@@ -28,15 +28,16 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web") {
         exclude module: "spring-boot-starter-tomcat"
     }
+    compile("org.springframework.boot:spring-boot-starter-jdbc:0.5.0.M6")
     compile("org.springframework:spring-jdbc")
     compile("org.springframework.boot:spring-boot-starter-jetty")
     // end::jetty[]
     // tag::actuator[]
-    compile("org.springframework.boot:spring-boot-starter-actuator")
+    
     // end::actuator[]
     compile group:'com.fasterxml.jackson.core', name:'jackson-databind'
     compile group:'org.springframework', name:'spring-jdbc'
-    compile group:'com.h2database', name:'h2'
+    compile group:'mysql', name:'mysql-connector-java',version: '5.1.26'
     testCompile("junit:junit")
 
     //Elasticsearch

@@ -1,6 +1,6 @@
 package hello;
 
-import hello.Customer;
+import hello.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,53 +36,36 @@ public class HelloController {
         
     }*/
     
+    
+    
+    
     @RequestMapping("/")
-    public String index(){
-        return "";
-    }
-    
-    private void storeInDatabase() {
-        jdbcTemplate.execute("drop table customers if exists");
-        jdbcTemplate.execute("create table customers(" +
-                "id serial, first_name varchar(255), last_name varchar(255))");
-
-        String[] names = "John Woo;Jeff Dean;Josh Bloch;Josh Long".split(";");
-        for (String fullname : names) {
-            String[] name = fullname.split(" ");
-            System.out.printf("Inserting customer record for %s %s\n", name[0], name[1]);
-            jdbcTemplate.update(
-                    "INSERT INTO customers(first_name,last_name) values(?,?)",
-                    name[0], name[1]);
-        }
-    }
-    
-    private List<Customer> getFromDatabase() {
-        List<Customer> results = jdbcTemplate.query(
-            "select * from customers where first_name = ?", new Object[] { "Josh" },
-            new RowMapper<Customer>() {
+    @ResponseBody List<User> getFromDatabase() {
+        List<User> results = jdbcTemplate.query(
+            "select id,firstName,lastName from users where institutionId = ?", new Object[] { "MindApps" },
+            new RowMapper<User>() {
                 @Override
-                public Customer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return new Customer(rs.getLong("id"), rs.getString("first_name"),
-                            rs.getString("last_name"));
+                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new User(rs.getLong("id"), rs.getString("firstName"),
+                            rs.getString("lastName"));
                 }
             });
 
-        for (Customer customer : results) {
-            System.out.println(customer);
+        for (User User : results) {
+            System.out.println(User);
         }
         return results;
     }
     
-    @RequestMapping(value= "/store/{document}/{index}/{id}")
-    @ResponseBody List<Customer> putDataIntoElasticSearch(@PathVariable(value="document")String document, @PathVariable(value="index")String index ,@PathVariable(value="id")int id) throws JsonProcessingException{
-        storeInDatabase();
-        List<Customer> objects = getFromDatabase();
+    @RequestMapping(value= "/start")
+    @ResponseBody List<User> putDataIntoElasticSearch() throws JsonProcessingException{
+        List<User> objects = getFromDatabase();
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json;
-        for(Customer c : objects){
+        for(User c : objects){
             json = mapper.writeValueAsString(c);
             System.out.println(json);
-            IndexResponse response = client.prepareIndex(document, index,String.valueOf(id++)).setSource(json).execute().actionGet();
+            IndexResponse response = client.prepareIndex("bca", "users",String.valueOf(c.getId())).setSource(json).execute().actionGet();
         }
         
         

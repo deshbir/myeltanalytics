@@ -13,3 +13,6 @@ dependency-reduced-pom.xml
 /scratch
 .gradle
 README.html
+/data
+/eclipse.bat
+/start.bat

@@ -1,10 +1,10 @@
 package hello;
 
-public class Customer {
+public class User {
     private long id;
     private String firstName, lastName;
 
-    public Customer(long id, String firstName, String lastName) {
+    public User(long id, String firstName, String lastName) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -13,7 +13,7 @@ public class Customer {
     @Override
     public String toString() {
         return String.format(
-                "Customer[id=%d, firstName='%s', lastName='%s']",
+                "User[id=%d, firstName='%s', lastName='%s']",
                 id, firstName, lastName);
     }
 
