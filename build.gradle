@@ -33,6 +33,9 @@ dependencies {
     // tag::actuator[]
     compile("org.springframework.boot:spring-boot-starter-actuator")
     // end::actuator[]
+    compile group:'com.fasterxml.jackson.core', name:'jackson-databind'
+    compile group:'org.springframework', name:'spring-jdbc'
+    compile group:'com.h2database', name:'h2'
     testCompile("junit:junit")
 
     //Elasticsearch
