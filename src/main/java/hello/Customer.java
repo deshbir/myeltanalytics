@@ -1,3 +1,5 @@
+package hello;
+
 public class Customer {
     private long id;
     private String firstName, lastName;
