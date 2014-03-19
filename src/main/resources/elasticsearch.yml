@@ -1,0 +1,3 @@
+cluster.name: myeltanalytics
+node.name: manav
+http.port: 9200
