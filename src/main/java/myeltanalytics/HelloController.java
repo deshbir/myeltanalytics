@@ -1,4 +1,4 @@
-package hello;
+package myeltanalytics;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,12 +29,6 @@ public class HelloController {
     
     @Autowired
     private Node node;
-    /*String home() {
-        
-    }*/
-    
-    
-    
     
     @RequestMapping("/")
     @ResponseBody List<User> getFromDatabase() {

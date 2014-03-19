@@ -1,4 +1,4 @@
-package hello;
+package myeltanalytics;
 
 import javax.annotation.PostConstruct;
 

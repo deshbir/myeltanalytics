@@ -1,4 +1,4 @@
-package hello;
+package myeltanalytics;
 
 import java.util.concurrent.Executors;
 
@@ -19,37 +19,22 @@ import com.google.common.eventbus.EventBus;
 @ComponentScan
 public class Application {
     
-    public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(Application.class, args);
-        
+    public static void main(String[] args) {        
+        ApplicationContext ctx = SpringApplication.run(Application.class, args);        
         ctx.getBeanDefinitionNames();
-
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-
-		System.out.println("Game Started");
-
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-
-       
+		System.out.println("************************************");
+		System.out.println("MyELT Analytics Application Started");
+		System.out.println("************************************");
     }
     
     @Bean
     public EventBus EventBusBuilder() {
         return new AsyncEventBus(Executors.newCachedThreadPool());
     }
-    
-    
+        
     @Bean
     public Node NodeBuilder(){
         Node node = NodeBuilder.nodeBuilder().node();
         return node;
     }
-
 }

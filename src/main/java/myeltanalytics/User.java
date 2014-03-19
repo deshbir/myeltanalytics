@@ -1,4 +1,4 @@
-package hello;
+package myeltanalytics;
 
 public class User {
     private long id;
