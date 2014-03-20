@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -41,6 +42,7 @@ public class PushDataListener
     }
     
     @Subscribe
+    @AllowConcurrentEvents
     public void onEvent(PushObjectEvent event) {
         try
         {
@@ -48,14 +50,15 @@ public class PushDataListener
             ObjectMapper mapper = new ObjectMapper(); // create once, reuse
             String json;
             json = mapper.writeValueAsString(user);
-            System.out.println(json);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
             USER_POSTED_STATUS_MAP.put(user.getId(), Status.SUCCESS);
-            LOGGER.debug("user: " + event.getId() + " pushed successfully");
+            System.out.println("User with UserId= " + event.getId() + " pushed successfully");
+            LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
-            LOGGER.error("Failure for user id: " + event.getId() + e.getMessage());
-            LOGGER.error(e.getStackTrace());
+            e.printStackTrace();
+            LOGGER.error("Failure for UserId= " + event.getId(), e);
+            //TO-DO retry logic if neccessary
             USER_POSTED_STATUS_MAP.put(event.getId(), Status.FAILURE);
         }
         
