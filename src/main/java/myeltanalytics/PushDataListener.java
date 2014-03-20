@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,6 +24,7 @@ import com.google.common.eventbus.Subscribe;
 public class PushDataListener
 {
     public static Map<Long,Status> USER_POSTED_STATUS_MAP = new HashMap<Long,Status>();
+    private final Logger LOGGER = Logger.getLogger(PushDataListener.class);
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -49,10 +51,11 @@ public class PushDataListener
             System.out.println(json);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
             USER_POSTED_STATUS_MAP.put(user.getId(), Status.SUCCESS);
-            System.out.println("user: " + event.getId() + " pushed successfully");
+            LOGGER.debug("user: " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
-            e.printStackTrace();
+            LOGGER.error("Failure for user id: " + event.getId() + e.getMessage());
+            LOGGER.error(e.getStackTrace());
             USER_POSTED_STATUS_MAP.put(event.getId(), Status.FAILURE);
         }
         
