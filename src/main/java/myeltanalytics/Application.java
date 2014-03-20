@@ -2,8 +2,10 @@ package myeltanalytics;
 
 import java.util.concurrent.Executors;
 
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +21,12 @@ import com.google.common.eventbus.EventBus;
 @ComponentScan
 public class Application {
     
+    @Value("${elasticsearch.host}")
+    private String elasticSearchHost;
+    
+    @Value("${elasticsearch.port}")
+    private int elasticSearchPort;
+    
     public static void main(String[] args) {        
         ApplicationContext ctx = SpringApplication.run(Application.class, args);        
         ctx.getBeanDefinitionNames();
@@ -28,13 +36,12 @@ public class Application {
     }
     
     @Bean
-    public EventBus EventBusBuilder() {
+    public EventBus eventBus() {
         return new AsyncEventBus(Executors.newCachedThreadPool());
     }
         
     @Bean
-    public Node NodeBuilder(){
-        Node node = NodeBuilder.nodeBuilder().node();
-        return node;
+    public Client elasticSearchClient(){
+        return new TransportClient().addTransportAddress(new InetSocketTransportAddress(elasticSearchHost, elasticSearchPort));
     }
 }
