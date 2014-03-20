@@ -8,15 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-@RestController
+@Controller
 public class MainController {
     
+    private static long LAST_USER_ID = -1;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     
@@ -45,13 +46,14 @@ public class MainController {
     @ResponseBody String putDataIntoElasticSearch() throws JsonProcessingException{
         
         jdbcTemplate.query(
-            "select id from users where type=0",
+            "select id from users where type=0  and id > ? order by id LIMIT 1000",new Object[] { LAST_USER_ID },
             new RowCallbackHandler()
             {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException
                 {
-                    PushObjectEvent event = new PushObjectEvent("bca", "users", rs.getLong("id"));
+                    LAST_USER_ID = rs.getLong("id");
+                    PushObjectEvent event = new PushObjectEvent("bca", "users", LAST_USER_ID);
                     PushDataListener.USER_POSTED_STATUS_MAP.put(rs.getLong("id"),Status.WAITING);
                     eventBusService.postEvent(event);
                     
