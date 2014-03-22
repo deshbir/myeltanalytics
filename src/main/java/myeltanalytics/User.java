@@ -12,7 +12,7 @@ public class User {
     private Date dateLastLogin;
     private String firstName,lastName;
     private String country;
-    private Institution instituion;
+    private Institution institution;
     private List<String> products;
     private List<String> courses;
     private List<String> accesscodes;
@@ -56,52 +56,7 @@ public class User {
         
         
     }
-    public static class Institution
-    {
-        private String id;
-        private String name;
-        
-        
-        
-        /**
-         * @param id
-         * @param name
-         */
-        public Institution(String id, String name)
-        {
-            this.id = id;
-            this.name = name;
-        }
-        /**
-         * @return the id
-         */
-        public String getId()
-        {
-            return id;
-        }
-        /**
-         * @param id the id to set
-         */
-        public void setId(String id)
-        {
-            this.id = id;
-        }
-        /**
-         * @return the name
-         */
-        public String getName()
-        {
-            return name;
-        }
-        /**
-         * @param name the name to set
-         */
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-        
-    }
+    
     
     public User(long id){
         this.id = id;
@@ -318,9 +273,9 @@ public class User {
     /**
      * @return the instituion
      */
-    public Institution getInstituion()
+    public Institution getInstitution()
     {
-        return instituion;
+        return institution;
     }
 
 
@@ -328,9 +283,9 @@ public class User {
     /**
      * @param instituion the instituion to set
      */
-    public void setInstituion(Institution instituion)
+    public void setInstitution(Institution institution)
     {
-        this.instituion = instituion;
+        this.institution = institution;
     }
 
 

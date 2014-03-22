@@ -29,8 +29,8 @@ public class MainController {
         return "Welcome to MyElt Analytics";
     }
     
-    @RequestMapping(value= "/start")
-    @ResponseBody String putDataIntoElasticSearch() throws JsonProcessingException{
+    @RequestMapping(value= "/startPushingUser")
+    @ResponseBody String putUserDataIntoElasticSearch() throws JsonProcessingException{
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
@@ -40,17 +40,43 @@ public class MainController {
                     @Override
                     public void processRow(ResultSet rs) throws SQLException
                     {
-                        PushObjectEvent event = new PushObjectEvent("bca", "users", rs.getLong("id"));
+                        PushUserEvent event = new PushUserEvent("bca", "users", rs.getLong("id"));
                         PushDataListener.USER_POSTED_STATUS_MAP.put(rs.getLong("id"),Status.WAITING);
                         eventBusService.postEvent(event);
                         
                     }
                 });
             LOGGER.debug("Started sync process");
+            return "Started User sync process";
+        } catch (Exception e) {
+            LOGGER.error("Error starting sync process", e);
+            return "Error starting User sync process";
+        }
+        
+    }  
+    
+    
+    @RequestMapping(value= "/startPushingSubmissions")
+    @ResponseBody String putSubmissionDataIntoElasticSearch() throws JsonProcessingException{
+        //To-Do move this logic in eventBus if required 
+        try {
+            jdbcTemplate.query(
+                "select id from assignmentresults where assignmentId IN (select assignmentId from assignments where AssignmentType =2 ) LIMIT 10",
+                new RowCallbackHandler()
+                {
+                    @Override
+                    public void processRow(ResultSet rs) throws SQLException
+                    {
+                        PushSubmissionEvent event = new PushSubmissionEvent("bca", "submissions", rs.getLong("id"));
+                        eventBusService.postEvent(event);
+                        
+                    }
+                });
+            LOGGER.debug("Started Submission sync process");
             return "Started sync process";
         } catch (Exception e) {
             LOGGER.error("Error starting sync process", e);
-            return "Error starting sync process";
+            return "Error starting Submission sync process";
         }
         
     }  

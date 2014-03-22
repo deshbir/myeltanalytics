@@ -8,6 +8,9 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import myeltanalytics.ActivitySubmission.Assignment;
+import myeltanalytics.ActivitySubmission.Book;
+
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +46,7 @@ public class PushDataListener
     
     @Subscribe
     @AllowConcurrentEvents
-    public void onEvent(PushObjectEvent event) {
+    public void onPushUserEvent(PushUserEvent event) {
         try
         {
             User user = populateUser(event.getId());
@@ -63,8 +66,115 @@ public class PushDataListener
         }
         
     }
+    
+    
+    @Subscribe
+    @AllowConcurrentEvents
+    public void onPushSubmissionEvent(PushSubmissionEvent event) {
+        try
+        {
+            ActivitySubmission activitySubmission = populateSubmission(event.getId());
+            ObjectMapper mapper = new ObjectMapper(); // create once, reuse
+            String json;
+            json = mapper.writeValueAsString(activitySubmission);
+            elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
+            System.out.println("Submission with assignmentResultID= " + event.getId() + " pushed successfully");
+            LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            LOGGER.error("Failure for assignmentResultID= " + event.getId(), e);
+        }
+        
+    }
 
 
+    private ActivitySubmission populateSubmission(long activitySubmissionId)
+    {
+        ActivitySubmission activitySubmission = jdbcTemplate.queryForObject(
+            "select id,CompletedAt,Score,PossibleScore,assignmentId,userId from assignmentResults where id = ?", new Object[] { activitySubmissionId },
+            new RowMapper<ActivitySubmission>() {
+                @Override
+                public ActivitySubmission mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    ActivitySubmission activitySubmission = new ActivitySubmission(rs.getLong("id"));
+                    activitySubmission.setDateSubmitted(rs.getDate("CompletedAt"));
+                    activitySubmission.setStudentScore(rs.getDouble("Score"));
+                    activitySubmission.setMaxScore(rs.getDouble("PossibleScore"));
+                    activitySubmission.setAssignment(populateAssignment(rs.getLong("assignmentId")));
+                    activitySubmission.setUser(populateUserForSubmission(rs.getLong("userId")));
+                    return activitySubmission;
+                }
+            });
+        return activitySubmission;
+    }
+
+    
+
+    protected ActivitySubmission.User populateUserForSubmission(long userId)
+    {
+        ActivitySubmission.User user = jdbcTemplate.queryForObject(
+            "select id,firstName,lastName,country,InstitutionID from users where id = ?", new Object[] { userId },
+            new RowMapper<ActivitySubmission.User>() {
+                @Override
+                public ActivitySubmission.User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    ActivitySubmission.User user = new ActivitySubmission.User(rs.getLong("id"));
+                    user.setFirstName(rs.getString("firstName"));
+                    user.setLastName(rs.getString("lastName"));
+                    user.setCountry(rs.getString("country"));
+                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));
+                    return user;
+                }
+            });
+        return user;
+    }
+
+   
+    protected Assignment populateAssignment(long assignmentId)
+    {
+        Assignment assignment = jdbcTemplate.queryForObject(
+            "select id,name,NumRetakes,AssignmentType,AssignmentData from assignments where id = ?", new Object[] { assignmentId },
+            new RowMapper<Assignment>() {
+
+                @Override
+                public Assignment mapRow(ResultSet rs, int rowNum) throws SQLException
+                {
+                    Assignment assignment = new Assignment(rs.getLong("id"));
+                    assignment.setName(rs.getString("name"));
+                    assignment.setMaxTakesAllowed(rs.getInt("NumRetakes"));
+                    assignment.setActivityType(rs.getInt("AssignmentType"));
+                    assignment.setBook(populateBookDetails(rs.getString("AssignmentData")));
+                    return assignment;
+                }
+            
+            });
+        return assignment;
+    }
+    
+    
+    protected Book populateBookDetails(String assignmentData)
+    {
+        int startIndex = assignmentData.indexOf("book=") + 5;
+        int endIndex = assignmentData.indexOf("&",startIndex);
+        String bookAbbr = assignmentData.substring(startIndex, endIndex);
+        Book book = jdbcTemplate.queryForObject(
+            "select abbr,name,discipline from booklist where abbr = ?", new Object[] { bookAbbr },
+            new RowMapper<Book>() {
+
+                @Override
+                public Book mapRow(ResultSet rs, int rowNum) throws SQLException
+                {
+                    Book book = new Book();
+                    book.setName(rs.getString("name"));
+                    book.setAbbr(rs.getString("abbr"));
+                    book.setDiscipline(rs.getString("discipline"));
+                    return book;
+                }
+            
+            });
+        return book;
+    }
+    
+    
     private User populateUser(long userId)
     {
        User user = jdbcTemplate.queryForObject(
@@ -81,7 +191,7 @@ public class PushDataListener
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
                     user.setCountry(rs.getString("country"));
-                    user.setInstituion(populateInstitution(rs.getString("InstitutionID")));
+                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));
                     user.setProducts(populateProducts(user.getId()));
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));
@@ -136,13 +246,13 @@ public class PushDataListener
     }
 
 
-    protected User.Institution populateInstitution(String institutionId){
-        User.Institution  institution = jdbcTemplate.queryForObject(
+    protected Institution populateInstitution(String institutionId){
+        Institution  institution = jdbcTemplate.queryForObject(
             "select id,name from institutions where id = ?", new Object[] { institutionId },
-            new RowMapper<User.Institution>() {
+            new RowMapper<Institution>() {
                 @Override
-                public User.Institution mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return new User.Institution(rs.getString("id"),rs.getString("name"));
+                public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new Institution(rs.getString("id"),rs.getString("name"));
                 }
             });
         return institution;

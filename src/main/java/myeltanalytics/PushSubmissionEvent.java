@@ -1,12 +1,12 @@
 package myeltanalytics;
 
-public class PushObjectEvent
+public class PushSubmissionEvent
 {
     private String document;
     private String index;
     private long id;
     
-    public PushObjectEvent(String document, String index, long id)
+    public PushSubmissionEvent(String document, String index, long id)
     {
         this.document = document;
         this.index = index;
