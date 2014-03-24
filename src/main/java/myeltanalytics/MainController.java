@@ -2,13 +2,13 @@ package myeltanalytics;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.indices.IndexMissingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -41,25 +41,35 @@ public class MainController {
     @PostConstruct
     void initializeLastStatusParameters(){
         try {
-            GetResponse userIdStatusResponse = elasticSearchClient.prepareGet("myEltAnalytics", "status", "lastUserId")
+            GetResponse userIdStatusResponse = elasticSearchClient.prepareGet("myeltanalytics", "status", "lastUserId")
             .execute()
             .actionGet();
-            GetResponse lastSubmissionStatusResponse = elasticSearchClient.prepareGet("myEltAnalytics", "status", "lastActivitySubmissionId")
-                .execute()
-                .actionGet();
-            String userIdStatus = userIdStatusResponse.getSourceAsString();
-            if(userIdStatus!= null && !userIdStatus.equals(BLANK)){
-                LAST_USER_ID = Long.parseLong(userIdStatus); 
+            Map<String,Object> map = userIdStatusResponse.getSourceAsMap();
+            Integer userIdStatus = (Integer) map.get("id");
+            if(userIdStatus!= null){
+                LAST_USER_ID = userIdStatus; 
             }
-            
-            String lastSubmissionStatus = lastSubmissionStatusResponse.getSourceAsString();
-            if(lastSubmissionStatus!= null && !lastSubmissionStatus.equals(BLANK)){
-                LAST_ACTIVITY_SUBMISSION_ID = Long.parseLong(lastSubmissionStatus); 
-            }
-        } catch (IndexMissingException ex){
+        }
+        catch (Exception ex){
             //will come when application is started first time
             //ignore if comes once
-            LOGGER.error("Status Index not found" ,ex);
+            LOGGER.error("User Status Index not found" ,ex);
+        }
+        try {
+            GetResponse lastSubmissionStatusResponse = elasticSearchClient.prepareGet("myeltanalytics", "status", "lastActivitySubmissionId")
+                .execute()
+                .actionGet();
+            
+            Map<String,Object> map = lastSubmissionStatusResponse.getSourceAsMap();
+            Integer lastSubmissionStatus = (Integer) map.get("id");
+            if(lastSubmissionStatus!= null){
+                LAST_ACTIVITY_SUBMISSION_ID = lastSubmissionStatus; 
+            }
+        }
+        catch (Exception ex){
+            //will come when application is started first time
+            //ignore if comes once
+            LOGGER.error("Last Activity Submission Status Index not found" ,ex);
         }
     }
     
@@ -73,16 +83,21 @@ public class MainController {
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
-                "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
+                "select id from users where type=0 and id > ? order by id LIMIT 10", new Object[] { LAST_USER_ID },
                 new RowCallbackHandler()
                 {
                     @Override
                     public void processRow(ResultSet rs) throws SQLException
                     {
-                        setLastUserStatus(++LAST_USER_ID);
-                        PushUserEvent event = new PushUserEvent("bca", "users", rs.getLong("id"));
-                        PushDataListener.USER_POSTED_STATUS_MAP.put(rs.getLong("id"),Status.WAITING);
-                        eventBusService.postEvent(event);
+                        try
+                        {
+                            setLastUserStatus(++LAST_USER_ID);
+                            PushUserEvent event = new PushUserEvent("bca", "users", rs.getLong("id"));
+                            PushDataListener.USER_POSTED_STATUS_MAP.put(rs.getLong("id"),Status.WAITING);
+                            eventBusService.postEvent(event);
+                        } catch(Exception e){
+                            LOGGER.error("Error while processing User row" ,e);
+                        }
                         
                     }
                 });
@@ -107,9 +122,14 @@ public class MainController {
                     @Override
                     public void processRow(ResultSet rs) throws SQLException
                     {
-                        setLastActivitySubmissionStatus(++LAST_ACTIVITY_SUBMISSION_ID);
-                        PushSubmissionEvent event = new PushSubmissionEvent("bca", "submissions", rs.getLong("id"));
-                        eventBusService.postEvent(event);
+                        try {
+                            setLastActivitySubmissionStatus(++LAST_ACTIVITY_SUBMISSION_ID);
+                            PushSubmissionEvent event = new PushSubmissionEvent("bca", "submissions", rs.getLong("id"));
+                            eventBusService.postEvent(event);
+                        } catch (Exception e) {
+                            LOGGER.error("Error while processing Activity Submission row" ,e);
+                        }
+                        
                         
                     }
                 });
@@ -122,12 +142,12 @@ public class MainController {
         
     }
     
-    synchronized void setLastUserStatus(long userStatus){
-        System.out.println();
-        elasticSearchClient.prepareIndex("myEltAnalytics", "status", "lastUserId").setSource(userStatus).execute().actionGet();
+    synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
+        String json = "{\"id\": " + userStatus + "}";
+        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastUserId").setSource(json).execute().actionGet();
     }
     
     synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
-        elasticSearchClient.prepareIndex("myEltAnalytics", "status", "lastActivitySubmissionId").setSource(activitySubmissionStatus).execute().actionGet();
+        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastActivitySubmissionId").setSource(activitySubmissionStatus).execute().actionGet();
     }
 }
