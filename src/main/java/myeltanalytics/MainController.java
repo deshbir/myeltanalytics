@@ -83,7 +83,7 @@ public class MainController {
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
-                "select id from users where type=0 and id > ? order by id LIMIT 10", new Object[] { LAST_USER_ID },
+                "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
                 new RowCallbackHandler()
                 {
                     @Override
@@ -91,7 +91,8 @@ public class MainController {
                     {
                         try
                         {
-                            setLastUserStatus(++LAST_USER_ID);
+                            long currentId = rs.getLong("id");
+                            setLastUserStatus(currentId);
                             PushUserEvent event = new PushUserEvent("bca", "users", rs.getLong("id"));
                             PushDataListener.USER_POSTED_STATUS_MAP.put(rs.getLong("id"),Status.WAITING);
                             eventBusService.postEvent(event);
@@ -123,8 +124,9 @@ public class MainController {
                     public void processRow(ResultSet rs) throws SQLException
                     {
                         try {
-                            setLastActivitySubmissionStatus(++LAST_ACTIVITY_SUBMISSION_ID);
-                            PushSubmissionEvent event = new PushSubmissionEvent("bca", "submissions", rs.getLong("id"));
+                            long currentId = rs.getLong("id");
+                            setLastActivitySubmissionStatus(currentId);
+                            PushSubmissionEvent event = new PushSubmissionEvent("bca", "submissions", currentId);
                             eventBusService.postEvent(event);
                         } catch (Exception e) {
                             LOGGER.error("Error while processing Activity Submission row" ,e);
@@ -143,11 +145,14 @@ public class MainController {
     }
     
     synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
+        LAST_USER_ID = userStatus;
         String json = "{\"id\": " + userStatus + "}";
         elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastUserId").setSource(json).execute().actionGet();
     }
     
     synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
-        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastActivitySubmissionId").setSource(activitySubmissionStatus).execute().actionGet();
+        LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
+        String json = "{\"id\": " + activitySubmissionStatus + "}";
+        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastActivitySubmissionId").setSource(json).execute().actionGet();
     }
 }
