@@ -61,7 +61,7 @@ public class MainController {
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
-                "select id from assignmentresults where assignmentId IN (select assignmentId from assignments where AssignmentType =2 ) LIMIT 10",
+                "select id from assignmentresults where assignmentId IN (select assignmentId from assignments where AssignmentType =2 )",
                 new RowCallbackHandler()
                 {
                     @Override

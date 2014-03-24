@@ -37,7 +37,7 @@ public class Application {
     
     @Bean
     public EventBus eventBus() {
-        return new AsyncEventBus(Executors.newFixedThreadPool(5));
+        return new AsyncEventBus(Executors.newFixedThreadPool(40));
     }
         
     @Bean

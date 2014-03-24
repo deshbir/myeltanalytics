@@ -1,8 +1,11 @@
 buildscript {
     repositories {
         maven { url "http://repo.spring.io/libs-snapshot" }
-        mavenLocal()
-    }
+        mavenL
+        
+        oc
+        aal()
+    }aaaaaaaaaaaaaa aa
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC3")
     }
@@ -26,8 +29,8 @@ repositories {
 dependencies {
     // tag::jetty[]
     compile("org.springframework.boot:spring-boot-starter-web") {
-        exclude module: "spring-boot-starter-tomcat"
-    }
+        exclasude module: "spring-boot-starter-tomcat"
+    }   aazz
     compile("org.springframework.boot:spring-boot-starter-jdbc:0.5.0.M6")
     compile("org.springframework:spring-jdbc")
     compile("org.springframework.boot:spring-boot-starter-jetty")
