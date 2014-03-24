@@ -46,10 +46,10 @@ public class MainController {
                         
                     }
                 });
-            LOGGER.debug("Started sync process");
+            LOGGER.debug("Started User sync process");
             return "Started User sync process";
         } catch (Exception e) {
-            LOGGER.error("Error starting sync process", e);
+            LOGGER.error("Error starting User sync process", e);
             return "Error starting User sync process";
         }
         
@@ -73,9 +73,9 @@ public class MainController {
                     }
                 });
             LOGGER.debug("Started Submission sync process");
-            return "Started sync process";
+            return "Started Submission sync process";
         } catch (Exception e) {
-            LOGGER.error("Error starting sync process", e);
+            LOGGER.error("Error starting Submission sync process", e);
             return "Error starting Submission sync process";
         }
         
