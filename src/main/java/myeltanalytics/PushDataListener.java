@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
@@ -54,6 +55,7 @@ public class PushDataListener
             String json;
             json = mapper.writeValueAsString(user);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
+            setLastUserStatus(event.getId());
             USER_POSTED_STATUS_MAP.put(user.getId(), Status.SUCCESS);
             System.out.println("User with UserId= " + event.getId() + " pushed successfully");
             LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
@@ -78,8 +80,8 @@ public class PushDataListener
             String json;
             json = mapper.writeValueAsString(activitySubmission);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
-            System.out.println("Submission with assignmentResultID= " + event.getId() + " pushed successfully");
-            LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
+            setLastActivitySubmissionStatus(event.getId());
+            LOGGER.debug("Submission with SubmissionId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -153,25 +155,29 @@ public class PushDataListener
     
     protected Book populateBookDetails(String assignmentData)
     {
-        int startIndex = assignmentData.indexOf("book=") + 5;
-        int endIndex = assignmentData.indexOf("&",startIndex);
-        String bookAbbr = assignmentData.substring(startIndex, endIndex);
-        Book book = jdbcTemplate.queryForObject(
-            "select abbr,name,discipline from booklist where abbr = ?", new Object[] { bookAbbr },
-            new RowMapper<Book>() {
-
-                @Override
-                public Book mapRow(ResultSet rs, int rowNum) throws SQLException
-                {
-                    Book book = new Book();
-                    book.setName(rs.getString("name"));
-                    book.setAbbr(rs.getString("abbr"));
-                    book.setDiscipline(rs.getString("discipline"));
-                    return book;
-                }
-            
-            });
-        return book;
+        if(assignmentData.equals(MainController.BLANK)){
+            int startIndex = assignmentData.indexOf("book=") + 5;
+            int endIndex = assignmentData.indexOf("&",startIndex);
+            String bookAbbr = assignmentData.substring(startIndex, endIndex);
+            Book book = jdbcTemplate.queryForObject(
+                "select abbr,name,discipline from booklist where abbr = ?", new Object[] { bookAbbr },
+                new RowMapper<Book>() {
+    
+                    @Override
+                    public Book mapRow(ResultSet rs, int rowNum) throws SQLException
+                    {
+                        Book book = new Book();
+                        book.setName(rs.getString("name"));
+                        book.setAbbr(rs.getString("abbr"));
+                        book.setDiscipline(rs.getString("discipline"));
+                        return book;
+                    }
+                
+                });
+            return book;
+        } else {
+            return null;
+        }
     }
     
     
@@ -180,6 +186,7 @@ public class PushDataListener
        User user = jdbcTemplate.queryForObject(
             "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,InstitutionID from users where id = ?", new Object[] { userId },
             new RowMapper<User>() {
+                
                 @Override
                 public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                     User user = new User(rs.getLong("id"));
@@ -235,7 +242,7 @@ public class PushDataListener
     protected List<String> populateCourses(long userId)
     {
         List<String> courses = jdbcTemplate.query(
-            "select name from sections where id IN (select SectionID from sectionmembers where UserID = ?)", new Object[] { userId },
+            "select name from sections, sectionmembers where sections.id=sectionmembers.sectionId and sectionmembers.userId = ?", new Object[] { userId },
             new RowMapper<String>() {
                 @Override
                 public String mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -257,6 +264,18 @@ public class PushDataListener
             });
         return institution;
 
+    }
+    
+    synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
+        MainController.LAST_USER_ID = userStatus;
+        String json = "{\"id\": " + userStatus + "}";
+        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastUserId").setSource(json).execute().actionGet();
+    }
+    
+    synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
+        MainController.LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
+        String json = "{\"id\": " + activitySubmissionStatus + "}";
+        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastActivitySubmissionId").setSource(json).execute().actionGet();
     }
     
 }

@@ -22,12 +22,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class MainController {
     public static final String BLANK = "";
   
-    private long LAST_USER_ID = -1;
+    public static long LAST_USER_ID = -1;
     
     @Autowired
     private Client elasticSearchClient;
     
-    private long LAST_ACTIVITY_SUBMISSION_ID = -1;
+    public static long LAST_ACTIVITY_SUBMISSION_ID = -1;
 
     
     private final Logger LOGGER = Logger.getLogger(MainController.class);
@@ -74,13 +74,12 @@ public class MainController {
     }
     
     @RequestMapping("/")
-    @ResponseBody public String getIndex() {
-        return "Welcome to MyElt Analytics";
+    public String getIndex() {
+        return "index.html";
     }
     
     @RequestMapping(value= "/startPushingUser")
     @ResponseBody String putUserDataIntoElasticSearch() throws JsonProcessingException{
-        //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
                 "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
@@ -92,9 +91,8 @@ public class MainController {
                         try
                         {
                             long currentId = rs.getLong("id");
-                            setLastUserStatus(currentId);
                             PushUserEvent event = new PushUserEvent("bca", "users", rs.getLong("id"));
-                            PushDataListener.USER_POSTED_STATUS_MAP.put(rs.getLong("id"),Status.WAITING);
+                            PushDataListener.USER_POSTED_STATUS_MAP.put(currentId,Status.WAITING);
                             eventBusService.postEvent(event);
                         } catch(Exception e){
                             LOGGER.error("Error while processing User row" ,e);
@@ -117,16 +115,15 @@ public class MainController {
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
-                "select id from assignmentresults where id > ?  and assignmentId IN (select assignmentId from assignments where AssignmentType =2 )",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
+                "select (ar.id) from assignmentresults as ar inner join assignments as a on ar.assignmentId = a.id where ar.id> ? and a.AssignmentType = 2 LIMIT 20000",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
                 new RowCallbackHandler()
                 {
                     @Override
                     public void processRow(ResultSet rs) throws SQLException
                     {
                         try {
-                            long currentId = rs.getLong("id");
-                            setLastActivitySubmissionStatus(currentId);
-                            PushSubmissionEvent event = new PushSubmissionEvent("bca", "submissions", currentId);
+                            long currentId = rs.getLong("ar.id");
+                            PushSubmissionEvent event = new PushSubmissionEvent("myelt", "submissions", currentId);
                             eventBusService.postEvent(event);
                         } catch (Exception e) {
                             LOGGER.error("Error while processing Activity Submission row" ,e);
@@ -144,15 +141,5 @@ public class MainController {
         
     }
     
-    synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
-        LAST_USER_ID = userStatus;
-        String json = "{\"id\": " + userStatus + "}";
-        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastUserId").setSource(json).execute().actionGet();
-    }
     
-    synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
-        LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
-        String json = "{\"id\": " + activitySubmissionStatus + "}";
-        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastActivitySubmissionId").setSource(json).execute().actionGet();
-    }
 }
