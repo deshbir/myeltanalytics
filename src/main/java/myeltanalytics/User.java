@@ -1,7 +1,9 @@
 package myeltanalytics;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class User {
     private long id;
@@ -16,6 +18,7 @@ public class User {
     private List<String> products;
     private List<String> courses;
     private List<String> accesscodes;
+    private List<String> disciplines;
     
     public enum StudentType{
         STUDENT(1,"STUDENT"),INSTRUCTOR(2,"INSTRUCTOR"),AUTHOR(3,"AUTHOR"),ADMINISTRATOR(4,"ADMINISTRATOR"),DISTRICT(5,"DISTRICT"),SUPERUSER(6,"SUPERUSER");
@@ -351,6 +354,14 @@ public class User {
     public String getName(){
         return this.firstName + " " + this.lastName;
     }
-   
 
+    public List<String> getDisciplines()
+    {
+        return disciplines;
+    }
+
+    public void setDisciplines(List<String> disciplines)
+    {
+        this.disciplines = disciplines;
+    } 
 }

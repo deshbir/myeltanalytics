@@ -200,6 +200,7 @@ public class PushDataListener
                     user.setCountry(rs.getString("country"));
                     user.setInstitution(populateInstitution(rs.getString("InstitutionID")));
                     user.setProducts(populateProducts(user.getId()));
+                    user.setDisciplines(populateDisciplines(user.getId()));
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));
                     return user;
@@ -225,18 +226,27 @@ public class PushDataListener
     protected List<String> populateProducts(long userId)
     {
         List<String> products = jdbcTemplate.query(
-            "select feature from accessrights where userId = ?", new Object[] { userId },
+            "select SUBSTRING(feature,11) as feature from accessrights where feature like 'book-view-%' and userId = ?", new Object[] { userId },
             new RowMapper<String>() {
                 @Override
                 public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    String feature  = rs.getString("feature");
-                    if (feature != null && !feature.equals("") && feature.startsWith("book-view-")) {
-                        return feature.substring(10);
-                    }
-                    return null;
+                    return rs.getString("feature");
                 }
             });
         return products;
+    }
+    
+    protected List<String> populateDisciplines(long userId)
+    {
+        List<String> disciplines = jdbcTemplate.query(
+            "select discipline.name as discipline from accessrights,booklist,discipline where discipline.abbr = booklist.discipline and booklist.abbr = SUBSTRING(accessrights.feature,11) and accessrights.feature like 'book-view-%' and accessrights.userId = ?", new Object[] { userId },
+            new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getString("discipline");
+                }
+            });
+        return disciplines;
     }
     
     protected List<String> populateCourses(long userId)
