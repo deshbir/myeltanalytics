@@ -233,7 +233,7 @@ public class PushDataListener
                     if (feature != null && !feature.equals("") && feature.startsWith("book-view-")) {
                         return feature.substring(10);
                     }
-                    return feature;
+                    return null;
                 }
             });
         return products;
