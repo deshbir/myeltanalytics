@@ -115,7 +115,7 @@ public class MainController {
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
-                "select (ar.id) from assignmentresults as ar inner join assignments as a on ar.assignmentId = a.id where ar.id> ? and a.AssignmentType = 2 LIMIT 20000",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
+                "select (ar.id) from assignmentresults as ar where ar.id> ? LIMIT 20000",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
                 new RowCallbackHandler()
                 {
                     @Override

@@ -81,6 +81,7 @@ public class PushDataListener
             json = mapper.writeValueAsString(activitySubmission);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
             setLastActivitySubmissionStatus(event.getId());
+            System.out.println("Submission with SubmissionId= " + event.getId() + " pushed successfully");
             LOGGER.debug("Submission with SubmissionId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
@@ -155,21 +156,21 @@ public class PushDataListener
     
     protected Book populateBookDetails(String assignmentData)
     {
-        if(assignmentData.equals(MainController.BLANK)){
+        if(!assignmentData.equals(MainController.BLANK)){
             int startIndex = assignmentData.indexOf("book=") + 5;
             int endIndex = assignmentData.indexOf("&",startIndex);
             String bookAbbr = assignmentData.substring(startIndex, endIndex);
             Book book = jdbcTemplate.queryForObject(
-                "select abbr,name,discipline from booklist where abbr = ?", new Object[] { bookAbbr },
+                "select b.abbr,b.name,d.name from booklist as b inner join discipline as d on b.discipline= d.abbr where b.abbr = ?", new Object[] { bookAbbr },
                 new RowMapper<Book>() {
     
                     @Override
                     public Book mapRow(ResultSet rs, int rowNum) throws SQLException
                     {
                         Book book = new Book();
-                        book.setName(rs.getString("name"));
-                        book.setAbbr(rs.getString("abbr"));
-                        book.setDiscipline(rs.getString("discipline"));
+                        book.setName(rs.getString("b.name"));
+                        book.setAbbr(rs.getString("b.abbr"));
+                        book.setDiscipline(rs.getString("d.name"));
                         return book;
                     }
                 
