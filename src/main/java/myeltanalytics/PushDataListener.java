@@ -227,7 +227,7 @@ public class PushDataListener
     protected List<String> populateProducts(long userId)
     {
         List<String> products = jdbcTemplate.query(
-            "select SUBSTRING(feature,11) as feature from accessrights where feature like 'book-view-%' and userId = ?", new Object[] { userId },
+            "select SUBSTRING(feature,11) as feature from accessrights where feature like 'book-view-%' and feature != 'book-view-ALL' and userId = ?", new Object[] { userId },
             new RowMapper<String>() {
                 @Override
                 public String mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -240,7 +240,7 @@ public class PushDataListener
     protected List<String> populateDisciplines(long userId)
     {
         List<String> disciplines = jdbcTemplate.query(
-            "select discipline.name as discipline from accessrights,booklist,discipline where discipline.abbr = booklist.discipline and booklist.abbr = SUBSTRING(accessrights.feature,11) and accessrights.feature like 'book-view-%' and accessrights.userId = ?", new Object[] { userId },
+            "select distinct discipline.name as discipline from accessrights,booklist,discipline where discipline.abbr = booklist.discipline and booklist.abbr = SUBSTRING(accessrights.feature,11) and accessrights.feature like 'book-view-%' and accessrights.feature != 'book-view-ALL' and accessrights.userId = ?", new Object[] { userId },
             new RowMapper<String>() {
                 @Override
                 public String mapRow(ResultSet rs, int rowNum) throws SQLException {
