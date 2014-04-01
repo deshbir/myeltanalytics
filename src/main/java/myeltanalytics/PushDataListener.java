@@ -52,7 +52,7 @@ public class PushDataListener
             String json = mapper.writeValueAsString(user);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
             setLastUserStatus(event.getId());
-            System.out.println("User with UserId= " + event.getId() + " pushed successfully");
+            //System.out.println("User with UserId= " + event.getId() + " pushed successfully");
             LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
@@ -72,7 +72,7 @@ public class PushDataListener
             String json = mapper.writeValueAsString(activitySubmission);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
             setLastActivitySubmissionStatus(event.getId());
-            System.out.println("Submission with SubmissionId= " + event.getId() + " pushed successfully");
+            //System.out.println("Submission with SubmissionId= " + event.getId() + " pushed successfully");
             LOGGER.debug("Submission with SubmissionId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
