@@ -4,9 +4,7 @@ public class Institution
 {
     private String id;
     private String name;
-    
-    
-    
+      
     /**
      * @param id
      * @param name

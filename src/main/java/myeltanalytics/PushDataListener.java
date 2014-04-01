@@ -2,9 +2,7 @@ package myeltanalytics;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -28,7 +26,6 @@ import com.google.common.eventbus.Subscribe;
 @Service(value="pushDataListener")
 public class PushDataListener
 {
-    public static Map<Long,Status> USER_POSTED_STATUS_MAP = new HashMap<Long,Status>();
     private final Logger LOGGER = Logger.getLogger(PushDataListener.class);
     
     @Autowired
@@ -52,11 +49,9 @@ public class PushDataListener
         {
             User user = populateUser(event.getId());
             ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-            String json;
-            json = mapper.writeValueAsString(user);
-            elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
+            String json = mapper.writeValueAsString(user);
+            elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
             setLastUserStatus(event.getId());
-            USER_POSTED_STATUS_MAP.put(user.getId(), Status.SUCCESS);
             System.out.println("User with UserId= " + event.getId() + " pushed successfully");
             LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
         }
@@ -64,11 +59,8 @@ public class PushDataListener
             e.printStackTrace();
             LOGGER.error("Failure for UserId= " + event.getId(), e);
             //TO-DO retry logic if neccessary
-            USER_POSTED_STATUS_MAP.put(event.getId(), Status.FAILURE);
         }
-        
     }
-    
     
     @Subscribe
     @AllowConcurrentEvents
@@ -77,9 +69,8 @@ public class PushDataListener
         {
             ActivitySubmission activitySubmission = populateSubmission(event.getId());
             ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-            String json;
-            json = mapper.writeValueAsString(activitySubmission);
-            elasticSearchClient.prepareIndex(event.getIndex(),event.getDocument(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
+            String json = mapper.writeValueAsString(activitySubmission);
+            elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
             setLastActivitySubmissionStatus(event.getId());
             System.out.println("Submission with SubmissionId= " + event.getId() + " pushed successfully");
             LOGGER.debug("Submission with SubmissionId= " + event.getId() + " pushed successfully");
@@ -280,13 +271,13 @@ public class PushDataListener
     synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
         MainController.LAST_USER_ID = userStatus;
         String json = "{\"id\": " + userStatus + "}";
-        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastUserId").setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_ANALYTICS_TYPE, "lastUserId").setSource(json).execute().actionGet();
     }
     
     synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
         MainController.LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
         String json = "{\"id\": " + activitySubmissionStatus + "}";
-        elasticSearchClient.prepareIndex("myeltanalytics", "status", "lastActivitySubmissionId").setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId").setSource(json).execute().actionGet();
     }
     
 }

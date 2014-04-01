@@ -2,25 +2,25 @@ package myeltanalytics;
 
 public class PushUserEvent
 {
-    private String document;
+    private String type;
     private String index;
     private long id;
     
-    public PushUserEvent(String document, String index, long id)
+    public PushUserEvent(String index, String type , long id)
     {
-        this.document = document;
+        this.type = type;
         this.index = index;
         this.id = id;
     }
     
     
-    public String getDocument()
+    public String getType()
     {
-        return document;
+        return type;
     }
-    public void setDocument(String document)
+    public void setType(String type)
     {
-        this.document = document;
+        this.type = type;
     }
     public String getIndex()
     {

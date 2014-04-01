@@ -7,8 +7,14 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -20,17 +26,29 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Controller
 public class MainController {
-    public static final String BLANK = "";
   
     public static long LAST_USER_ID = -1;
     
-    @Autowired
-    private Client elasticSearchClient;
-    
     public static long LAST_ACTIVITY_SUBMISSION_ID = -1;
-
+    
+    public static String USERS_INDEX = "users";
+    
+    public static String USERS_TYPE = "user_info";
+    
+    public static String SUBMISSIONS_INDEX = "submissions";
+    
+    public static String SUBMISSIONS_TYPE = "submissions_info";
+    
+    public static String MYELT_ANALYTICS_INDEX = "myeltanalytics";
+    
+    public static String MYELT_ANALYTICS_TYPE = "status";
+    
+    public static final String BLANK = "";
     
     private final Logger LOGGER = Logger.getLogger(MainController.class);
+    
+    @Autowired
+    private Client elasticSearchClient;
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -40,37 +58,9 @@ public class MainController {
     
     @PostConstruct
     void initializeLastStatusParameters(){
-        try {
-            GetResponse userIdStatusResponse = elasticSearchClient.prepareGet("myeltanalytics", "status", "lastUserId")
-            .execute()
-            .actionGet();
-            Map<String,Object> map = userIdStatusResponse.getSourceAsMap();
-            Integer userIdStatus = (Integer) map.get("id");
-            if(userIdStatus!= null){
-                LAST_USER_ID = userIdStatus; 
-            }
-        }
-        catch (Exception ex){
-            //will come when application is started first time
-            //ignore if comes once
-            LOGGER.error("User Status Index not found" ,ex);
-        }
-        try {
-            GetResponse lastSubmissionStatusResponse = elasticSearchClient.prepareGet("myeltanalytics", "status", "lastActivitySubmissionId")
-                .execute()
-                .actionGet();
-            
-            Map<String,Object> map = lastSubmissionStatusResponse.getSourceAsMap();
-            Integer lastSubmissionStatus = (Integer) map.get("id");
-            if(lastSubmissionStatus!= null){
-                LAST_ACTIVITY_SUBMISSION_ID = lastSubmissionStatus; 
-            }
-        }
-        catch (Exception ex){
-            //will come when application is started first time
-            //ignore if comes once
-            LOGGER.error("Last Activity Submission Status Index not found" ,ex);
-        }
+        setLastSyncedUserId();
+        setLastSyncedSubmissionId();
+        createUsersIndex();
     }
     
     @RequestMapping("/")
@@ -79,7 +69,7 @@ public class MainController {
     }
     
     @RequestMapping(value= "/startPushingUser")
-    @ResponseBody String putUserDataIntoElasticSearch() throws JsonProcessingException{
+    @ResponseBody String putUserDataIntoElasticSearch() throws JsonProcessingException{       
         try {
             jdbcTemplate.query(
                 "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
@@ -90,9 +80,7 @@ public class MainController {
                     {
                         try
                         {
-                            long currentId = rs.getLong("id");
-                            PushUserEvent event = new PushUserEvent("bca", "users", rs.getLong("id"));
-                            PushDataListener.USER_POSTED_STATUS_MAP.put(currentId,Status.WAITING);
+                            PushUserEvent event = new PushUserEvent(USERS_INDEX, USERS_TYPE, rs.getLong("id"));
                             eventBusService.postEvent(event);
                         } catch(Exception e){
                             LOGGER.error("Error while processing User row" ,e);
@@ -115,7 +103,7 @@ public class MainController {
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
-                "select (ar.id) from assignmentresults as ar where ar.id> ? LIMIT 20000",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
+                "select (ar.id) from assignmentresults as ar where ar.id> ?",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
                 new RowCallbackHandler()
                 {
                     @Override
@@ -123,7 +111,7 @@ public class MainController {
                     {
                         try {
                             long currentId = rs.getLong("ar.id");
-                            PushSubmissionEvent event = new PushSubmissionEvent("myelt", "submissions", currentId);
+                            PushSubmissionEvent event = new PushSubmissionEvent(SUBMISSIONS_TYPE, SUBMISSIONS_INDEX, currentId);
                             eventBusService.postEvent(event);
                         } catch (Exception e) {
                             LOGGER.error("Error while processing Activity Submission row" ,e);
@@ -139,6 +127,72 @@ public class MainController {
             return "Error starting Submission sync process";
         }
         
+    }
+    
+    private void setLastSyncedUserId() {
+        try {
+            GetResponse userIdStatusResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_ANALYTICS_TYPE, "lastUserId").execute().actionGet();
+            Map<String,Object> map = userIdStatusResponse.getSourceAsMap();
+            Integer userIdStatus = (Integer) map.get("id");
+            if(userIdStatus != null){
+                LAST_USER_ID = userIdStatus; 
+            }
+        }
+        catch (Exception e){
+            //will come when application is started first time
+            //ignore if comes once
+            LOGGER.error("An error occured while reading last synced UserId from ElasticSearch" ,e);
+        }
+    }
+    
+    private void setLastSyncedSubmissionId() {
+        try {
+            GetResponse lastSubmissionStatusResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId")
+                .execute()
+                .actionGet();
+            
+            Map<String,Object> map = lastSubmissionStatusResponse.getSourceAsMap();
+            Integer lastSubmissionStatus = (Integer) map.get("id");
+            if(lastSubmissionStatus != null){
+                LAST_ACTIVITY_SUBMISSION_ID = lastSubmissionStatus; 
+            }
+        }
+        catch (Exception e){
+            //will come when application is started first time
+            //ignore if comes once
+            LOGGER.error("An error occured while reading last synced ActivitySubmissionId from ElasticSearch" , e);
+        }
+    }
+    
+    private void createUsersIndex() {
+        if (!isIndexExist(USERS_INDEX)) {
+            elasticSearchClient.admin().indices().create(new CreateIndexRequest(USERS_INDEX)
+                    .mapping(USERS_TYPE, buildUserTypeMappings())).actionGet();
+        }      
+    } 
+    
+    private boolean isIndexExist(String index) {
+        ActionFuture<IndicesExistsResponse> exists = elasticSearchClient.admin().indices().exists(new IndicesExistsRequest(index));
+        IndicesExistsResponse actionGet = exists.actionGet();
+        return actionGet.isExists();
+    }
+    
+    private XContentBuilder buildUserTypeMappings(){
+        XContentBuilder builder = null; 
+        try {
+            builder = XContentFactory.jsonBuilder();
+            builder.startObject()
+            .startObject("properties")
+                .startObject("disciplines")
+                    .field("type", "string")                      
+                    .field("index", "not_analyzed")
+                 .endObject()
+               .endObject()
+           .endObject();           
+        } catch (Exception e) {
+            LOGGER.error("An error occured while building mapping for user_info" , e);
+        }
+        return builder;
     }
     
     
