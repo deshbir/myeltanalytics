@@ -61,6 +61,7 @@ public class MainController {
         setLastSyncedUserId();
         setLastSyncedSubmissionId();
         createUsersIndex();
+        createSubmissionIndex();
     }
     
     @RequestMapping("/")
@@ -103,7 +104,7 @@ public class MainController {
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
-                "select (ar.id) from assignmentresults as ar where ar.id> ?",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
+                "select (ar.id) from assignmentresults as ar where ar.id> ? LIMIT 200000",new Object[] { LAST_ACTIVITY_SUBMISSION_ID },
                 new RowCallbackHandler()
                 {
                     @Override
@@ -111,7 +112,7 @@ public class MainController {
                     {
                         try {
                             long currentId = rs.getLong("ar.id");
-                            PushSubmissionEvent event = new PushSubmissionEvent(SUBMISSIONS_TYPE, SUBMISSIONS_INDEX, currentId);
+                            PushSubmissionEvent event = new PushSubmissionEvent(SUBMISSIONS_INDEX,SUBMISSIONS_TYPE , currentId);
                             eventBusService.postEvent(event);
                         } catch (Exception e) {
                             LOGGER.error("Error while processing Activity Submission row" ,e);
@@ -169,8 +170,35 @@ public class MainController {
             elasticSearchClient.admin().indices().create(new CreateIndexRequest(USERS_INDEX)
                     .mapping(USERS_TYPE, buildUserTypeMappings())).actionGet();
         }      
-    } 
+    }
+    private void createSubmissionIndex() {
+        if (!isIndexExist(SUBMISSIONS_INDEX)) {
+            elasticSearchClient.admin().indices().create(new CreateIndexRequest(SUBMISSIONS_INDEX)
+                    .mapping(SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();
+        }      
+    }
     
+    private XContentBuilder buildSumissionTypeMappings()
+    {
+        XContentBuilder builder = null; 
+        try {
+            builder = XContentFactory.jsonBuilder();
+            builder.startObject()
+            .startObject("properties")
+                .startObject("book")
+                    .startObject("properties")
+                    .startObject("discipline")
+                        .field("type", "string")                      
+                        .field("index", "not_analyzed")
+                 .endObject()
+               .endObject()
+           .endObject();           
+        } catch (Exception e) {
+            LOGGER.error("An error occured while building mapping for submission_info" , e);
+        }
+        return builder;
+    }
+
     private boolean isIndexExist(String index) {
         ActionFuture<IndicesExistsResponse> exists = elasticSearchClient.admin().indices().exists(new IndicesExistsRequest(index));
         IndicesExistsResponse actionGet = exists.actionGet();
