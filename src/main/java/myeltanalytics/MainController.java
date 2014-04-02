@@ -190,8 +190,19 @@ public class MainController {
                     .startObject("discipline")
                         .field("type", "string")                      
                         .field("index", "not_analyzed")
+                        
                  .endObject()
                .endObject()
+                   .endObject()
+                   .startObject("institution")
+                     .startObject("properties")
+                         .startObject("name")
+                             .field("type", "string")                      
+                             .field("index", "not_analyzed")
+                         .endObject()
+                         .endObject()
+                     .endObject()      
+                 .endObject()
            .endObject();           
         } catch (Exception e) {
             LOGGER.error("An error occured while building mapping for submission_info" , e);
