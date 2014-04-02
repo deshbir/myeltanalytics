@@ -215,7 +215,15 @@ public class MainController {
                     .field("type", "string")                      
                     .field("index", "not_analyzed")
                  .endObject()
-               .endObject()
+                 .startObject("institution")
+                     .startObject("properties")
+                         .startObject("name")
+                             .field("type", "string")                      
+                             .field("index", "not_analyzed")
+                         .endObject()  
+                     .endObject()      
+                 .endObject()
+           .endObject()
            .endObject();           
         } catch (Exception e) {
             LOGGER.error("An error occured while building mapping for user_info" , e);

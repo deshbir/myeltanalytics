@@ -56,7 +56,7 @@ public class PushDataListener
             LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             LOGGER.error("Failure for UserId= " + event.getId(), e);
             //TO-DO retry logic if neccessary
         }
@@ -76,7 +76,7 @@ public class PushDataListener
             LOGGER.debug("Submission with SubmissionId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             LOGGER.error("Failure for assignmentResultID= " + event.getId(), e);
         }
         
