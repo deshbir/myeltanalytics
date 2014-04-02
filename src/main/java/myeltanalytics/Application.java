@@ -4,6 +4,8 @@ import java.util.concurrent.Executors;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -27,6 +29,12 @@ public class Application {
     @Value("${elasticsearch.port}")
     private int elasticSearchPort;
     
+    @Value("${eventbus.poolsize}")
+    private int eventbusPoolSize;
+    
+    @Value("${elasticsearch.clustername}")
+    private String clusterName;
+    
     public static void main(String[] args) {        
         ApplicationContext ctx = SpringApplication.run(Application.class, args);        
         ctx.getBeanDefinitionNames();
@@ -37,11 +45,14 @@ public class Application {
     
     @Bean
     public EventBus eventBus() {
-        return new AsyncEventBus(Executors.newFixedThreadPool(30));
+        return new AsyncEventBus(Executors.newFixedThreadPool(eventbusPoolSize));
     }
         
     @Bean
     public Client elasticSearchClient(){
-        return new TransportClient().addTransportAddress(new InetSocketTransportAddress(elasticSearchHost, elasticSearchPort));
+        Settings settings = ImmutableSettings.settingsBuilder()
+            .put("cluster.name", clusterName).build();
+
+        return new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(elasticSearchHost, elasticSearchPort));
     }
 }
