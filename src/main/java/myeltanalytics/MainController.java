@@ -73,7 +73,7 @@ public class MainController {
     @ResponseBody String putUserDataIntoElasticSearch() throws JsonProcessingException{       
         try {
             jdbcTemplate.query(
-                "select id from users where type=0 and id > ? order by id LIMIT 10", new Object[] { LAST_USER_ID },
+                "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
                 new RowCallbackHandler()
                 {
                     @Override
