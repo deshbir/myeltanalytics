@@ -5,12 +5,14 @@ public class PushSubmissionEvent
     private String type;
     private String index;
     private long id;
+    private long jobId;
     
-    public PushSubmissionEvent(String index, String type, long id)
+    public PushSubmissionEvent(String index, String type, long id,long jobId)
     {
         this.type = type;
         this.index = index;
         this.id = id;
+        this.setJobId(jobId);
     }
     
     
@@ -38,6 +40,18 @@ public class PushSubmissionEvent
     public void setId(long id)
     {
         this.id = id;
+    }
+
+
+    public long getJobId()
+    {
+        return jobId;
+    }
+
+
+    public void setJobId(long jobId)
+    {
+        this.jobId = jobId;
     }
 
     

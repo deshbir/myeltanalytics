@@ -26,7 +26,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Controller
 public class MainController {
-  
+    
+    /**
+     * Setting the string values as final String variable to reuse them
+     */
+    public static final String LAST_JOB_ID = "lastJobId";
+    public static final String LAST_USER_ID_STR = "lastUserId";
+    public static final String ID = "id";
+    public static final String LAST_SUBMISSION_ID = "lastSubmissionId";
+    public static final String SUCCESSFULL_RECORDS = "successfullRecords";
+    public static final String FAILED_RECORDS = "failedRecords";
+    public static final String TOTAL_RECORDS = "totalRecords";
+    
+    
+    
+    
     public static long LAST_USER_ID = -1;
     
     public static long LAST_ACTIVITY_SUBMISSION_ID = -1;
@@ -39,9 +53,15 @@ public class MainController {
     
     public static String SUBMISSIONS_TYPE = "submissions_info";
     
-    public static String MYELT_ANALYTICS_INDEX = "myeltanalytics";
+    public static String MYELT_ANALYTICS_INDEX = "myeltsync";
     
-    public static String MYELT_ANALYTICS_TYPE = "status";
+    public static String MYELT_USER_STATUS_TYPE = "usersyncjob";
+    
+    public static String MYELT_SUBMISSIONS_STATUS_TYPE = "status";
+    
+    public static int LAST_USER_JOB_ID = 0;
+    
+    public static Integer LAST_SUBMISSION_JOB_ID;
     
     public static final String BLANK = "";
     
@@ -56,10 +76,15 @@ public class MainController {
     @Autowired
     private EventBusService eventBusService;
     
+    @Autowired
+    private PushDataListener pushDataListener;
+
+    
+    
     @PostConstruct
     void initializeLastStatusParameters(){
-        setLastSyncedUserId();
-        setLastSyncedSubmissionId();
+        setLastSyncedUserJob();
+        setLastSyncedSubmissionJob();
         createUsersIndex();
         createSubmissionIndex();
     }
@@ -69,8 +94,20 @@ public class MainController {
         return "index.html";
     }
     
+    
+    
     @RequestMapping(value= "/startPushingUser")
-    @ResponseBody String putUserDataIntoElasticSearch() throws JsonProcessingException{       
+    @ResponseBody String putUserDataIntoElasticSearch() throws JsonProcessingException{
+        setTotalUserCount();
+        if(isLastUserJobCompleted()){
+            ++LAST_USER_JOB_ID;
+            LAST_USER_ID = -1;
+            String json = "{\"id\": " + LAST_USER_JOB_ID + "}";
+            elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_USER_STATUS_TYPE, LAST_JOB_ID).setSource(json).execute().actionGet();
+            pushDataListener.totalUserSucessFullRecords = 0;
+            pushDataListener.totalUserFailedRecords = 0;
+            pushDataListener.setLastUserStatus(LAST_USER_ID, LAST_USER_JOB_ID,0);
+        }
         try {
             jdbcTemplate.query(
                 "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
@@ -81,7 +118,7 @@ public class MainController {
                     {
                         try
                         {
-                            PushUserEvent event = new PushUserEvent(USERS_INDEX, USERS_TYPE, rs.getLong("id"));
+                            PushUserEvent event = new PushUserEvent(USERS_INDEX, USERS_TYPE, rs.getLong("id"),LAST_USER_JOB_ID);
                             eventBusService.postEvent(event);
                         } catch(Exception e){
                             LOGGER.error("Error while processing User row" ,e);
@@ -99,8 +136,20 @@ public class MainController {
     }  
     
     
+   
+
     @RequestMapping(value= "/startPushingSubmissions")
     @ResponseBody String putSubmissionDataIntoElasticSearch() throws JsonProcessingException{
+        setTotalSubmissionsCount();
+        if(isLastSubmissionJobCompleted()){
+            ++LAST_SUBMISSION_JOB_ID;
+            LAST_ACTIVITY_SUBMISSION_ID = -1;
+            String json = "{\"id\": " + LAST_SUBMISSION_JOB_ID + "}";
+            elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_SUBMISSIONS_STATUS_TYPE, LAST_JOB_ID).setSource(json).execute().actionGet();
+            pushDataListener.totalSubmissionSucessFullRecords = 0;
+            pushDataListener.totalSubmissionFailedRecords = 0;
+            pushDataListener.setLastActivitySubmissionStatus(LAST_ACTIVITY_SUBMISSION_ID, LAST_SUBMISSION_JOB_ID,0);
+        }
         //To-Do move this logic in eventBus if required 
         try {
             jdbcTemplate.query(
@@ -112,7 +161,7 @@ public class MainController {
                     {
                         try {
                             long currentId = rs.getLong("ar.id");
-                            PushSubmissionEvent event = new PushSubmissionEvent(SUBMISSIONS_INDEX,SUBMISSIONS_TYPE , currentId);
+                            PushSubmissionEvent event = new PushSubmissionEvent(SUBMISSIONS_INDEX,SUBMISSIONS_TYPE , currentId,LAST_SUBMISSION_JOB_ID);
                             eventBusService.postEvent(event);
                         } catch (Exception e) {
                             LOGGER.error("Error while processing Activity Submission row" ,e);
@@ -130,13 +179,58 @@ public class MainController {
         
     }
     
-    private void setLastSyncedUserId() {
+    @RequestMapping(value= "/stopPushingUsers")
+    @ResponseBody void stopPushingUsersIntoElasticSearch(){
+        eventBusService.unRegisterSubscriber(pushDataListener);
+    }
+    
+    @RequestMapping(value= "/getPushedUsersStatus")
+    @ResponseBody String getPushedUsersIntoElasticSearchStatus(){
+        return "User pushed successfully " + pushDataListener.totalUserSucessFullRecords + " \n total failed records " + pushDataListener.totalUserFailedRecords +
+            " \n total records " + pushDataListener.totalUserRecords + " last User Job ID "  + LAST_USER_JOB_ID;
+    }
+    
+    
+    
+    private boolean isLastUserJobCompleted()
+    {
+        if(LAST_USER_JOB_ID != 0){
+            if((pushDataListener.totalUserFailedRecords + pushDataListener.totalUserSucessFullRecords) == pushDataListener.totalUserRecords){
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
+    private boolean isLastSubmissionJobCompleted()
+    {
+        if(LAST_SUBMISSION_JOB_ID != null){
+            if((pushDataListener.totalSubmissionFailedRecords + pushDataListener.totalSubmissionSucessFullRecords) == pushDataListener.totalSubmissionRecords){
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
+    
+    private void setLastSyncedUserJob() {
         try {
-            GetResponse userIdStatusResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_ANALYTICS_TYPE, "lastUserId").execute().actionGet();
-            Map<String,Object> map = userIdStatusResponse.getSourceAsMap();
-            Integer userIdStatus = (Integer) map.get("id");
-            if(userIdStatus != null){
-                LAST_USER_ID = userIdStatus; 
+            GetResponse lastJobIdResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_USER_STATUS_TYPE, LAST_JOB_ID).execute().actionGet();
+            Map<String,Object> map = lastJobIdResponse.getSourceAsMap();
+            LAST_USER_JOB_ID = (Integer) map.get(ID);
+            if(LAST_USER_JOB_ID != 0){
+                GetResponse lastJobResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_USER_STATUS_TYPE, String.valueOf(LAST_USER_JOB_ID)).execute().actionGet();
+                map  = lastJobResponse.getSourceAsMap();
+                LAST_USER_ID = (Integer) map.get(LAST_USER_ID_STR);
+                pushDataListener.totalUserSucessFullRecords = (Integer) map.get(SUCCESSFULL_RECORDS);
+                pushDataListener.totalUserFailedRecords = (Integer) map.get(FAILED_RECORDS);
+                pushDataListener.totalUserRecords = (Integer) map.get(TOTAL_RECORDS);
             }
         }
         catch (Exception e){
@@ -146,16 +240,18 @@ public class MainController {
         }
     }
     
-    private void setLastSyncedSubmissionId() {
+    private void setLastSyncedSubmissionJob() {
         try {
-            GetResponse lastSubmissionStatusResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId")
-                .execute()
-                .actionGet();
-            
-            Map<String,Object> map = lastSubmissionStatusResponse.getSourceAsMap();
-            Integer lastSubmissionStatus = (Integer) map.get("id");
-            if(lastSubmissionStatus != null){
-                LAST_ACTIVITY_SUBMISSION_ID = lastSubmissionStatus; 
+            GetResponse lastJobIdResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_SUBMISSIONS_STATUS_TYPE, LAST_JOB_ID).execute().actionGet();
+            Map<String,Object> map = lastJobIdResponse.getSourceAsMap();
+            LAST_SUBMISSION_JOB_ID = (Integer) map.get(ID);
+            if(LAST_SUBMISSION_JOB_ID != null){
+                GetResponse lastJobResponse = elasticSearchClient.prepareGet(MYELT_ANALYTICS_INDEX, MYELT_SUBMISSIONS_STATUS_TYPE, LAST_SUBMISSION_JOB_ID.toString()).execute().actionGet();
+                map  = lastJobResponse.getSourceAsMap();
+                LAST_ACTIVITY_SUBMISSION_ID = (Integer) map.get(LAST_SUBMISSION_ID);
+                pushDataListener.totalSubmissionSucessFullRecords = (Integer) map.get(SUCCESSFULL_RECORDS);
+                pushDataListener.totalSubmissionFailedRecords = (Integer) map.get(FAILED_RECORDS); 
+                pushDataListener.totalSubmissionRecords = (Integer) map.get(TOTAL_RECORDS);
             }
         }
         catch (Exception e){
@@ -242,5 +338,16 @@ public class MainController {
         return builder;
     }
     
+    
+    
+    private void setTotalUserCount(){
+        String sql = "SELECT COUNT(*) FROM users";
+        pushDataListener.totalUserRecords = jdbcTemplate.queryForObject(sql, Long.class);
+    }
+    
+    private void setTotalSubmissionsCount(){
+        String sql = "SELECT COUNT(*) FROM users";
+        pushDataListener.totalSubmissionRecords = jdbcTemplate.queryForObject(sql, Long.class);
+    }
     
 }

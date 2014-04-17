@@ -5,12 +5,14 @@ public class PushUserEvent
     private String type;
     private String index;
     private long id;
+    private long jobId;
     
-    public PushUserEvent(String index, String type , long id)
+    public PushUserEvent(String index, String type , long id,long jobId)
     {
         this.type = type;
         this.index = index;
         this.id = id;
+        this.jobId = jobId;
     }
     
     
@@ -37,6 +39,18 @@ public class PushUserEvent
     public void setId(long id)
     {
         this.id = id;
+    }
+
+
+    public long getJobId()
+    {
+        return jobId;
+    }
+
+
+    public void setJobId(long jobId)
+    {
+        this.jobId = jobId;
     }
 
     
