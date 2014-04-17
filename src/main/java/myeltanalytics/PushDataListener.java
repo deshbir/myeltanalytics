@@ -274,11 +274,15 @@ public class PushDataListener
 
     protected Institution populateInstitution(String institutionId){
         Institution  institution = jdbcTemplate.queryForObject(
-            "select id,name from institutions where id = ?", new Object[] { institutionId },
+            "select id,name,country from institutions where id = ?", new Object[] { institutionId },
             new RowMapper<Institution>() {
                 @Override
                 public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return new Institution(rs.getString("id"),rs.getString("name"));
+                    String country = rs.getString("country");
+                    if (country == null || country.equals(MainController.BLANK)) {
+                        country = "Unknown";
+                    }
+                    return new Institution(rs.getString("id"),rs.getString("name"), country);
                 }
             });
         return institution;
