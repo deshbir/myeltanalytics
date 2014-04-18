@@ -2,9 +2,7 @@ package myeltanalytics;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -44,57 +42,42 @@ public class PushDataListener
         eventBus.register(this);
     }
     
-    public int totalUserSucessFullRecords = 0;
-    
-    public int totalUserFailedRecords = 0;
-    
-    public int totalSubmissionSucessFullRecords = 0;
-    
-    
-    public int totalSubmissionFailedRecords = 0;
-
-    public long totalUserRecords = 0;
-
-    public long totalSubmissionRecords = 0;
-    
     @Subscribe
     @AllowConcurrentEvents
-    public void onPushUserEvent(PushUserEvent event) throws JsonProcessingException {
+    public void onPushUserEvent(PushUserEvent event) {
         try
         {
             User user = populateUser(event.getId());
             ObjectMapper mapper = new ObjectMapper(); // create once, reuse
             String json = mapper.writeValueAsString(user);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
-            setLastUserStatus(event.getId(),event.getJobId(),2);
+            setLastUserStatus(event.getId());
             //System.out.println("User with UserId= " + event.getId() + " pushed successfully");
             LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
             //e.printStackTrace();
             LOGGER.error("Failure for UserId= " + event.getId(), e);
-            setLastUserStatus(event.getId(),event.getJobId(),1);
             //TO-DO retry logic if neccessary
         }
     }
     
     @Subscribe
     @AllowConcurrentEvents
-    public void onPushSubmissionEvent(PushSubmissionEvent event) throws JsonProcessingException {
+    public void onPushSubmissionEvent(PushSubmissionEvent event) {
         try
         {
             ActivitySubmission activitySubmission = populateSubmission(event.getId());
             ObjectMapper mapper = new ObjectMapper(); // create once, reuse
             String json = mapper.writeValueAsString(activitySubmission);
             elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
-            setLastActivitySubmissionStatus(event.getId(),event.getJobId(),2);
+            setLastActivitySubmissionStatus(event.getId());
             //System.out.println("Submission with SubmissionId= " + event.getId() + " pushed successfully");
             LOGGER.debug("Submission with SubmissionId= " + event.getId() + " pushed successfully");
         }
         catch(Exception e){
             //e.printStackTrace();
             LOGGER.error("Failure for assignmentResultID= " + event.getId(), e);
-            setLastActivitySubmissionStatus(event.getId(),event.getJobId(),1);
         }
         
     }
@@ -288,49 +271,17 @@ public class PushDataListener
         return institution;
 
     }
-    /**}
-     * 
-     * @param userStatus if 2 then user pushed successfully, 
-     * 1 is user failed with exception, 
-     * 0 is to set the fresh document without incrementing anything
-     * @param jobId
-     * @param status
-     * @throws JsonProcessingException
-     */
-    synchronized public void setLastUserStatus(long userStatus, long jobId,int status) throws JsonProcessingException{
-        if(status == 2){
-            ++totalUserSucessFullRecords;
-        }
-        else if(status == 1){
-            ++totalUserFailedRecords;
-        }
+    
+    synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
         MainController.LAST_USER_ID = userStatus;
-        Map<String, Object> jsonMap = new HashMap<String, Object>();
-        jsonMap.put(MainController.LAST_USER_ID_STR,userStatus);
-        jsonMap.put(MainController.SUCCESSFULL_RECORDS,totalUserSucessFullRecords);
-        jsonMap.put(MainController.FAILED_RECORDS,totalUserFailedRecords);
-        jsonMap.put(MainController.TOTAL_RECORDS,totalUserRecords);
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonMap);
-        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_USER_STATUS_TYPE, String.valueOf(jobId)).setSource(json).execute().actionGet();
+        String json = "{\"id\": " + userStatus + "}";
+        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_ANALYTICS_TYPE, "lastUserId").setSource(json).execute().actionGet();
     }
     
-    synchronized public void setLastActivitySubmissionStatus(long activitySubmissionStatus, long jobId,int status) throws JsonProcessingException{
-        if(status == 2){
-            ++totalSubmissionSucessFullRecords;
-        }
-        else if(status == 1){
-            ++totalSubmissionFailedRecords;
-        }
+    synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
         MainController.LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
-        Map<String, Object> jsonMap = new HashMap<String, Object>();
-        jsonMap.put(MainController.LAST_SUBMISSION_ID,activitySubmissionStatus);
-        jsonMap.put(MainController.SUCCESSFULL_RECORDS,totalSubmissionSucessFullRecords);
-        jsonMap.put(MainController.FAILED_RECORDS,totalSubmissionFailedRecords);
-        jsonMap.put(MainController.TOTAL_RECORDS,totalSubmissionRecords);
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonMap);
-        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_SUBMISSIONS_STATUS_TYPE, String.valueOf(jobId)).setSource(json).execute().actionGet();
+        String json = "{\"id\": " + activitySubmissionStatus + "}";
+        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId").setSource(json).execute().actionGet();
     }
     
 }
