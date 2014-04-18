@@ -190,9 +190,7 @@ public class PushDataListener
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
                     user.setCountry(rs.getString("country"));
-                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));
-                    user.setProducts(populateProducts(user.getId()));
-                    user.setDisciplines(populateDisciplines(user.getId()));
+                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));                   
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));
                     return user;
@@ -201,45 +199,51 @@ public class PushDataListener
         return user;
     }
     
-    protected List<String> populateAccessCodes(long userId)
+    protected List<AccessCode> populateAccessCodes(long userId)
     {
-        List<String> accessCodes = jdbcTemplate.query(
-            "select BookAbbr,AccessCode from bookaccesscodes where UserID = ?", new Object[] { userId },
-            new RowMapper<String>() {
+        List<AccessCode> accessCode = jdbcTemplate.query(
+            "select d.name as Discipline,bl.name as ProductName,SUBSTRING(ar.feature,11) as ProductCode,ba.AccessCode,ba.LastModified from accessrights as ar, bookaccesscodes as ba,booklist as bl, discipline as d where d.Abbr = bl.discipline and bl.Abbr=SUBSTRING(ar.feature,11) and ar.userId=? and ba.userId=? and ba.BookAbbr like CONCAT(SUBSTRING(ar.feature,11),'%') order by ba.LastModified", new Object[] { userId },
+            new RowMapper<AccessCode>() {
                 @Override
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return (rs.getString("BookAbbr") + "365-" + rs.getString("AccessCode"));
+                public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    AccessCode accessCode = new AccessCode();
+                    accessCode.setCode(rs.getString("ProductName") + "-" + rs.getString("AccessCode"));
+                    accessCode.setDateCreated(rs.getDate("LastModified"));
+                    accessCode.setProductCode(rs.getString("ProductCode"));
+                    accessCode.setProductName(rs.getString("ProductName"));
+                    accessCode.setDiscipline(rs.getString("Discipline"));
+                    return accessCode;
                 }
             });
-        return accessCodes;
+        return accessCode;
     }
 
 
-    protected List<String> populateProducts(long userId)
-    {
-        List<String> products = jdbcTemplate.query(
-            "select SUBSTRING(feature,11) as feature from accessrights where feature like 'book-view-%' and feature != 'book-view-ALL' and userId = ?", new Object[] { userId },
-            new RowMapper<String>() {
-                @Override
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getString("feature");
-                }
-            });
-        return products;
-    }
-    
-    protected List<String> populateDisciplines(long userId)
-    {
-        List<String> disciplines = jdbcTemplate.query(
-            "select distinct discipline.name as discipline from accessrights,booklist,discipline where discipline.abbr = booklist.discipline and booklist.abbr = SUBSTRING(accessrights.feature,11) and accessrights.feature like 'book-view-%' and accessrights.feature != 'book-view-ALL' and accessrights.userId = ?", new Object[] { userId },
-            new RowMapper<String>() {
-                @Override
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getString("discipline");
-                }
-            });
-        return disciplines;
-    }
+//    protected List<String> populateProducts(long userId)
+//    {
+//        List<String> products = jdbcTemplate.query(
+//            "select SUBSTRING(feature,11) as feature from accessrights where feature like 'book-view-%' and feature != 'book-view-ALL' and userId = ?", new Object[] { userId },
+//            new RowMapper<String>() {
+//                @Override
+//                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+//                    return rs.getString("feature");
+//                }
+//            });
+//        return products;
+//    }
+//    
+//    protected List<String> populateDisciplines(long userId)
+//    {
+//        List<String> disciplines = jdbcTemplate.query(
+//            "select distinct discipline.name as discipline from accessrights,booklist,discipline where discipline.abbr = booklist.discipline and booklist.abbr = SUBSTRING(accessrights.feature,11) and accessrights.feature like 'book-view-%' and accessrights.feature != 'book-view-ALL' and accessrights.userId = ?", new Object[] { userId },
+//            new RowMapper<String>() {
+//                @Override
+//                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+//                    return rs.getString("discipline");
+//                }
+//            });
+//        return disciplines;
+//    }
     
     protected List<String> populateCourses(long userId)
     {
@@ -257,15 +261,11 @@ public class PushDataListener
 
     protected Institution populateInstitution(String institutionId){
         Institution  institution = jdbcTemplate.queryForObject(
-            "select id,name,country from institutions where id = ?", new Object[] { institutionId },
+            "select institutions.id,institutions.name,institutions.country,institutions.other,districts.name as district from institutions left join districts on districts.id=institutions.DistrictID where institutions.id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
                 @Override
-                public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    String country = rs.getString("country");
-                    if (country == null || country.equals(MainController.BLANK)) {
-                        country = "Unknown";
-                    }
-                    return new Institution(rs.getString("id"),rs.getString("name"), country);
+                public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {                                      
+                    return new Institution(rs.getString(1),rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
                 }
             });
         return institution;

@@ -15,7 +15,7 @@ public class User {
     private Institution institution;
     private List<String> products;
     private List<String> courses;
-    private List<String> accesscodes;
+    private List<AccessCode> accesscodes;
     private List<String> disciplines;
     
     public enum StudentType{
@@ -334,32 +334,18 @@ public class User {
     /**
      * @return the accesscodes
      */
-    public List<String> getAccesscodes()
+    public List<AccessCode> getAccesscodes()
     {
         return accesscodes;
     }
 
-
-
     /**
      * @param accesscodes the accesscodes to set
      */
-    public void setAccesscodes(List<String> accesscodes)
+    public void setAccesscodes(List<AccessCode> accesscodes)
     {
         this.accesscodes = accesscodes;
     }
     
-    public String getName(){
-        return this.firstName + " " + this.lastName;
-    }
-
-    public List<String> getDisciplines()
-    {
-        return disciplines;
-    }
-
-    public void setDisciplines(List<String> disciplines)
-    {
-        this.disciplines = disciplines;
-    } 
+    
 }

@@ -5,16 +5,48 @@ public class Institution
     private String id;
     private String name;
     private String country;
+    private String other;
+    private String district;
       
     /**
      * @param id
      * @param name
      */
-    public Institution(String id, String name, String country)
+    public Institution(String id, String name, String country, String other, String district)
     {
         this.id = id;
         this.name = name;
         this.country = country;
+        this.other = other;
+        this.district = district;
+    }
+    /**
+     * @return the other
+     */
+    public String getOther()
+    {
+        return other;
+    }
+    /**
+     * @param other the other to set
+     */
+    public void setOther(String other)
+    {
+        this.other = other;
+    }
+    /**
+     * @return the district
+     */
+    public String getDistrict()
+    {
+        return district;
+    }
+    /**
+     * @param district the district to set
+     */
+    public void setDistrict(String district)
+    {
+        this.district = district;
     }
     /**
      * @return the id
