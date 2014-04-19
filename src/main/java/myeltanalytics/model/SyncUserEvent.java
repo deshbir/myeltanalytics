@@ -1,12 +1,12 @@
-package myeltanalytics;
+package myeltanalytics.model;
 
-public class PushSubmissionEvent
+public class SyncUserEvent
 {
     private String type;
     private String index;
     private long id;
     
-    public PushSubmissionEvent(String index, String type, long id)
+    public SyncUserEvent(String index, String type , long id)
     {
         this.type = type;
         this.index = index;
@@ -22,7 +22,6 @@ public class PushSubmissionEvent
     {
         this.type = type;
     }
-    
     public String getIndex()
     {
         return index;

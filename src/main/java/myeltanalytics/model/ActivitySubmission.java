@@ -1,4 +1,4 @@
-package myeltanalytics;
+package myeltanalytics.model;
 
 import java.util.Date;
 

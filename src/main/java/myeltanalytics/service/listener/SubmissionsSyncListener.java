@@ -1,13 +1,17 @@
-package myeltanalytics;
+package myeltanalytics.service.listener;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import myeltanalytics.ActivitySubmission.Assignment;
-import myeltanalytics.ActivitySubmission.Book;
+import myeltanalytics.controller.SubmissionsSyncController;
+import myeltanalytics.model.ActivitySubmission;
+import myeltanalytics.model.ActivitySubmission.Assignment;
+import myeltanalytics.model.ActivitySubmission.Book;
+import myeltanalytics.model.Institution;
+import myeltanalytics.model.SyncSubmissionEvent;
+import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.Client;
@@ -16,17 +20,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 
-@Service(value="pushDataListener")
-public class PushDataListener
+@Service(value="submissionsSyncListener")
+public class SubmissionsSyncListener
 {
-    private final Logger LOGGER = Logger.getLogger(PushDataListener.class);
+    private final Logger LOGGER = Logger.getLogger(SubmissionsSyncListener.class);
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -44,27 +47,7 @@ public class PushDataListener
     
     @Subscribe
     @AllowConcurrentEvents
-    public void onPushUserEvent(PushUserEvent event) {
-        try
-        {
-            User user = populateUser(event.getId());
-            ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-            String json = mapper.writeValueAsString(user);
-            elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
-            setLastUserStatus(event.getId());
-            //System.out.println("User with UserId= " + event.getId() + " pushed successfully");
-            LOGGER.debug("User with UserId= " + event.getId() + " pushed successfully");
-        }
-        catch(Exception e){
-            //e.printStackTrace();
-            LOGGER.error("Failure for UserId= " + event.getId(), e);
-            //TO-DO retry logic if neccessary
-        }
-    }
-    
-    @Subscribe
-    @AllowConcurrentEvents
-    public void onPushSubmissionEvent(PushSubmissionEvent event) {
+    public void onSyncSubmissionEvent(SyncSubmissionEvent event) {
         try
         {
             ActivitySubmission activitySubmission = populateSubmission(event.getId());
@@ -81,7 +64,6 @@ public class PushDataListener
         }
         
     }
-
 
     private ActivitySubmission populateSubmission(long activitySubmissionId)
     {
@@ -102,8 +84,6 @@ public class PushDataListener
         return activitySubmission;
     }
 
-    
-
     protected ActivitySubmission.User populateUserForSubmission(long userId)
     {
         ActivitySubmission.User user = jdbcTemplate.queryForObject(
@@ -121,7 +101,6 @@ public class PushDataListener
             });
         return user;
     }
-
    
     protected Assignment populateAssignment(long assignmentId)
     {
@@ -144,10 +123,9 @@ public class PushDataListener
         return assignment;
     }
     
-    
     protected Book populateBookDetails(String assignmentData)
     {
-        if(!assignmentData.equals(MainController.BLANK)){
+        if(!assignmentData.equals(Helper.BLANK)){
             int startIndex = assignmentData.indexOf("book=") + 5;
             int endIndex = assignmentData.indexOf("&",startIndex);
             String bookAbbr = assignmentData.substring(startIndex, endIndex);
@@ -171,93 +149,6 @@ public class PushDataListener
             return null;
         }
     }
-    
-    
-    private User populateUser(long userId)
-    {
-       User user = jdbcTemplate.queryForObject(
-            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,InstitutionID from users where id = ?", new Object[] { userId },
-            new RowMapper<User>() {
-                
-                @Override
-                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    User user = new User(rs.getLong("id"));
-                    user.setUserName(rs.getString("name"));
-                    user.setEmail(rs.getString("email"));
-                    user.setUserType(rs.getInt("parent"));
-                    user.setDateCreated(rs.getDate("createdAt"));
-                    user.setDateLastLogin(rs.getLong("lastLoginAt"));
-                    user.setFirstName(rs.getString("firstName"));
-                    user.setLastName(rs.getString("lastName"));
-                    user.setCountry(rs.getString("country"));
-                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));                   
-                    user.setCourses(populateCourses(user.getId()));
-                    user.setAccesscodes(populateAccessCodes(user.getId()));
-                    return user;
-                }
-            });
-        return user;
-    }
-    
-    protected List<AccessCode> populateAccessCodes(long userId)
-    {
-        List<AccessCode> accessCode = jdbcTemplate.query(
-            "select d.name as Discipline,bl.name as ProductName,SUBSTRING(ar.feature,11) as ProductCode,ba.AccessCode,ba.LastModified from accessrights as ar, bookaccesscodes as ba,booklist as bl, discipline as d where d.Abbr = bl.discipline and bl.Abbr=SUBSTRING(ar.feature,11) and ar.userId=? and ba.userId=? and ba.BookAbbr like CONCAT(SUBSTRING(ar.feature,11),'%') order by ba.LastModified", new Object[] { userId },
-            new RowMapper<AccessCode>() {
-                @Override
-                public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    AccessCode accessCode = new AccessCode();
-                    accessCode.setCode(rs.getString("ProductName") + "-" + rs.getString("AccessCode"));
-                    accessCode.setDateCreated(rs.getDate("LastModified"));
-                    accessCode.setProductCode(rs.getString("ProductCode"));
-                    accessCode.setProductName(rs.getString("ProductName"));
-                    accessCode.setDiscipline(rs.getString("Discipline"));
-                    return accessCode;
-                }
-            });
-        return accessCode;
-    }
-
-
-//    protected List<String> populateProducts(long userId)
-//    {
-//        List<String> products = jdbcTemplate.query(
-//            "select SUBSTRING(feature,11) as feature from accessrights where feature like 'book-view-%' and feature != 'book-view-ALL' and userId = ?", new Object[] { userId },
-//            new RowMapper<String>() {
-//                @Override
-//                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-//                    return rs.getString("feature");
-//                }
-//            });
-//        return products;
-//    }
-//    
-//    protected List<String> populateDisciplines(long userId)
-//    {
-//        List<String> disciplines = jdbcTemplate.query(
-//            "select distinct discipline.name as discipline from accessrights,booklist,discipline where discipline.abbr = booklist.discipline and booklist.abbr = SUBSTRING(accessrights.feature,11) and accessrights.feature like 'book-view-%' and accessrights.feature != 'book-view-ALL' and accessrights.userId = ?", new Object[] { userId },
-//            new RowMapper<String>() {
-//                @Override
-//                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-//                    return rs.getString("discipline");
-//                }
-//            });
-//        return disciplines;
-//    }
-    
-    protected List<String> populateCourses(long userId)
-    {
-        List<String> courses = jdbcTemplate.query(
-            "select name from sections, sectionmembers where sections.id=sectionmembers.sectionId and sectionmembers.userId = ?", new Object[] { userId },
-            new RowMapper<String>() {
-                @Override
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getString("name");
-                }
-            });
-        return courses;
-    }
-
 
     protected Institution populateInstitution(String institutionId){
         Institution  institution = jdbcTemplate.queryForObject(
@@ -272,16 +163,10 @@ public class PushDataListener
 
     }
     
-    synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
-        MainController.LAST_USER_ID = userStatus;
-        String json = "{\"id\": " + userStatus + "}";
-        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_ANALYTICS_TYPE, "lastUserId").setSource(json).execute().actionGet();
-    }
-    
     synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
-        MainController.LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
+        SubmissionsSyncController.LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
         String json = "{\"id\": " + activitySubmissionStatus + "}";
-        elasticSearchClient.prepareIndex(MainController.MYELT_ANALYTICS_INDEX, MainController.MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId").setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId").setSource(json).execute().actionGet();
     }
     
 }

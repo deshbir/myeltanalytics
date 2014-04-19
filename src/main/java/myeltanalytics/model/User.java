@@ -1,4 +1,4 @@
-package myeltanalytics;
+package myeltanalytics.model;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +16,6 @@ public class User {
     private List<String> products;
     private List<String> courses;
     private List<AccessCode> accesscodes;
-    private List<String> disciplines;
     
     public enum StudentType{
         STUDENT(1,"STUDENT"),INSTRUCTOR(2,"INSTRUCTOR"),AUTHOR(3,"AUTHOR"),ADMINISTRATOR(4,"ADMINISTRATOR"),DISTRICT(5,"DISTRICT"),SUPERUSER(6,"SUPERUSER");

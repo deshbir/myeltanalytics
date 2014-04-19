@@ -1,4 +1,4 @@
-package myeltanalytics;
+package myeltanalytics.model;
 
 public class Institution
 {

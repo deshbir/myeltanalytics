@@ -52,7 +52,6 @@ public class Application {
     public Client elasticSearchClient(){
         Settings settings = ImmutableSettings.settingsBuilder()
             .put("cluster.name", clusterName).build();
-
         return new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(elasticSearchHost, elasticSearchPort));
     }
 }
