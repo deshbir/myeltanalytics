@@ -3,6 +3,8 @@ package myeltanalytics.model;
 import java.util.Date;
 import java.util.List;
 
+import myeltanalytics.service.Helper;
+
 public class User extends AbstractUser {
 
     private List<AccessCode> accesscodes;
@@ -121,24 +123,39 @@ public class User extends AbstractUser {
     {
         if((institution.getName().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTSelfLearner") != -1)){
             return "SELF_PACED";
-        } else if((accesscodes.size() == 0) && (institution.getDistrict().equals("CAPES"))){
+        } else if((accesscodes.size() == 0) && (("CAPES").equals(institution.getDistrict()))){
             return "CAPES";
-        } else if(accesscodes.size() == 0 && !(institution.getDistrict().equals("CAPES"))){
+        } else if(accesscodes.size() == 0 && !(("CAPES").equals(institution.getDistrict()))){
             return "INSTRUCTOR_LED";
         }
         return "OTHERS";
     }
-
+    
+    
+    public Country getUserCountry()
+    {
+        if(super.getUserCountry().getCode().equals("")){
+            return null;
+        }
+        else
+            return super.getUserCountry();
+    }
+    
     public Country getCountry()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if(getUserCountry() != null){
+            return getUserCountry();
+        } else if(institution.getCountry() != null){
+            return institution.getCountry();
+        }
+        else {
+           return Helper.getInstitutionCountry(institution.getId());
+        }
     }
 
     public String getRegion()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return Helper.getRegion(getCountry().getCode());
     }
 
 }
