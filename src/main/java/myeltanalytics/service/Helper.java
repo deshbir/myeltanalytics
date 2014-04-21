@@ -26,4 +26,10 @@ public class Helper
         IndicesExistsResponse actionGet = exists.actionGet();
         return actionGet.isExists();
     }
+
+    public static String lookupCountry(String country)
+    {
+        // TODO read from properties
+        return "US";
+    }
 }

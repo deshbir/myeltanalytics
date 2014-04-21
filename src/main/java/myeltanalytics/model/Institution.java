@@ -1,9 +1,10 @@
 package myeltanalytics.model;
 
-public class Institution
+import myeltanalytics.service.Helper;
+
+
+public class Institution extends AbstractInstitution
 {
-    private String id;
-    private String name;
     private String country;
     private String other;
     private String district;
@@ -14,16 +15,15 @@ public class Institution
      */
     public Institution(String id, String name, String country, String other, String district)
     {
-        this.id = id;
-        this.name = name;
-        this.country = country;
+        super(id,name);
+        this.setCountry(country);
         this.other = other;
         this.district = district;
     }
     /**
      * @return the other
      */
-    public String getOther()
+    protected String getOther()
     {
         return other;
     }
@@ -37,7 +37,7 @@ public class Institution
     /**
      * @return the district
      */
-    public String getDistrict()
+    protected String getDistrict()
     {
         return district;
     }
@@ -48,38 +48,13 @@ public class Institution
     {
         this.district = district;
     }
-    /**
-     * @return the id
-     */
-    public String getId()
+    
+    public Country getCountry()
     {
-        return id;
+        String countrycode = Helper.lookupCountry(country);
+        return new Country(country, countrycode);
     }
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-    /**
-     * @return the name
-     */
-    public String getName()
-    {
-        return name;
-    }
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-    public String getCountry()
-    {
-        return country;
-    }
+    
     public void setCountry(String country)
     {
         this.country = country;

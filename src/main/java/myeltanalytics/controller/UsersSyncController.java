@@ -52,7 +52,7 @@ public class UsersSyncController {
     @ResponseBody String startSyncUsers() throws JsonProcessingException{       
         try {
             jdbcTemplate.query(
-                "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
+                "select id from users where type=0 and id > ? order by id LIMIT 2", new Object[] { LAST_USER_ID },
                 new RowCallbackHandler()
                 {
                     @Override
@@ -113,10 +113,6 @@ public class UsersSyncController {
                  .startObject("institution")
                      .startObject("properties")
                          .startObject("name")
-                             .field("type", "string")                      
-                             .field("index", "not_analyzed")
-                         .endObject()  
-                         .startObject("country")
                              .field("type", "string")                      
                              .field("index", "not_analyzed")
                          .endObject()  

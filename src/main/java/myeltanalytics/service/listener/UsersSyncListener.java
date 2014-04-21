@@ -8,6 +8,8 @@ import javax.annotation.PostConstruct;
 
 import myeltanalytics.controller.UsersSyncController;
 import myeltanalytics.model.AccessCode;
+import myeltanalytics.model.Country;
+import myeltanalytics.model.ElasticSearchUser;
 import myeltanalytics.model.Institution;
 import myeltanalytics.model.SyncUserEvent;
 import myeltanalytics.model.User;
@@ -52,10 +54,24 @@ public class UsersSyncListener
         try
         {
             User user = populateUser(event.getId());
-            ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-            String json = mapper.writeValueAsString(user);
-            elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
-            setLastUserStatus(event.getId());
+            List<AccessCode> accessCodes = user.getAccesscodes();
+            if(accessCodes.size() ==0){
+                ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,0);
+                pushuser(esUser,event);
+            }
+            else {
+                for(int i = 0 ;i < accessCodes.size(); i++){
+                    ElasticSearchUser esUser = null;
+                    AccessCode accessCode  =  accessCodes.get(i);
+                    if(i == 0){
+                        esUser  = ElasticSearchUser.transformUser(user,accessCode,1);
+                        
+                    } else {
+                        esUser = ElasticSearchUser.transformUser(user,accessCode,2);
+                    }
+                    pushuser(esUser,event);
+                }
+            }
             //System.out.println("User with UserId= " + event.getId() + " pushed successfully");
             LOGGER.debug("User with UserId= " + event.getId() + " synced successfully");
         }
@@ -65,16 +81,23 @@ public class UsersSyncListener
             //TO-DO retry logic if neccessary
         }
     }
-    
+    private void pushuser(ElasticSearchUser esUser,SyncUserEvent event) throws JsonProcessingException{
+        
+        ObjectMapper mapper = new ObjectMapper(); // create once, reuse
+        String json = mapper.writeValueAsString(esUser);
+        elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
+        setLastUserStatus(event.getId());
+    }
     private User populateUser(long userId)
     {
        User user = jdbcTemplate.queryForObject(
-            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,InstitutionID from users where id = ?", new Object[] { userId },
+            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,countryCode,InstitutionID from users where id = ?", new Object[] { userId },
             new RowMapper<User>() {
                 
                 @Override
                 public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    User user = new User(rs.getLong("id"));
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
                     user.setUserName(rs.getString("name"));
                     user.setEmail(rs.getString("email"));
                     user.setUserType(rs.getInt("parent"));
@@ -82,7 +105,8 @@ public class UsersSyncListener
                     user.setDateLastLogin(rs.getLong("lastLoginAt"));
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
-                    user.setCountry(rs.getString("country"));
+                    Country country = new Country(rs.getString("country"),rs.getString("countryCode"));
+                    user.setUserCountry(country);
                     user.setInstitution(populateInstitution(rs.getString("InstitutionID")));                   
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));

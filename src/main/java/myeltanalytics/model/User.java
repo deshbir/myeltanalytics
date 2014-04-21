@@ -3,19 +3,27 @@ package myeltanalytics.model;
 import java.util.Date;
 import java.util.List;
 
-public class User {
-    private long id;
-    private String userName;
-    private String email;
-    private String userType;
-    private Date dateCreated;
-    private Date dateLastLogin;
-    private String firstName,lastName;
-    private String country;
-    private Institution institution;
-    private List<String> products;
-    private List<String> courses;
+public class User extends AbstractUser {
+
     private List<AccessCode> accesscodes;
+    private Institution institution;
+
+    /**
+     * @return the accesscodes
+     */
+    public List<AccessCode> getAccesscodes()
+    {
+        return accesscodes;
+    }
+
+    /**
+     * @param accesscodes the accesscodes to set
+     */
+    public void setAccesscodes(List<AccessCode> accesscodes)
+    {
+        this.accesscodes = accesscodes;
+    }
+    
     
     public enum StudentType{
         STUDENT(1,"STUDENT"),INSTRUCTOR(2,"INSTRUCTOR"),AUTHOR(3,"AUTHOR"),ADMINISTRATOR(4,"ADMINISTRATOR"),DISTRICT(5,"DISTRICT"),SUPERUSER(6,"SUPERUSER");
@@ -58,89 +66,6 @@ public class User {
     }
     
     
-    public User(long id){
-        this.id = id;
-    }
-    
-    /*@Override
-    public String toString() {
-        return String.format(
-                "User[id=%d, firstName='%s', lastName='%s']",
-                id, firstName, lastName);
-    }*/
-
-    
-
-    /**
-     * @return the id
-     */
-    public long getId()
-    {
-        return id;
-    }
-
-
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(long id)
-    {
-        this.id = id;
-    }
-
-
-
-    /**
-     * @return the userName
-     */
-    public String getUserName()
-    {
-        return userName;
-    }
-
-
-
-    /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName)
-    {
-        this.userName = userName;
-    }
-
-
-
-    /**
-     * @return the email
-     */
-    public String getEmail()
-    {
-        return email;
-    }
-
-
-
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email)
-    {
-        this.email = email;
-    }
-
-
-
-    /**
-     * @return the userType
-     */
-    public String getUserType()
-    {
-        return userType;
-    }
-
-
-
     /**
      * @param userType the userType to set
      */
@@ -148,127 +73,31 @@ public class User {
     {
         switch(userType){
             case 1:
-                this.userType = StudentType.STUDENT.getTypeString();
+                setUserType(StudentType.STUDENT.getTypeString());
                 break;
             case 2:
-                this.userType = StudentType.INSTRUCTOR.getTypeString();
+                setUserType(StudentType.INSTRUCTOR.getTypeString());
                 break;
             case 3:
-                this.userType = StudentType.AUTHOR.getTypeString();
+                setUserType(StudentType.AUTHOR.getTypeString());
                 break;
             case 4:
-                this.userType = StudentType.ADMINISTRATOR.getTypeString();
+                setUserType(StudentType.ADMINISTRATOR.getTypeString());
                 break;
             case 5:
-                this.userType = StudentType.DISTRICT.getTypeString();
+                setUserType(StudentType.DISTRICT.getTypeString());
                 break;
             case 6:
-                this.userType = StudentType.SUPERUSER.getTypeString();
+                setUserType(StudentType.SUPERUSER.getTypeString());
                 break;
         }
     }
 
-
-
-    /**
-     * @return the dateCreated
-     */
-    public Date getDateCreated()
+    public void setDateLastLogin(long date)
     {
-        return dateCreated;
+        setDateLastLogin(new Date(date));
+        
     }
-
-
-
-    /**
-     * @param dateCreated the dateCreated to set
-     */
-    public void setDateCreated(Date dateCreated)
-    {
-        this.dateCreated = dateCreated;
-    }
-
-
-
-    /**
-     * @return the dateLastLogin
-     */
-    public Date getDateLastLogin()
-    {
-        return dateLastLogin;
-    }
-
-
-
-    /**
-     * @param dateLastLogin the dateLastLogin to set
-     */
-    public void setDateLastLogin(long dateLastLogin)
-    {
-        this.dateLastLogin = new Date(dateLastLogin);
-    }
-
-
-
-    /**
-     * @return the firstName
-     */
-    public String getFirstName()
-    {
-        return firstName;
-    }
-
-
-
-    /**
-     * @param firstName the firstName to set
-     */
-    public void setFirstName(String firstName)
-    {
-        this.firstName = firstName;
-    }
-
-
-
-    /**
-     * @return the lastName
-     */
-    public String getLastName()
-    {
-        return lastName;
-    }
-
-
-
-    /**
-     * @param lastName the lastName to set
-     */
-    public void setLastName(String lastName)
-    {
-        this.lastName = lastName;
-    }
-
-
-
-    /**
-     * @return the country
-     */
-    public String getCountry()
-    {
-        return country;
-    }
-
-
-
-    /**
-     * @param country the country to set
-     */
-    public void setCountry(String country)
-    {
-        this.country = country;
-    }
-
-
 
     /**
      * @return the instituion
@@ -287,64 +116,29 @@ public class User {
     {
         this.institution = institution;
     }
-
-
-
-    /**
-     * @return the products
-     */
-    public List<String> getProducts()
-    {
-        return products;
-    }
-
-
-
-    /**
-     * @param products the products to set
-     */
-    public void setProducts(List<String> products)
-    {
-        this.products = products;
-    }
-
-
-
-    /**
-     * @return the courses
-     */
-    public List<String> getCourses()
-    {
-        return courses;
-    }
-
-
-
-    /**
-     * @param courses the courses to set
-     */
-    public void setCourses(List<String> courses)
-    {
-        this.courses = courses;
-    }
-
-
-
-    /**
-     * @return the accesscodes
-     */
-    public List<AccessCode> getAccesscodes()
-    {
-        return accesscodes;
-    }
-
-    /**
-     * @param accesscodes the accesscodes to set
-     */
-    public void setAccesscodes(List<AccessCode> accesscodes)
-    {
-        this.accesscodes = accesscodes;
-    }
     
-    
+    public String getStudentType()
+    {
+        if((institution.getName().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTSelfLearner") != -1)){
+            return "SELF_PACED";
+        } else if((accesscodes.size() == 0) && (institution.getDistrict().equals("CAPES"))){
+            return "CAPES";
+        } else if(accesscodes.size() == 0 && !(institution.getDistrict().equals("CAPES"))){
+            return "INSTRUCTOR_LED";
+        }
+        return "OTHERS";
+    }
+
+    public Country getCountry()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getRegion()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
