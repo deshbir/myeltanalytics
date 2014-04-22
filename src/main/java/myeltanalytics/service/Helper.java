@@ -65,7 +65,7 @@ public class Helper
         if(node != null){
             return node.getParent().valueOf("/code");
         }
-        return "";
+        return "US";
     }
 
     public static String getRegion(String countryCode)
@@ -75,7 +75,7 @@ public class Helper
         if(node != null){
             return node.getParent().valueOf("region");
         }
-        return "";
+        return "North America";
     }
 
     public static Country getInstitutionCountry(String institutionId)
@@ -88,7 +88,7 @@ public class Helper
             return new Country(countryCode,lookupCountryName(countryCode));
         }
         else 
-            return new Country("U.S.A","US");
+            return new Country("United States","US");
     }
 
     private static String lookupCountryName(String countryCode)
@@ -98,6 +98,6 @@ public class Helper
         if(node != null){
             return node.getParent().valueOf("name");
         }
-        return "";
+        return "United States";
     }
 }
