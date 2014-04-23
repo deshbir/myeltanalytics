@@ -145,12 +145,10 @@ public class User extends AbstractUser {
     {
         if(getUserCountry() != null){
             return getUserCountry();
-        } else if(institution.getCountry() != null){
+        } else {
             return institution.getCountry();
         }
-        else {
-           return Helper.getInstitutionCountry(institution.getId());
-        }
+        
     }
 
     public String getRegion()

@@ -53,9 +53,12 @@ public class Institution extends AbstractInstitution
     {
         if(!country.equals("")){
             String countrycode = Helper.lookupCountryCode(country);
-            return new Country(country, countrycode);
+            if(countrycode != null)
+                return new Country(country, countrycode);
+            else
+                return Helper.getInstitutionCountry(getId());
         } 
-        return null;
+        return Helper.getInstitutionCountry(getId());
     }
     
     public void setCountry(String country)
