@@ -56,7 +56,7 @@ public class UsersSyncListener
             User user = populateUser(event.getId());
             List<AccessCode> accessCodes = user.getAccesscodes();
             if(accessCodes.size() ==0){
-                ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,0);
+                ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
                 pushuser(esUser,event);
             }
             else {
@@ -64,10 +64,10 @@ public class UsersSyncListener
                     ElasticSearchUser esUser = null;
                     AccessCode accessCode  =  accessCodes.get(i);
                     if(i == 0){
-                        esUser  = ElasticSearchUser.transformUser(user,accessCode,1);
+                        esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE");
                         
                     } else {
-                        esUser = ElasticSearchUser.transformUser(user,accessCode,2);
+                        esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE");
                     }
                     pushuser(esUser,event);
                 }
@@ -101,7 +101,7 @@ public class UsersSyncListener
                     user.setUserName(rs.getString("name"));
                     user.setEmail(rs.getString("email"));
                     user.setUserType(rs.getInt("parent"));
-                    user.setDateCreated(rs.getDate("createdAt"));
+                    user.setDateCreated(rs.getTimestamp("createdAt"));
                     user.setDateLastLogin(rs.getLong("lastLoginAt"));
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
@@ -124,8 +124,8 @@ public class UsersSyncListener
                 @Override
                 public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
                     AccessCode accessCode = new AccessCode();
-                    accessCode.setCode(rs.getString("ProductName") + "-" + rs.getString("AccessCode"));
-                    accessCode.setDateCreated(rs.getDate("LastModified"));
+                    accessCode.setCode(rs.getString("ProductCode") + "-" + rs.getString("AccessCode"));
+                    accessCode.setDateCreated(rs.getTimestamp("LastModified"));
                     accessCode.setProductCode(rs.getString("ProductCode"));
                     accessCode.setProductName(rs.getString("ProductName"));
                     accessCode.setDiscipline(rs.getString("Discipline"));

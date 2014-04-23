@@ -63,7 +63,7 @@ public class Helper
         String xPath  = "//country/name[text()=\"" +  countryName + "\"]";
         Node node = countryDocument.selectSingleNode( xPath );
         if(node != null){
-            return node.getParent().valueOf("/code");
+            return node.getParent().valueOf("code");
         }
         return null;
     }
@@ -85,7 +85,7 @@ public class Helper
         if(node != null) {
             Node institution = node.getParent();
             String countryCode = institution.valueOf("countryCode");
-            return new Country(countryCode,lookupCountryName(countryCode));
+            return new Country(lookupCountryName(countryCode),countryCode);
         }
         else 
             return null;

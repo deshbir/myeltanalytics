@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ElasticSearchUser extends AbstractUser {
-        private int recordType; 
+        private String recordType; 
         private String studentType;
         private AccessCode accessCode;
         private List<String> productNames;
@@ -14,7 +14,7 @@ public class ElasticSearchUser extends AbstractUser {
         private String region;
         private ElasticSearchInstitution institution;
         
-        public static ElasticSearchUser transformUser(User user, AccessCode ac,int recordType)
+        public static ElasticSearchUser transformUser(User user, AccessCode ac,String recordType)
         {
             ElasticSearchUser esUser = new ElasticSearchUser();
             esUser.setAccessCode(ac);
@@ -125,7 +125,7 @@ public class ElasticSearchUser extends AbstractUser {
 
 
 
-        public int getRecordType()
+        public String getRecordType()
         {
             return recordType;
         }
@@ -133,9 +133,9 @@ public class ElasticSearchUser extends AbstractUser {
 
 
 
-        public void setRecordType(int recordType)
+        public void setRecordType(String recordType2)
         {
-            this.recordType = recordType;
+            this.recordType = recordType2;
         }
 
 

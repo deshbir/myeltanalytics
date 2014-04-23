@@ -121,14 +121,14 @@ public class User extends AbstractUser {
     
     public String getStudentType()
     {
-        if((institution.getName().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTSelfLearner") != -1)){
-            return "SELF_PACED";
-        } else if((accesscodes.size() == 0) && (("CAPES").equals(institution.getDistrict()))){
-            return "CAPES";
-        } else if(accesscodes.size() == 0 && !(("CAPES").equals(institution.getDistrict()))){
-            return "INSTRUCTOR_LED";
+        if((institution.getName().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTHideAssignment=true") != -1)){
+            return "SELF_LEARNER";
+        } else if(("OCC").equals(institution.getDistrict()) || (("CAPES").equals(institution.getDistrict()))){
+            return "CAPES_MODEL";
+        } else if(institution.getOther().indexOf("MyELTSelfLearner=false") != -1){
+            return "CLASSROOM";
         }
-        return "OTHERS";
+        return "HYBRID_LEARNER";
     }
     
     
