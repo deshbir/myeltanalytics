@@ -81,7 +81,7 @@ public class SubmissionsSyncController {
     
     private void setLastSyncedSubmissionId() {
         try {
-            GetResponse lastSubmissionStatusResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId")
+            GetResponse lastSubmissionStatusResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_SYNC_JOB_TYPE, "lastActivitySubmissionId")
                 .execute()
                 .actionGet();
             

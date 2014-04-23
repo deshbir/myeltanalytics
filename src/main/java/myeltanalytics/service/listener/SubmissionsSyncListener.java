@@ -166,7 +166,7 @@ public class SubmissionsSyncListener
     synchronized void setLastActivitySubmissionStatus(long activitySubmissionStatus){
         SubmissionsSyncController.LAST_ACTIVITY_SUBMISSION_ID = activitySubmissionStatus;
         String json = "{\"id\": " + activitySubmissionStatus + "}";
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.MYELT_ANALYTICS_TYPE, "lastActivitySubmissionId").setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_SYNC_JOB_TYPE, "lastActivitySubmissionId").setSource(json).execute().actionGet();
     }
     
 }

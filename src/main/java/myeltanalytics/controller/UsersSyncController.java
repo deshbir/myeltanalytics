@@ -1,5 +1,6 @@
 package myeltanalytics.controller;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -16,6 +17,8 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -43,16 +46,20 @@ public class UsersSyncController {
     private EventBusService eventBusService;
     
     @PostConstruct
-    void initializeLastStatusParameters(){
+    void initializeLastStatusParameters() throws IOException{
         setLastSyncedUserId();
         createUsersIndex();
     }    
     
     @RequestMapping(value= "/startSync")
-    @ResponseBody String startSyncUsers() throws JsonProcessingException{       
+    @ResponseBody String startSyncUsers() throws JsonProcessingException{
+        String query = "select id from users where type=0 and id > ? order by id";
+        if (Helper.USER_QUERY_LIMIT > 0) {
+            query = query + " limit " + Helper.USER_QUERY_LIMIT;
+        }
         try {
             jdbcTemplate.query(
-                "select id from users where type=0 and id > ? order by id", new Object[] { LAST_USER_ID },
+                query, new Object[] { LAST_USER_ID },
                 new RowCallbackHandler()
                 {
                     @Override
@@ -79,7 +86,7 @@ public class UsersSyncController {
     
     private void setLastSyncedUserId() {
         try {
-            GetResponse userIdStatusResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.MYELT_ANALYTICS_TYPE, "lastUserId").execute().actionGet();
+            GetResponse userIdStatusResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_SYNC_JOB_TYPE, "lastUserId").execute().actionGet();
             Map<String,Object> map = userIdStatusResponse.getSourceAsMap();
             Integer userIdStatus = (Integer) map.get("id");
             if(userIdStatus != null){
@@ -93,16 +100,23 @@ public class UsersSyncController {
         }
     }   
   
-    private void createUsersIndex() {
+    private void createUsersIndex() throws IOException {
         if (!Helper.isIndexExist(Helper.USERS_INDEX, elasticSearchClient)) {
+            
             elasticSearchClient.admin().indices().create(new CreateIndexRequest(Helper.USERS_INDEX)
-                    .mapping(Helper.USERS_TYPE, buildUserTypeMappings())).actionGet();
+                    .mapping(Helper.USERS_TYPE, buildUserTypeMappings())).actionGet();      
+            
+            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE.toLowerCase(), Helper.USER_WITHOUT_ACCESSCODE.toLowerCase());
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_ONLY_ALIAS, usersOnlyFilter).execute().actionGet();
+            
+            TermsFilterBuilder accessCodesOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE.toLowerCase(), Helper.ADDITIONAL_ACCESSCODE.toLowerCase());
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.ACCESS_CODES_ONLY_ALIAS, accessCodesOnlyFilter).execute().actionGet();
         }      
     } 
     
     private XContentBuilder buildUserTypeMappings(){
         XContentBuilder builder = null; 
-        try {
+             try {
             builder = XContentFactory.jsonBuilder();
             builder.startObject()
             .startObject("properties")

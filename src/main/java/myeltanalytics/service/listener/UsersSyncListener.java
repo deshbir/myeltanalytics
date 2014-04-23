@@ -56,7 +56,7 @@ public class UsersSyncListener
             User user = populateUser(event.getId());
             List<AccessCode> accessCodes = user.getAccesscodes();
             if(accessCodes.size() ==0){
-                ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
+                ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user, null, Helper.USER_WITHOUT_ACCESSCODE);
                 pushuser(esUser,event);
             }
             else {
@@ -64,10 +64,10 @@ public class UsersSyncListener
                     ElasticSearchUser esUser = null;
                     AccessCode accessCode  =  accessCodes.get(i);
                     if(i == 0){
-                        esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE");
+                        esUser  = ElasticSearchUser.transformUser(user,accessCode, Helper.USER_WITH_ACCESSCODE);
                         
                     } else {
-                        esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE");
+                        esUser = ElasticSearchUser.transformUser(user,accessCode, Helper.ADDITIONAL_ACCESSCODE);
                     }
                     pushuser(esUser,event);
                 }
@@ -165,6 +165,6 @@ public class UsersSyncListener
     synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
         UsersSyncController.LAST_USER_ID = userStatus;
         String json = "{\"id\": " + userStatus + "}";
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.MYELT_ANALYTICS_TYPE, "lastUserId").setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_SYNC_JOB_TYPE, "lastUserId").setSource(json).execute().actionGet();
     }
 }
