@@ -25,7 +25,7 @@ public class ElasticSearchInstitution extends AbstractInstitution
    
     public static ElasticSearchInstitution transformInstitution(Institution institution)
     {
-        ElasticSearchInstitution esi = new ElasticSearchInstitution(institution.getName(),institution.getId());
+        ElasticSearchInstitution esi = new ElasticSearchInstitution(institution.getId(),institution.getName());
         esi.setCountry(institution.getCountry());
         return esi;
     }

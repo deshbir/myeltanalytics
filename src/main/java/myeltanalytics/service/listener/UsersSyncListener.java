@@ -85,7 +85,7 @@ public class UsersSyncListener
         
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),String.valueOf(event.getId())).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(event.getIndex(),event.getType()).setSource(json).execute().actionGet();
         setLastUserStatus(event.getId());
     }
     private User populateUser(long userId)
@@ -155,7 +155,7 @@ public class UsersSyncListener
             new RowMapper<Institution>() {
                 @Override
                 public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {                                      
-                    return new Institution(rs.getString(1),rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                    return new Institution(rs.getString("id"),rs.getString("name"), rs.getString("country"), rs.getString("other"), rs.getString("district"));
                 }
             });
         return institution;
