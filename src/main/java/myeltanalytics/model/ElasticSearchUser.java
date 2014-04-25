@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ElasticSearchUser extends AbstractUser {
+        private long jobId;
         private String recordType; 
         private String studentType;
         private AccessCode accessCode;
@@ -14,9 +15,10 @@ public class ElasticSearchUser extends AbstractUser {
         private String region;
         private ElasticSearchInstitution institution;
         
-        public static ElasticSearchUser transformUser(User user, AccessCode ac,String recordType)
+        public static ElasticSearchUser transformUser(User user, AccessCode ac,String recordType,long jobId)
         {
             ElasticSearchUser esUser = new ElasticSearchUser();
+            esUser.setJobId(jobId);
             esUser.setAccessCode(ac);
             esUser.setId(user.getId());
             esUser.setFirstName(user.getFirstName());
@@ -200,6 +202,22 @@ public class ElasticSearchUser extends AbstractUser {
         public void setInstitution(ElasticSearchInstitution institution)
         {
             this.institution = institution;
+        }
+
+
+
+
+        public long getJobId()
+        {
+            return jobId;
+        }
+
+
+
+
+        public void setJobId(long jobId)
+        {
+            this.jobId = jobId;
         }
 
         

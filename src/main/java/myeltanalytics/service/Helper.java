@@ -22,31 +22,57 @@ public class Helper
     
     public static final String USERS_INDEX = "users";
     
+    public static final String MYELT_ANALYTICS_INDEX = "myelt_analytics";
+    
+    
     public static final String USERS_TYPE = "users_info";
     
     public static final String USERS_ONLY_ALIAS = "users_only";
     
-    public static final String ACCESS_CODES_ONLY_ALIAS = "accesscodes_only";
+	public static final String ACCESS_CODES_ONLY_ALIAS = "accesscodes_only";
     
     public static final String SUBMISSIONS_INDEX = "submissions";
     
-    public static final String SUBMISSIONS_TYPE = "submissions_info";
-    
-    public static final String MYELT_ANALYTICS_INDEX = "myelt_analytics";
-    
     public static final String USERS_SYNC_JOB_TYPE = "users_sync_job";
+    
+    
+    public static final String TOTAL_RECORDS = "totalRecords";
+    
+    public static final String SUCCESSFULL_RECORDS = "successRecords";
+    
+    public static final String ERROR_RECORDS = "errorRecords";
+    
+    public static final String USERS_LAST_SYNCED_ID = "last_synced_user_id";
+    
+    public static final String USERS_JOB_STATUS = "userstatus";
     
     public static final String SUBMISSIONS_SYNC_JOB_TYPE = "submissions_sync_job";
     
+    public static final String LAST_JOB_ID = "lastJobId";
+    
+    public static final String JOB_STATUS_INPROGRESS = "in_progress";
+    
+    public static final String JOB_STATUS_PAUSED = "paused";
+    
+    public static final String JOB_STATUS_COMPLETED = "completed";
+
     public static final String USER_WITH_ACCESSCODE = "USER_WITH_ACCESSCODE";
     
     public static final String USER_WITHOUT_ACCESSCODE = "USER_WITHOUT_ACCESSCODE";
     
     public static final String ADDITIONAL_ACCESSCODE = "ADDITIONAL_ACCESSCODE";
     
-    public static final String BLANK = "";
+    public static final String ID = "id";
     
-    public static final int USER_QUERY_LIMIT = 0;
+    public static final String BLANK = "";
+
+    public static final String SUBMISSIONS_TYPE = "submissions_info";
+    
+    public static String usersSyncJobId;
+    
+    public static String usersSyncJobStatus;
+    
+    public static long lastSyncedUserId;
     
     public static Document countryDocument = null;
     public static Document institutionDocument = null;

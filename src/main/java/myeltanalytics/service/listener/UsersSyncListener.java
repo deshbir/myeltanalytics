@@ -6,11 +6,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import myeltanalytics.controller.UsersSyncController;
 import myeltanalytics.model.AccessCode;
 import myeltanalytics.model.Country;
 import myeltanalytics.model.ElasticSearchUser;
 import myeltanalytics.model.Institution;
+import myeltanalytics.model.JobStatus;
 import myeltanalytics.model.SyncUserEvent;
 import myeltanalytics.model.User;
 import myeltanalytics.service.Helper;
@@ -46,39 +46,58 @@ public class UsersSyncListener
     @PostConstruct
     void subscribeToBus(){
         eventBus.register(this);
+        jobStatus = new JobStatus();
     }
+    
+    public JobStatus jobStatus = null;
+
+    public boolean isPaused = true;  
+    
     
     @Subscribe
     @AllowConcurrentEvents
     public void onSyncUserEvent(SyncUserEvent event) {
-        try
-        {
-            User user = populateUser(event.getId());
-            List<AccessCode> accessCodes = user.getAccesscodes();
-            if(accessCodes.size() ==0){
-                ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user, null, Helper.USER_WITHOUT_ACCESSCODE);
-                pushuser(esUser,event);
-            }
-            else {
-                for(int i = 0 ;i < accessCodes.size(); i++){
-                    ElasticSearchUser esUser = null;
-                    AccessCode accessCode  =  accessCodes.get(i);
-                    if(i == 0){
-                        esUser  = ElasticSearchUser.transformUser(user,accessCode, Helper.USER_WITH_ACCESSCODE);
-                        
-                    } else {
-                        esUser = ElasticSearchUser.transformUser(user,accessCode, Helper.ADDITIONAL_ACCESSCODE);
-                    }
+        if(!isPaused){
+            try
+            {
+                User user = populateUser(event.getId());
+                List<AccessCode> accessCodes = user.getAccesscodes();
+                if(accessCodes.size() ==0){
+                    ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",jobStatus.getJobId());
                     pushuser(esUser,event);
                 }
+                else {
+                    for(int i = 0 ;i < accessCodes.size(); i++){
+                        ElasticSearchUser esUser = null;
+                        AccessCode accessCode  =  accessCodes.get(i);
+                        if(i == 0){
+                            esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE",jobStatus.getJobId());
+                            
+                        } else {
+                            esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE",jobStatus.getJobId());
+                        }
+                        pushuser(esUser,event);
+                    }
+                }
+                jobStatus.setSuccessRecords(jobStatus.getSuccessRecords() + 1);
+                setLastUserStatus(event.getId());
+                LOGGER.debug("User with UserId= " + event.getId() + " synced successfully");
             }
-            //System.out.println("User with UserId= " + event.getId() + " pushed successfully");
-            LOGGER.debug("User with UserId= " + event.getId() + " synced successfully");
-        }
-        catch(Exception e){
-            //e.printStackTrace();
-            LOGGER.error("Failure for UserId= " + event.getId(), e);
-            //TO-DO retry logic if neccessary
+            catch(Exception e){
+                //e.printStackTrace();
+                jobStatus.setErrorRecords(jobStatus.getErrorRecords() + 1);
+                try
+                {
+                    setLastUserStatus(event.getId());
+                }
+                catch (JsonProcessingException e1)
+                {
+                    // TODO Auto-generated catch block
+                    LOGGER.error("Failure for json processing= " + event.getId(), e1);
+                }
+                LOGGER.error("Failure for UserId= " + event.getId(), e);
+                //TO-DO retry logic if neccessary
+            }
         }
     }
     private void pushuser(ElasticSearchUser esUser,SyncUserEvent event) throws JsonProcessingException{
@@ -86,7 +105,6 @@ public class UsersSyncListener
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
         elasticSearchClient.prepareIndex(event.getIndex(),event.getType()).setSource(json).execute().actionGet();
-        setLastUserStatus(event.getId());
     }
     private User populateUser(long userId)
     {
@@ -162,9 +180,10 @@ public class UsersSyncListener
 
     }
     
-    synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
-        UsersSyncController.LAST_USER_ID = userStatus;
-        String json = "{\"id\": " + userStatus + "}";
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_SYNC_JOB_TYPE, "lastUserId").setSource(json).execute().actionGet();
+    public synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
+        jobStatus.setLastId(userStatus);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(jobStatus);
+        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobStatus.getJobId())).setSource(json).execute().actionGet();
     }
 }

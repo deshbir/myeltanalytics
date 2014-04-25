@@ -8,7 +8,7 @@ public class MainController {
     
     @RequestMapping("/")
     public String getIndex() {
-        return "index.html";
+        return "welcome";
     }
     
 }
