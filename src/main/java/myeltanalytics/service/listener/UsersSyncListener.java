@@ -101,10 +101,10 @@ public class UsersSyncListener
         }
     }
     private void pushuser(ElasticSearchUser esUser,SyncUserEvent event) throws JsonProcessingException{
-        
+        String id = String.valueOf(esUser.getId()) + esUser.getAccessCode();
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(event.getIndex(),event.getType()).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),id).setSource(json).execute().actionGet();
     }
     private User populateUser(long userId)
     {
