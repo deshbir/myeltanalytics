@@ -34,7 +34,7 @@ public class Country
      */
     public String getCode()
     {
-        return code;
+        return code.toLowerCase();
     }
     /**
      * @param code the code to set

@@ -56,11 +56,11 @@ public class Helper
     
     public static final String JOB_STATUS_COMPLETED = "completed";
 
-    public static final String USER_WITH_ACCESSCODE = "USER_WITH_ACCESSCODE";
+    public static final String USER_WITH_ACCESSCODE = "user_with_accesscode";
     
-    public static final String USER_WITHOUT_ACCESSCODE = "USER_WITHOUT_ACCESSCODE";
+    public static final String USER_WITHOUT_ACCESSCODE = "user_without_accesscode";
     
-    public static final String ADDITIONAL_ACCESSCODE = "ADDITIONAL_ACCESSCODE";
+    public static final String ADDITIONAL_ACCESSCODE = "additional_accesscode";
     
     public static final String ID = "id";
     

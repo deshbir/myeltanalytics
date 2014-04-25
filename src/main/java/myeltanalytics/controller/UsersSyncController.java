@@ -40,7 +40,7 @@ public class UsersSyncController {
     private static final String LAST_ID = "lastId";
 
 
-    private static final int USER_QUERY_LIMIT = 10000;
+    private static int USER_QUERY_LIMIT = 0;
 
     
     private final Logger LOGGER = Logger.getLogger(UsersSyncController.class);
@@ -180,10 +180,10 @@ public class UsersSyncController {
             elasticSearchClient.admin().indices().create(new CreateIndexRequest(Helper.USERS_INDEX)
                     .mapping(Helper.USERS_TYPE, buildUserTypeMappings())).actionGet();      
             
-            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE.toLowerCase(), Helper.USER_WITHOUT_ACCESSCODE.toLowerCase());
+            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE);
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_ONLY_ALIAS, usersOnlyFilter).execute().actionGet();
             
-            TermsFilterBuilder accessCodesOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE.toLowerCase(), Helper.ADDITIONAL_ACCESSCODE.toLowerCase());
+            TermsFilterBuilder accessCodesOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.ADDITIONAL_ACCESSCODE);
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.ACCESS_CODES_ONLY_ALIAS, accessCodesOnlyFilter).execute().actionGet();
         }      
     }
