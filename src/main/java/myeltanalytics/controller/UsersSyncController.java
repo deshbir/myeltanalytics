@@ -21,6 +21,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -65,8 +66,14 @@ public class UsersSyncController {
         createUsersIndex();
     }  
     
-       
+    @RequestMapping(value= "/startNewSync")
+    String startNewUserJob() throws JsonProcessingException {
+        deletePreviousJobData();
+        startFreshUserJob();
+        return "redirect:getSyncStatus";
+    }   
     
+
     @RequestMapping(value= "/startFreshSync")
     String startFreshUserJob() throws JsonProcessingException{
         long lastUserJob =  usersSyncListener.jobStatus.getJobId();
@@ -113,6 +120,14 @@ public class UsersSyncController {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonMap);
         elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).setSource(json).execute().actionGet();
+        return "redirect:getSyncStatus";
+    }
+    
+    @RequestMapping(value= "/deleteLastSync")
+    String deleteLastJob() throws JsonProcessingException{
+        deletePreviousJobData();
+        usersSyncListener.jobStatus.setSuccessRecords(0);
+        usersSyncListener.jobStatus.setErrorRecords(0);
         return "redirect:getSyncStatus";
     }
     
@@ -172,7 +187,15 @@ public class UsersSyncController {
     }
     
     
-    
+    private void deletePreviousJobData()
+    {
+        //delete the user_type
+        elasticSearchClient.prepareDeleteByQuery(Helper.USERS_INDEX)
+            .setQuery(QueryBuilders.termQuery("_type", Helper.USERS_TYPE))
+            .execute()
+            .actionGet();
+        
+    }
   
     private void createUsersIndex() throws IOException {
         if (!Helper.isIndexExist(Helper.USERS_INDEX, elasticSearchClient)) {

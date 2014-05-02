@@ -58,7 +58,12 @@
             </c:choose>
         </div>
     </div>
+    <div>If at anytime you want to delete the current job and start a new job. Click the below button</div>
+    <button onclick="changeUrl('startNewSync')";>Start Fresh Job</button>
     
+    
+     <div>If you want to delete all data of last job, click the below button</div>
+    <button onclick="changeUrl('deleteLastSync')";>Delete last Job</button>
 </body>
 
 </html>
