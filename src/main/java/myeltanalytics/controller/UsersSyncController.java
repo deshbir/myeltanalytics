@@ -137,7 +137,7 @@ public class UsersSyncController {
         long totalLeftRecords =  usersSyncListener.jobStatus.getTotalRecords() - usersSyncListener.jobStatus.getSuccessRecords() - usersSyncListener.jobStatus.getErrorRecords();
         try {
             jdbcTemplate.query(
-                "select id from users where type=0 and id > ? order by id LIMIT ?", new Object[] { usersSyncListener.jobStatus.getLastId(),totalLeftRecords },
+                "select id from users where type=0 and InstitutionID NOT IN ('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI') and id > ? order by id LIMIT ?", new Object[] { usersSyncListener.jobStatus.getLastId(),totalLeftRecords },
                 new RowCallbackHandler()
                 {
                     @Override
@@ -226,6 +226,12 @@ public class UsersSyncController {
             builder = XContentFactory.jsonBuilder();
             builder.startObject()
             .startObject("properties")
+                .startObject("dateCreated")
+                    .field("type", "date")                      
+                .endObject()
+                .startObject("dateLastLogin")
+                    .field("type", "date")                      
+                .endObject()
                 .startObject("accessCode")
                     .startObject("properties")
                         .startObject("discipline")
@@ -236,6 +242,9 @@ public class UsersSyncController {
                              .field("type", "string")                      
                              .field("index", "not_analyzed")
                          .endObject()
+                         .startObject("dateCreated")
+                            .field("type", "date")                      
+                        .endObject()
                      .endObject()
                 .endObject()
                 .startObject("country")

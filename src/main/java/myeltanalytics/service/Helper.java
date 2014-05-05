@@ -68,6 +68,8 @@ public class Helper
 
     public static final String SUBMISSIONS_TYPE = "submissions_info";
     
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    
     public static String usersSyncJobId;
     
     public static String usersSyncJobStatus;
@@ -129,6 +131,11 @@ public class Helper
         }
         else 
             return null;
+    }
+    
+    public static Country getDefaultCountry()
+    {
+        return new Country("Madagascar","MG");
     }
 
     private static String lookupCountryName(String countryCode)

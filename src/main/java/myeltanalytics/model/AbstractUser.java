@@ -1,6 +1,5 @@
 package myeltanalytics.model;
 
-import java.util.Date;
 import java.util.List;
 
 public abstract class AbstractUser
@@ -9,8 +8,8 @@ public abstract class AbstractUser
     private String userName;
     private String email;
     private String userType;
-    private Date dateCreated;
-    private Date dateLastLogin;
+    private String dateCreated;
+    private String dateLastLogin;
     private String firstName,lastName;
     private Country userCountry;
     private List<String> courses;
@@ -97,7 +96,7 @@ public abstract class AbstractUser
     /**
      * @return the dateCreated
      */
-    public Date getDateCreated()
+    public String getDateCreated()
     {
         return dateCreated;
     }
@@ -107,7 +106,7 @@ public abstract class AbstractUser
     /**
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated)
+    public void setDateCreated(String dateCreated)
     {
         this.dateCreated = dateCreated;
     }
@@ -117,7 +116,7 @@ public abstract class AbstractUser
     /**
      * @return the dateLastLogin
      */
-    public Date getDateLastLogin()
+    public String getDateLastLogin()
     {
         return dateLastLogin;
     }
@@ -127,7 +126,7 @@ public abstract class AbstractUser
     /**
      * @param date the dateLastLogin to set
      */
-    public void setDateLastLogin(Date date)
+    public void setDateLastLogin(String date)
     {
         this.dateLastLogin = date;
     }

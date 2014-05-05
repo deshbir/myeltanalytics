@@ -56,9 +56,9 @@ public class Institution extends AbstractInstitution
             if(countrycode != null)
                 return new Country(country, countrycode);
             else
-                return Helper.getInstitutionCountry(getId());
+                return Helper.getDefaultCountry();
         } 
-        return Helper.getInstitutionCountry(getId());
+        return Helper.getDefaultCountry();
     }
     
     public void setCountry(String country)

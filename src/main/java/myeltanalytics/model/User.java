@@ -1,6 +1,5 @@
 package myeltanalytics.model;
 
-import java.util.Date;
 import java.util.List;
 
 import myeltanalytics.service.Helper;
@@ -95,12 +94,6 @@ public class User extends AbstractUser {
         }
     }
 
-    public void setDateLastLogin(long date)
-    {
-        setDateLastLogin(new Date(date));
-        
-    }
-
     /**
      * @return the instituion
      */
@@ -122,7 +115,7 @@ public class User extends AbstractUser {
     public String getStudentType()
     {
         if((institution.getName().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTHideAssignment=true") != -1)){
-            return "self_learner";
+            return "self_paced";
         } else if(("OCC").equals(institution.getDistrict()) || (("CAPES").equals(institution.getDistrict()))){
             return "capes_model";
         } else if(institution.getOther().indexOf("MyELTSelfLearner=false") != -1){

@@ -1,11 +1,10 @@
 package myeltanalytics.model;
 
-import java.util.Date;
 
 public class AccessCode
 {
     private String code;
-    private Date dateCreated;
+    private String dateCreated;
     private String productCode;
     private String productName;
     private String discipline;
@@ -27,14 +26,14 @@ public class AccessCode
     /**
      * @return the dateCreated
      */
-    public Date getDateCreated()
+    public String getDateCreated()
     {
         return dateCreated;
     }
     /**
      * @param dateCreated the dateCreated to set
      */
-    public void setDateCreated(Date dateCreated)
+    public void setDateCreated(String dateCreated)
     {
         this.dateCreated = dateCreated;
     }

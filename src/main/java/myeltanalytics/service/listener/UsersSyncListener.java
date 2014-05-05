@@ -2,6 +2,8 @@ package myeltanalytics.service.listener;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -119,8 +121,17 @@ public class UsersSyncListener
                     user.setUserName(rs.getString("name"));
                     user.setEmail(rs.getString("email"));
                     user.setUserType(rs.getInt("parent"));
-                    user.setDateCreated(rs.getTimestamp("createdAt"));
-                    user.setDateLastLogin(rs.getLong("lastLoginAt"));
+                    
+                    DateFormat dateFormat = new SimpleDateFormat(Helper.DATE_FORMAT);
+                    
+                    if (rs.getTimestamp("createdAt") != null) {
+                        user.setDateCreated(dateFormat.format(rs.getTimestamp("createdAt").getTime())); 
+                    } 
+                    
+                    if (rs.getLong("lastLoginAt") != 0) {
+                        user.setDateLastLogin(dateFormat.format(rs.getLong("lastLoginAt")));
+                    } 
+                    
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
                     Country country = new Country(rs.getString("country"),rs.getString("countryCode"));
@@ -143,7 +154,12 @@ public class UsersSyncListener
                 public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
                     AccessCode accessCode = new AccessCode();
                     accessCode.setCode(rs.getString("ProductCode") + "-" + rs.getString("AccessCode"));
-                    accessCode.setDateCreated(rs.getTimestamp("LastModified"));
+                    
+                    DateFormat dateFormat = new SimpleDateFormat(Helper.DATE_FORMAT);
+                    if (rs.getTimestamp("LastModified") != null) {
+                        accessCode.setDateCreated(dateFormat.format(rs.getTimestamp("LastModified")));
+                    } 
+                    
                     accessCode.setProductCode(rs.getString("ProductCode"));
                     accessCode.setProductName(rs.getString("ProductName"));
                     accessCode.setDiscipline(rs.getString("Discipline"));
