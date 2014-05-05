@@ -7,11 +7,10 @@
         <h1>Welcome to MyELT Analytics</h1>
         
         <h2>
-            <a href="users/getSyncStatus">Sync Users</a>
+            <a href="<c:url value="/myeltanalytics/admin/users/getSyncStatus"/>">Sync Users</a>
         </h2>       
-        
          <h2>
-            <a href="submissions/">Sync Submissions</a>
+            <a href="<c:url value="/myeltanalytics/admin/submissions"/>">Sync Submissions</a>
         </h2>
     </body>
 
