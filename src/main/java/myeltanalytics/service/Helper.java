@@ -11,6 +11,8 @@ import org.dom4j.io.SAXReader;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
+import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
 import org.elasticsearch.client.Client;
 
 public class Helper
@@ -50,12 +52,16 @@ public class Helper
     
     public static final String LAST_JOB_ID = "lastJobId";
     
-    public static final String JOB_STATUS_INPROGRESS = "in_progress";
+    public static final String JOB_STATUS = "jobStatus";
     
-    public static final String JOB_STATUS_PAUSED = "paused";
+    public static final String STATUS_INPROGRESS = "InProgress";
     
-    public static final String JOB_STATUS_COMPLETED = "completed";
-
+    public static final String STATUS_PAUSED = "Paused";
+    
+    public static final String STATUS_COMPLETED = "Completed";
+    
+    public static final String STATUS_ABORTED = "Aborted";
+    
     public static final String USER_WITH_ACCESSCODE = "user_with_accesscode";
     
     public static final String USER_WITHOUT_ACCESSCODE = "user_without_accesscode";
@@ -99,6 +105,13 @@ public class Helper
         IndicesExistsResponse actionGet = exists.actionGet();
         return actionGet.isExists();
     }
+    
+    public static boolean isTypeExist(String index, String type, Client elasticSearchClient) {
+        ActionFuture<TypesExistsResponse> exists = elasticSearchClient.admin().indices().typesExists(new TypesExistsRequest(new String[] { index} , type));
+        TypesExistsResponse actionGet = exists.actionGet();
+        return actionGet.isExists();
+    }
+   
 
     public static String lookupCountryCode(String countryName)
     {

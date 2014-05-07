@@ -5,10 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import myeltanalytics.model.JobStatus;
 import myeltanalytics.model.SyncUserEvent;
 import myeltanalytics.service.EventBusService;
 import myeltanalytics.service.Helper;
@@ -21,7 +21,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,10 +39,6 @@ public class UsersSyncController {
 
     private static final String LAST_ID = "lastId";
 
-
-    private static int USER_QUERY_LIMIT = 0;
-
-    
     private final Logger LOGGER = Logger.getLogger(UsersSyncController.class);
     
     @Autowired
@@ -57,8 +52,6 @@ public class UsersSyncController {
     
     @Autowired
     private EventBusService eventBusService;
-
-
     
     @PostConstruct
     void initializeLastStatusParameters() throws IOException{
@@ -66,78 +59,73 @@ public class UsersSyncController {
         createUsersIndex();
     }  
     
-    @RequestMapping(value= "/startNewSync")
-    String startNewUserJob() throws JsonProcessingException {
-        deletePreviousJobData();
-        startFreshUserJob();
-        return "redirect:getSyncStatus";
-    }   
-    
-
-    @RequestMapping(value= "/startFreshSync")
-    String startFreshUserJob() throws JsonProcessingException{
-        long lastUserJob =  usersSyncListener.jobStatus.getJobId();
-        Map<String, Object> jsonMap = new HashMap<String, Object>();
-        jsonMap.put(Helper.ID,++lastUserJob);
-        jsonMap.put(Helper.JOB_STATUS_PAUSED,false);
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonMap);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).setSource(json).execute().actionGet();
-        usersSyncListener.jobStatus.setJobId(lastUserJob);
-        usersSyncListener.jobStatus.setLastId(-1);
-        usersSyncListener.jobStatus.setSuccessRecords(0);
-        usersSyncListener.jobStatus.setErrorRecords(0);
-        usersSyncListener.jobStatus.setTotalRecords(getTotalUsersCount());
-        usersSyncListener.setLastUserStatus(0);
-        startSyncUsers();
-        return "redirect:getSyncStatus";
-    }
-    
     @RequestMapping(value= "/getSyncStatus")
-    String getLastUserJobStatus(Model model) throws JsonProcessingException{
-        boolean isCompleted;
-        JobStatus jobStatus = usersSyncListener.jobStatus;
-        model.addAttribute("jobStatus",jobStatus);
-        if(jobStatus.getSuccessRecords() + jobStatus.getErrorRecords() >= jobStatus.getTotalRecords()){
-            isCompleted = true;
-            usersSyncListener.isPaused = true;
-        } else {
-            isCompleted = false;
-        }
-        model.addAttribute("isCompleted",isCompleted);
-        model.addAttribute("isPaused",usersSyncListener.isPaused);
+    String getSyncStatus(Model model) throws JsonProcessingException{
+        model.addAttribute("jobInfo",usersSyncListener.jobInfo);
         return "userJob";
-    }
-    
-    
-    @RequestMapping(value= "/stopSync")
-    String stopJob() throws JsonProcessingException{
-        usersSyncListener.isPaused = true;
-        long lastUserJob =  usersSyncListener.jobStatus.getJobId();
-        Map<String, Object> jsonMap = new HashMap<String, Object>();
-        jsonMap.put(Helper.ID,lastUserJob);
-        jsonMap.put(Helper.JOB_STATUS_PAUSED,true);
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonMap);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).setSource(json).execute().actionGet();
+    }  
+
+    @RequestMapping(value= "/startSync")
+    String startFreshSync() throws JsonProcessingException{
+        
+        String newJobId = UUID.randomUUID().toString();
+        
+        updateLastJobInfo(newJobId);
+        
+        usersSyncListener.jobInfo.setJobId(newJobId);
+        usersSyncListener.jobInfo.setLastId(0);
+        usersSyncListener.jobInfo.setSuccessRecords(0);
+        usersSyncListener.jobInfo.setErrorRecords(0);
+        usersSyncListener.jobInfo.setTotalRecords(getTotalUsersCount());
+        usersSyncListener.jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);        
+        
+        startSyncJob();
+        
         return "redirect:getSyncStatus";
     }
     
-    @RequestMapping(value= "/deleteLastSync")
-    String deleteLastJob() throws JsonProcessingException{
-        deletePreviousJobData();
-        usersSyncListener.jobStatus.setSuccessRecords(0);
-        usersSyncListener.jobStatus.setErrorRecords(0);
+    @RequestMapping(value= "/pauseSync")
+    String pauseSync() throws JsonProcessingException{
+        usersSyncListener.jobInfo.setJobStatus(Helper.STATUS_PAUSED);
+        usersSyncListener.updateLastSyncedUserStatus();
         return "redirect:getSyncStatus";
     }
     
     @RequestMapping(value= "/resumeSync")
-    String startSyncUsers() throws JsonProcessingException{  
-        usersSyncListener.isPaused = false;
-        long totalLeftRecords =  usersSyncListener.jobStatus.getTotalRecords() - usersSyncListener.jobStatus.getSuccessRecords() - usersSyncListener.jobStatus.getErrorRecords();
+    String resumeSync() throws JsonProcessingException{  
+        usersSyncListener.jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
+        startSyncJob();
+        return "redirect:getSyncStatus";
+    } 
+    
+//    @RequestMapping(value= "/startNewSync")
+//    String startNewUserJob() throws JsonProcessingException {
+//        deletePreviousJobData();
+//        startFreshUserJob();
+//        return "redirect:getSyncStatus";
+//    }   
+    
+    
+    @RequestMapping(value= "/abortSync")
+    String abortSync() throws JsonProcessingException{
+        usersSyncListener.jobInfo.setJobStatus(Helper.STATUS_ABORTED);
+        usersSyncListener.updateLastSyncedUserStatus();
+        return "redirect:getSyncStatus";
+    }
+    
+     
+    private void updateLastJobInfo(String jobId) throws JsonProcessingException {       
+        Map<String, Object> jsonMap = new HashMap<String, Object>();
+        jsonMap.put(Helper.ID, jobId);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(jsonMap);
+        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).setSource(json).execute().actionGet();
+    }
+    
+    private void startSyncJob() {
         try {
             jdbcTemplate.query(
-                "select id from users where type=0 and InstitutionID NOT IN ('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI') and id > ? order by id LIMIT ?", new Object[] { usersSyncListener.jobStatus.getLastId(),totalLeftRecords },
+                "select id from users where type=0 and InstitutionID NOT IN ('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI') and id > ? order by id", new Object[] { usersSyncListener.jobInfo.getLastId() },
                 new RowCallbackHandler()
                 {
                     @Override
@@ -154,48 +142,39 @@ public class UsersSyncController {
                     }
                 });
             LOGGER.debug("Started User sync process");
-            return "redirect:getSyncStatus";
         } catch (Exception e) {
             LOGGER.error("Error starting User sync process", e);
-            return "";
         }
-        
-    }      
-    
+    }
     
     public void setUserSyncJobStatus() {
-        try {
-            GetResponse lastJobIdResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).execute().actionGet();
-            Map<String,Object> map = lastJobIdResponse.getSourceAsMap();
-            long lastJobId = (Integer) map.get(Helper.ID);
-            if(lastJobId != 0){
-                usersSyncListener.jobStatus.setJobId(lastJobId);
+        if (Helper.isIndexExist(Helper.MYELT_ANALYTICS_INDEX, elasticSearchClient) && Helper.isTypeExist(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, elasticSearchClient)) {
+            GetResponse lastJobInfoResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).execute().actionGet();
+            Map<String,Object> lastJobInfoMap = lastJobInfoResponse.getSourceAsMap();
+            String lastJobId = (String) lastJobInfoMap.get(Helper.ID);
+            if(lastJobId != null){
+                usersSyncListener.jobInfo.setJobId(lastJobId);
                 GetResponse lastJobResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
-                map  = lastJobResponse.getSourceAsMap();
-                usersSyncListener.jobStatus.setLastId((Integer) map.get(LAST_ID));
-                usersSyncListener.jobStatus.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
-                usersSyncListener.jobStatus.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
-                usersSyncListener.jobStatus.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
+                Map<String,Object> map  = lastJobResponse.getSourceAsMap();
+                usersSyncListener.jobInfo.setLastId((Integer) map.get(LAST_ID));
+                usersSyncListener.jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
+                usersSyncListener.jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
+                usersSyncListener.jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
+                usersSyncListener.jobInfo.setJobStatus((String) map.get(Helper.JOB_STATUS));
             }
         }
-        catch (Exception e){
-            //will come when application is started first time
-            //ignore if comes once
-            usersSyncListener.jobStatus.setJobId(0);
-            LOGGER.error("An error occured while reading last synced UserId from ElasticSearch" ,e);
-        }
     }
     
     
-    private void deletePreviousJobData()
-    {
-        //delete the user_type
-        elasticSearchClient.prepareDeleteByQuery(Helper.USERS_INDEX)
-            .setQuery(QueryBuilders.termQuery("_type", Helper.USERS_TYPE))
-            .execute()
-            .actionGet();
-        
-    }
+//    private void deletePreviousJobData()
+//    {
+//        //delete the user_type
+//        elasticSearchClient.prepareDeleteByQuery(Helper.USERS_INDEX)
+//            .setQuery(QueryBuilders.termQuery("_type", Helper.USERS_TYPE))
+//            .execute()
+//            .actionGet();
+//        
+//    }
   
     private void createUsersIndex() throws IOException {
         if (!Helper.isIndexExist(Helper.USERS_INDEX, elasticSearchClient)) {
@@ -214,9 +193,6 @@ public class UsersSyncController {
     private long getTotalUsersCount() throws JsonProcessingException {
         String sql = "SELECT COUNT(*) FROM users";
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
-        if (USER_QUERY_LIMIT > 0 && usersCount > USER_QUERY_LIMIT) {
-            return USER_QUERY_LIMIT;
-        }
         return usersCount;
     }
     

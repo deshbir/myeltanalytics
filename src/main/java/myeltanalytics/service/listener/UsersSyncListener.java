@@ -12,7 +12,7 @@ import myeltanalytics.model.AccessCode;
 import myeltanalytics.model.Country;
 import myeltanalytics.model.ElasticSearchUser;
 import myeltanalytics.model.Institution;
-import myeltanalytics.model.JobStatus;
+import myeltanalytics.model.JobInfo;
 import myeltanalytics.model.SyncUserEvent;
 import myeltanalytics.model.User;
 import myeltanalytics.service.Helper;
@@ -48,24 +48,21 @@ public class UsersSyncListener
     @PostConstruct
     void subscribeToBus(){
         eventBus.register(this);
-        jobStatus = new JobStatus();
+        jobInfo = new JobInfo();
     }
     
-    public JobStatus jobStatus = null;
-
-    public boolean isPaused = true;  
-    
+    public JobInfo jobInfo = null;
     
     @Subscribe
     @AllowConcurrentEvents
     public void onSyncUserEvent(SyncUserEvent event) {
-        if(!isPaused){
+        if(jobInfo != null && !(jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED) || jobInfo.getJobStatus().equals(Helper.STATUS_ABORTED))){
             try
             {
                 User user = populateUser(event.getId());
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){
-                    ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",jobStatus.getJobId());
+                    ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",jobInfo.getJobId());
                     pushuser(esUser,event);
                 }
                 else {
@@ -73,24 +70,26 @@ public class UsersSyncListener
                         ElasticSearchUser esUser = null;
                         AccessCode accessCode  =  accessCodes.get(i);
                         if(i == 0){
-                            esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE",jobStatus.getJobId());
+                            esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE",jobInfo.getJobId());
                             
                         } else {
-                            esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE",jobStatus.getJobId());
+                            esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE",jobInfo.getJobId());
                         }
                         pushuser(esUser,event);
                     }
                 }
-                jobStatus.setSuccessRecords(jobStatus.getSuccessRecords() + 1);
-                setLastUserStatus(event.getId());
+                jobInfo.setSuccessRecords(jobInfo.getSuccessRecords() + 1);
+                jobInfo.setLastId(event.getId());
+                updateLastSyncedUserStatus();
                 LOGGER.debug("User with UserId= " + event.getId() + " synced successfully");
             }
             catch(Exception e){
                 //e.printStackTrace();
-                jobStatus.setErrorRecords(jobStatus.getErrorRecords() + 1);
+                jobInfo.setErrorRecords(jobInfo.getErrorRecords() + 1);
                 try
                 {
-                    setLastUserStatus(event.getId());
+                    jobInfo.setLastId(event.getId());
+                    updateLastSyncedUserStatus();
                 }
                 catch (JsonProcessingException e1)
                 {
@@ -196,10 +195,12 @@ public class UsersSyncListener
 
     }
     
-    public synchronized void setLastUserStatus(long userStatus) throws JsonProcessingException{
-        jobStatus.setLastId(userStatus);
+    public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
+        if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
+            jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
+        }
         ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jobStatus);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobStatus.getJobId())).setSource(json).execute().actionGet();
+        String json = mapper.writeValueAsString(jobInfo);
+        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
     }
 }

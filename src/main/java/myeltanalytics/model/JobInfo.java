@@ -1,15 +1,16 @@
 package myeltanalytics.model;
 
-public class JobStatus
+public class JobInfo
 {
-    private long jobId;
+    private String jobId;
+    private String jobStatus;
     private long lastId;
     private long totalRecords;
     private long successRecords;
     private long errorRecords;
     
     
-    public JobStatus() {
+    public JobInfo() {
         //default
     }
     
@@ -53,16 +54,30 @@ public class JobStatus
 
 
 
-    public long getJobId()
+    public String getJobId()
     {
         return jobId;
     }
 
 
 
-    public void setJobId(long jobId)
+    public void setJobId(String jobId)
     {
         this.jobId = jobId;
+    }
+
+
+
+    public String getJobStatus()
+    {
+        return jobStatus;
+    }
+
+
+
+    public void setJobStatus(String jobStatus)
+    {
+        this.jobStatus = jobStatus;
     }
     
 }
