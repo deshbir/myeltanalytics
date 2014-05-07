@@ -46,23 +46,21 @@
                          <td>${jobInfo.errorRecords}</td>
                          <td>
                             <c:choose>
-                                 <c:when test="${jobInfo.jobStatus eq 'Completed'}">Job Completed</c:when>
+                                 <c:when test="${jobInfo.jobStatus eq 'Completed'}">Sync Completed</c:when>
                                  <c:when test="${jobInfo.jobStatus eq 'Paused'}">
-                                     <button onclick="changeUrl('resumeSync')";>Resume Job</button>
+                                     <button onclick="changeUrl('resumeSync')";>Resume Sync</button>
                                  </c:when>
                                  <c:when test="${jobInfo.jobStatus eq 'InProgress'}">
-                                     <button onclick="changeUrl('pauseSync')";>Pause Job</button>
-                                     <button onclick="changeUrl('abortSync')";>Abort Job</button>
-                                 </c:when>
-                                 <c:when test="${jobInfo.jobStatus eq 'Aborted'}">Job Aborted</c:when>
+                                     <button onclick="changeUrl('stopSync')";>Stop Sync</button>                                     
+                                 </c:when>                                 
                                  <c:otherwise>-</c:otherwise>
                             </c:choose>
                          </td>
                      </tr>
                  </table>
-                  <c:if test="${jobInfo.jobStatus eq 'Aborted'}">
-                       <p>Last job was aborted. Click "Start Sync" button to start a fresh sync job.</p>
-                       <button onclick="changeUrl('startSync')";>Start Sync</button>
+                  <c:if test="${jobInfo.jobStatus eq 'Paused'}">
+                       <p>Click "Start Fresh Sync" button to abort/cancel last sync and start a new/fresh sync.</p>
+                       <button onclick="changeUrl('startSync')";>Start Fresh Sync</button>
                  </c:if>
            </c:when>
            <c:otherwise>
