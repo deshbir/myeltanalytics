@@ -1,7 +1,5 @@
 package myeltanalytics;
 
-import java.util.concurrent.Executors;
-
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -15,9 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
-
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
@@ -28,9 +23,6 @@ public class Application {
     
     @Value("${elasticsearch.port}")
     private int elasticSearchPort;
-    
-    @Value("${eventbus.poolsize}")
-    private int eventbusPoolSize;
     
     @Value("${elasticsearch.clustername}")
     private String clusterName;
@@ -43,11 +35,6 @@ public class Application {
 		System.out.println("************************************");
     }
     
-    @Bean
-    public EventBus eventBus() {
-        return new AsyncEventBus(Executors.newFixedThreadPool(eventbusPoolSize));
-    }
-        
     @Bean
     public Client elasticSearchClient(){
         Settings settings = ImmutableSettings.settingsBuilder()

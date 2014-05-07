@@ -23,24 +23,19 @@ repositories {
     maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
-dependencies {
-    // tag::jetty[]
+dependencies {    
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-jdbc:0.5.0.M6")
     compile("org.springframework:spring-jdbc")
+    
+    //Tomcat Container
     compile("org.springframework.boot:spring-boot-starter-tomcat")
     compile("org.apache.tomcat.embed:tomcat-embed-jasper")
+    
     compile("javax.servlet:jstl")
-    
-
-    // end::jetty[]
-    // tag::actuator[]
-    
-    // end::actuator[]
     compile group:'com.fasterxml.jackson.core', name:'jackson-databind'
     compile group:'org.springframework', name:'spring-jdbc'
-    compile group:'mysql', name:'mysql-connector-java',version: '5.1.26'
-    compile group: 'com.google.guava', name: 'guava', version: '12.0'
+    compile group:'mysql', name:'mysql-connector-java',version: '5.1.26'    
     compile group: 'log4j', name: 'log4j', version: '1.2.16'
     compile 'dom4j:dom4j:1.5.1'
    

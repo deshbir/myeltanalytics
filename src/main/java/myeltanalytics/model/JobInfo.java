@@ -4,7 +4,7 @@ public class JobInfo
 {
     private String jobId;
     private String jobStatus;
-    private long lastId;
+    private String lastId;
     private long totalRecords;
     private long successRecords;
     private long errorRecords;
@@ -42,12 +42,12 @@ public class JobInfo
     }
     
     
-    public long getLastId()
+    public String getLastId()
     {
         return lastId;
     }
 
-    public void setLastId(long lastId)
+    public void setLastId(String lastId)
     {
         this.lastId = lastId;
     }

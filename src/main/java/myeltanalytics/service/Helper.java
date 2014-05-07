@@ -18,71 +18,29 @@ import org.elasticsearch.client.Client;
 public class Helper
 {
     
-    public static final String COUNTRY_XML_FILE_NAME = "country.xml";
-    
+    //Country and Institution XML file names
+    public static final String COUNTRY_XML_FILE_NAME = "country.xml";    
     public static final String INSTITUTION_XML_FILE_NAME = "institution.xml";
     
-    public static final String USERS_INDEX = "users";
-    
-    public static final String MYELT_ANALYTICS_INDEX = "myelt_analytics";
-    
-    
-    public static final String USERS_TYPE = "users_info";
-    
-    public static final String USERS_ONLY_ALIAS = "users_only";
-    
-	public static final String ACCESS_CODES_ONLY_ALIAS = "accesscodes_only";
-    
-    public static final String SUBMISSIONS_INDEX = "submissions";
-    
-    public static final String USERS_SYNC_JOB_TYPE = "users_sync_job";
-    
-    
-    public static final String TOTAL_RECORDS = "totalRecords";
-    
-    public static final String SUCCESSFULL_RECORDS = "successRecords";
-    
-    public static final String ERROR_RECORDS = "errorRecords";
-    
-    public static final String USERS_LAST_SYNCED_ID = "last_synced_user_id";
-    
-    public static final String USERS_JOB_STATUS = "userstatus";
-    
-    public static final String SUBMISSIONS_SYNC_JOB_TYPE = "submissions_sync_job";
-    
+    //myelt_analytics index constants    
+    public static final String MYELT_ANALYTICS_INDEX = "myelt_analytics";    
     public static final String LAST_JOB_ID = "lastJobId";
+    public static final String USERS_JOB_STATUS = "userJobStatus";
     
+    //Job Status constants
+    public static final String TOTAL_RECORDS = "totalRecords";    
+    public static final String SUCCESSFULL_RECORDS = "successRecords";    
+    public static final String ERROR_RECORDS = "errorRecords";    
+    public static final String LAST_ID = "lastId";    
     public static final String JOB_STATUS = "jobStatus";
-    
     public static final String STATUS_INPROGRESS = "InProgress";
-    
     public static final String STATUS_PAUSED = "Paused";
-    
     public static final String STATUS_COMPLETED = "Completed";
-    
-    public static final String STATUS_ABORTED = "Aborted";
-    
-    public static final String USER_WITH_ACCESSCODE = "user_with_accesscode";
-    
-    public static final String USER_WITHOUT_ACCESSCODE = "user_without_accesscode";
-    
-    public static final String ADDITIONAL_ACCESSCODE = "additional_accesscode";
-    
-    public static final String ID = "id";
-    
-    public static final String BLANK = "";
-
-    public static final String SUBMISSIONS_TYPE = "submissions_info";
-    
+        
+    public static final String ID = "id";    
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     
-    public static String usersSyncJobId;
-    
-    public static String usersSyncJobStatus;
-    
-    public static long lastSyncedUserId;
-    
-    public static Document countryDocument = null;
+    public static Document countryDocument = null;    
     public static Document institutionDocument = null;
     
     static {

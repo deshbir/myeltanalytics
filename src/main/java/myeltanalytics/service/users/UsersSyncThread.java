@@ -1,4 +1,4 @@
-package myeltanalytics.service.listener;
+package myeltanalytics.service.users;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,108 +6,95 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import myeltanalytics.model.AccessCode;
 import myeltanalytics.model.Country;
 import myeltanalytics.model.ElasticSearchUser;
 import myeltanalytics.model.Institution;
-import myeltanalytics.model.JobInfo;
-import myeltanalytics.model.SyncUserEvent;
 import myeltanalytics.model.User;
+import myeltanalytics.service.ApplicationContextProvider;
 import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.Client;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 
-@Service(value="usersSyncListener")
-public class UsersSyncListener
+public class UsersSyncThread implements Runnable
 {
-    private final Logger LOGGER = Logger.getLogger(UsersSyncListener.class);
+    private JdbcTemplate jdbcTemplate = (JdbcTemplate)ApplicationContextProvider.getApplicationContext().getBean("jdbcTemplate");
     
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private Client elasticSearchClient = (Client)ApplicationContextProvider.getApplicationContext().getBean("elasticSearchClient");
     
-    @Autowired
-    private EventBus eventBus;
+    private UsersSyncService usersSyncService = (UsersSyncService)ApplicationContextProvider.getApplicationContext().getBean("usersSyncService");
     
-    @Autowired
-    private Client elasticSearchClient;
+    private final Logger LOGGER = Logger.getLogger(UsersSyncThread.class);
     
-    @PostConstruct
-    void subscribeToBus(){
-        eventBus.register(this);
-        jobInfo = new JobInfo();
+    private String userId;
+    
+    public UsersSyncThread(String userId) {
+        this.userId = userId;
     }
     
-    public JobInfo jobInfo = null;
-    
-    @Subscribe
-    @AllowConcurrentEvents
-    public void onSyncUserEvent(SyncUserEvent event) {
-        if(jobInfo != null && !(jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED) || jobInfo.getJobStatus().equals(Helper.STATUS_ABORTED))){
+    @Override
+    public void run() {
+        if(usersSyncService.jobInfo != null && !(usersSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){
             try
             {
-                User user = populateUser(event.getId());
+                User user = populateUser(userId);
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){
-                    ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",jobInfo.getJobId());
-                    pushuser(esUser,event);
+                    ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",usersSyncService.jobInfo.getJobId());
+                    pushuser(esUser);
                 }
                 else {
                     for(int i = 0 ;i < accessCodes.size(); i++){
                         ElasticSearchUser esUser = null;
                         AccessCode accessCode  =  accessCodes.get(i);
                         if(i == 0){
-                            esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE",jobInfo.getJobId());
+                            esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE",usersSyncService.jobInfo.getJobId());
                             
                         } else {
-                            esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE",jobInfo.getJobId());
+                            esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE",usersSyncService.jobInfo.getJobId());
                         }
-                        pushuser(esUser,event);
+                        pushuser(esUser);
                     }
                 }
-                jobInfo.setSuccessRecords(jobInfo.getSuccessRecords() + 1);
-                jobInfo.setLastId(event.getId());
-                updateLastSyncedUserStatus();
-                LOGGER.debug("User with UserId= " + event.getId() + " synced successfully");
+                usersSyncService.jobInfo.setSuccessRecords(usersSyncService.jobInfo.getSuccessRecords() + 1);
+                usersSyncService.jobInfo.setLastId(userId);
+                usersSyncService.updateLastSyncedUserStatus();
+                LOGGER.debug("User with UserId= " + userId + " synced successfully");
             }
             catch(Exception e){
                 //e.printStackTrace();
-                jobInfo.setErrorRecords(jobInfo.getErrorRecords() + 1);
+                usersSyncService.jobInfo.setErrorRecords(usersSyncService.jobInfo.getErrorRecords() + 1);
                 try
                 {
-                    jobInfo.setLastId(event.getId());
-                    updateLastSyncedUserStatus();
+                    usersSyncService.jobInfo.setLastId(userId);
+                    usersSyncService.updateLastSyncedUserStatus();
                 }
                 catch (JsonProcessingException e1)
                 {
                     // TODO Auto-generated catch block
-                    LOGGER.error("Failure for json processing= " + event.getId(), e1);
+                    LOGGER.error("Failure for json processing= " + userId, e1);
                 }
-                LOGGER.error("Failure for UserId= " + event.getId(), e);
+                LOGGER.error("Failure for UserId= " + userId, e);
                 //TO-DO retry logic if neccessary
             }
         }
     }
-    private void pushuser(ElasticSearchUser esUser,SyncUserEvent event) throws JsonProcessingException{
+    
+    private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
         String id = String.valueOf(esUser.getId()) + esUser.getAccessCode();
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(event.getIndex(),event.getType(),id).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(UsersSyncService.USERS_INDEX, UsersSyncService.USERS_TYPE, id).setSource(json).execute().actionGet();
     }
-    private User populateUser(long userId)
+    
+    private User populateUser(String userId)
     {
        User user = jdbcTemplate.queryForObject(
             "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,countryCode,InstitutionID from users where id = ?", new Object[] { userId },
@@ -144,7 +131,7 @@ public class UsersSyncListener
         return user;
     }
     
-    protected List<AccessCode> populateAccessCodes(long userId)
+    private List<AccessCode> populateAccessCodes(long userId)
     {
         List<AccessCode> accessCode = jdbcTemplate.query(
             "select d.name as Discipline,bl.name as ProductName,SUBSTRING(ar.feature,11) as ProductCode,ba.AccessCode,ba.LastModified from accessrights as ar, bookaccesscodes as ba,booklist as bl, discipline as d where d.Abbr = bl.discipline and bl.Abbr=SUBSTRING(ar.feature,11) and ar.userId=ba.userId and ba.userId=? and ba.BookAbbr like CONCAT(SUBSTRING(ar.feature,11),'%') order by ba.LastModified", new Object[] {userId},
@@ -168,7 +155,7 @@ public class UsersSyncListener
         return accessCode;
     }
     
-    protected List<String> populateCourses(long userId)
+    private List<String> populateCourses(long userId)
     {
         List<String> courses = jdbcTemplate.query(
             "select name from sections, sectionmembers where sections.id=sectionmembers.sectionId and sectionmembers.userId = ?", new Object[] { userId },
@@ -182,7 +169,7 @@ public class UsersSyncListener
     }
 
 
-    protected Institution populateInstitution(String institutionId){
+    private Institution populateInstitution(String institutionId){
         Institution  institution = jdbcTemplate.queryForObject(
             "select institutions.id,institutions.name,institutions.country,institutions.other,districts.name as district from institutions left join districts on districts.id=institutions.DistrictID where institutions.id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
@@ -192,15 +179,5 @@ public class UsersSyncListener
                 }
             });
         return institution;
-
-    }
-    
-    public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
-        if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
-            jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jobInfo);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
     }
 }
