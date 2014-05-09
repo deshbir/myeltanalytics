@@ -1,0 +1,53 @@
+body {
+    background: url("../img/skelatal_weave.png") repeat scroll 0 0 #EFEFEF;
+    padding-top: 80px; 
+}
+
+.navbar{
+  background-color: #2A333B;  
+}
+
+.navbar-brand {
+ color: #ffffff !important;
+ font-size:1.5em;
+}
+
+.navbar li a {
+  color: #FFFFFF !important; 
+  font-weight:bold;
+  font-size:1em;
+}
+
+.navbar li.active a {
+  background-color: #000000 !important;
+}
+
+.fa-gear-animated, .fa-gear-animated:hover{
+    animation: 1.5s linear 0s normal none infinite spin;
+}
+
+.panel-primary .panel-heading, .btn-primary{
+    background-color: #2EACD5;
+}
+
+.syncinfoHeading {
+    margin-left:10px;
+    font-weight:bold;
+}
+
+.syncinfo {
+   font-weight:bold; 
+   font-size:1.2em
+}
+
+.badge-error {
+  background-color: #b94a48;
+}
+
+.badge-success {
+  background-color: #468847;
+}
+
+.badge-info {
+  background-color: #3a87ad;
+}
