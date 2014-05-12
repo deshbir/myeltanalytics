@@ -43,8 +43,15 @@ var UsersSyncHelper = new function() {
     
     this.startSync= function () {
         $.get("/myeltanalytics/users/startSync", function(data){
+            var responseJson = eval("(" + data + ")");
+            
             $("#jobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
             $("#jobStatus").html("InProgress");
+            
+            $("#totalRecords").html(responseJson.totalRecords);
+            $("#successRecords").html("0");
+            $("#errorRecords").html("0");
+            
             $("#usersProgressContainer").addClass("active"); 
             $("#usersSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
             $("#resumeButton").hide();
@@ -56,8 +63,10 @@ var UsersSyncHelper = new function() {
     
     this.resumeSync= function () {
         $.get("/myeltanalytics/users/resumeSync", function(data){
+            var responseJson = eval("(" + data + ")");
             $("#jobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
             $("#jobStatus").html("InProgress");
+            $("#totalRecords").html(responseJson.totalRecords);
             $("#usersProgressContainer").addClass("active"); 
             $("#usersSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
             $("#resumeButton").hide();

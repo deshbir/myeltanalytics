@@ -51,7 +51,9 @@ public class UsersSyncController {
     String startFreshSync() throws JsonProcessingException{
         try {
             usersSyncService.startFreshSync();
-            return "{\"status\":\"success\"}";
+            JSONObject jobInfoJson = new JSONObject(usersSyncService.jobInfo);
+            jobInfoJson.put("status", "success");
+            return jobInfoJson.toString();
         } catch (Exception e) {
             LOGGER.error("Error while Startng Users Sync Job: ", e);
             return "{\"status\":\"error\"}";
@@ -77,7 +79,9 @@ public class UsersSyncController {
     String resumeSync() throws JsonProcessingException{ 
         try {
             usersSyncService.resumeSync();
-            return "{\"status\":\"success\"}";
+            JSONObject jobInfoJson = new JSONObject(usersSyncService.jobInfo);
+            jobInfoJson.put("status", "success");
+            return jobInfoJson.toString();
         } catch (Exception e) {
             LOGGER.error("Error while resuming Users Sync Job: ", e);
             return "{\"status\":\"error\"}";
