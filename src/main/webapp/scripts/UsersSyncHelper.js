@@ -2,24 +2,19 @@ var UsersSyncHelper = new function() {
     
     var fetchSyncPoller = null ;
     
-    this.changeUrl = function (url) {
-        location = url;
-    };
-    
-    this.triggerFetchingSyncStatus = function (url) {
+    this.triggerFetchingSyncStatus = function () {
         fetchSyncPoller = setInterval(function(){
             $.get("/myeltanalytics/users/getSyncStatus", function(data){
               var responseJson = eval("(" + data + ")");
               $("#usersProgressContainer .progress-bar").css('width', responseJson.percent +'%');
               $("#usersProgressContainer .progress-bar").html(responseJson.percent + '%');
               if (responseJson.jobStatus == "Completed") {
-                  $("#jobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
+                  $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
               }
-              $("#jobStatus").html(responseJson.jobStatus);
-              $("#lastId").html(responseJson.lastId);
-              $("#successRecords").html(responseJson.successRecords);
-              $("#errorRecords").html(responseJson.errorRecords);
+              $("#usersJobStatus").html(responseJson.jobStatus);
+              $("#usersSuccessRecords").html(responseJson.successRecords);
+              $("#usersErrorRecords").html(responseJson.errorRecords);
             })
         }, 5000);
     };
@@ -29,15 +24,15 @@ var UsersSyncHelper = new function() {
     };
     
     this.stopSync= function () {
-        this.abortFetchingSyncStatus();
+        UsersSyncHelper.abortFetchingSyncStatus();
         $.get("/myeltanalytics/users/stopSync", function(data){
-           $("#jobStatus").removeClass("badge-info").addClass("badge-error");
-           $("#jobStatus").html("Paused");
+           $("#usersJobStatus").removeClass("badge-info").addClass("badge-error");
+           $("#usersJobStatus").html("Paused");
            $("#usersProgressContainer").removeClass("active");
            $("#usersSyncPanel .panel-heading i").removeClass("fa-gear-animated"); 
-           $("#stopButton").hide();
-           $("#resumeButton").show();
-           $("#startButton").show();
+           $("#usersStopButton").hide();
+           $("#usersResumeButton").show();
+           $("#usersStartButton").show();
         });
     };
     
@@ -45,18 +40,18 @@ var UsersSyncHelper = new function() {
         $.get("/myeltanalytics/users/startSync", function(data){
             var responseJson = eval("(" + data + ")");
             
-            $("#jobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-            $("#jobStatus").html("InProgress");
+            $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+            $("#usersJobStatus").html("InProgress");
             
-            $("#totalRecords").html(responseJson.totalRecords);
-            $("#successRecords").html("0");
-            $("#errorRecords").html("0");
+            $("#usersTotalRecords").html(responseJson.totalRecords);
+            $("#usersSuccessRecords").html("0");
+            $("#usersErrorRecords").html("0");
             
             $("#usersProgressContainer").addClass("active"); 
             $("#usersSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
-            $("#resumeButton").hide();
-            $("#startButton").hide();
-            $("#stopButton").show();
+            $("#usersResumeButton").hide();
+            $("#usersStartButton").hide();
+            $("#usersStopButton").show();
             UsersSyncHelper.triggerFetchingSyncStatus();
         });
     };
@@ -64,14 +59,14 @@ var UsersSyncHelper = new function() {
     this.resumeSync= function () {
         $.get("/myeltanalytics/users/resumeSync", function(data){
             var responseJson = eval("(" + data + ")");
-            $("#jobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-            $("#jobStatus").html("InProgress");
-            $("#totalRecords").html(responseJson.totalRecords);
+            $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+            $("#usersJobStatus").html("InProgress");
+            $("#usersTotalRecords").html(responseJson.totalRecords);
             $("#usersProgressContainer").addClass("active"); 
             $("#usersSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
-            $("#resumeButton").hide();
-            $("#startButton").hide();
-            $("#stopButton").show();
+            $("#usersResumeButton").hide();
+            $("#usersStartButton").hide();
+            $("#usersStopButton").show();
             UsersSyncHelper.triggerFetchingSyncStatus();
         });
     };

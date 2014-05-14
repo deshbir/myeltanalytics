@@ -20,13 +20,15 @@ public class MainController {
     @RequestMapping("/")
     public String getIndex(Model model) {
         
-        long processedRecords = usersSyncService.jobInfo.getSuccessRecords() + usersSyncService.jobInfo.getErrorRecords();
-        int percentageProcessed = (int)(((double)processedRecords / (double)usersSyncService.jobInfo.getTotalRecords()) * 100);
+        long usersProcessedRecords = usersSyncService.jobInfo.getSuccessRecords() + usersSyncService.jobInfo.getErrorRecords();
+        int usersPercentProcessed = (int)(((double)usersProcessedRecords / (double)usersSyncService.jobInfo.getTotalRecords()) * 100);
         
-        model.addAttribute("usersJobPercent", percentageProcessed);
+        model.addAttribute("usersJobPercent", usersPercentProcessed);
         model.addAttribute("usersJobInfo",usersSyncService.jobInfo);
         
-        model.addAttribute("submissionsJobPercent", 0);
+        long submissionsRecordsProcessed = submissionsSyncService.jobInfo.getSuccessRecords() + submissionsSyncService.jobInfo.getErrorRecords();
+        int submissionsPercentProcessed = (int)(((double)submissionsRecordsProcessed / (double)submissionsSyncService.jobInfo.getTotalRecords()) * 100);        
+        model.addAttribute("submissionsJobPercent", submissionsPercentProcessed);
         model.addAttribute("submissionsJobInfo", submissionsSyncService.jobInfo);
         
         return "welcome";

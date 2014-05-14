@@ -25,7 +25,8 @@ public class Helper
     //myelt_analytics index constants    
     public static final String MYELT_ANALYTICS_INDEX = "myelt_analytics";    
     public static final String LAST_JOB_ID = "lastJobId";
-    public static final String USERS_JOB_STATUS = "userJobStatus";
+    public static final String USERS_JOB_STATUS = "usersJobStatus";
+    public static final String SUBMISSIONS_JOB_STATUS = "submissionsJobStatus";
     
     //Job Status constants
     public static final String TOTAL_RECORDS = "totalRecords";    
@@ -38,7 +39,10 @@ public class Helper
     public static final String STATUS_COMPLETED = "Completed";
         
     public static final String ID = "id";    
+    public static final String BLANK = "";
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String IGNORE_INSTITUTIONS = "('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI')";
+    public static final long SQL_RECORDS_LIMIT = 100000;
     
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;

@@ -38,7 +38,7 @@ public class UsersSyncService
     @Autowired
     private JdbcTemplate jdbcTemplate;
     
-    @Value("${usersync.threadpoolsize}")
+    @Value("${users.threadpoolsize}")
     private int userSyncThreadPoolSize;
     
     public static final String USERS_INDEX = "users";
@@ -60,6 +60,8 @@ public class UsersSyncService
     private ExecutorService userSyncExecutor = null;
     
     public JobInfo jobInfo = new JobInfo();
+    
+    private long recordsProcessed;
     
     public void startFreshSync() throws JsonProcessingException {
         String newJobId = UUID.randomUUID().toString();        
@@ -95,7 +97,7 @@ public class UsersSyncService
         
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
-        List<Map<String,Object>> usersList = jdbcTemplate.queryForList("select id from users where type=0 and InstitutionID NOT IN ('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI') and id > ? order by id", new Object[] { jobInfo.getLastId()});
+        List<Map<String,Object>> usersList = jdbcTemplate.queryForList("select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + " and id > ? order by id", new Object[] { jobInfo.getLastId()});
         
         Iterator<Map<String,Object>> usersListIter = usersList.iterator();
         
@@ -114,6 +116,12 @@ public class UsersSyncService
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
         elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
+        
+        recordsProcessed++;
+        if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
+            recordsProcessed = 0;
+            startSyncJob();
+        }
     }
     
     public void createUsersIndex() throws IOException {
@@ -131,7 +139,7 @@ public class UsersSyncService
     }
     
     public long getTotalUsersCount() throws JsonProcessingException {
-        String sql = "select count(*) from users where type=0 and InstitutionID NOT IN ('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI')";
+        String sql = "select count(*) from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
         return usersCount;
     }
