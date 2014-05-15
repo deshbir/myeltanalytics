@@ -31,7 +31,7 @@ require.config({
 
     jquery:                   '../vendor/jquery/jquery-1.8.0',
     'jquery-ui':              '../vendor/jquery/jquery-ui-1.10.3',
-
+	'jquery-ui-dialog':		  '../vendor/jquery/jquery-ui-dialog',
     'extend-jquery':          'components/extend-jquery',
 
     'jquery.flot':            '../vendor/jquery/jquery.flot',
@@ -42,6 +42,7 @@ require.config({
     'jquery.flot.stackpercent':'../vendor/jquery/jquery.flot.stackpercent',
     'jquery.flot.time':       '../vendor/jquery/jquery.flot.time',
     'jquery.flot.byte':       '../vendor/jquery/jquery.flot.byte',
+	'jquery.ajax.download':       '../vendor/jquery/jquery.ajax.download',
 
 
     modernizr:                '../vendor/modernizr-2.6.1',
@@ -77,7 +78,7 @@ require.config({
     'jquery.flot.stack':    ['jquery', 'jquery.flot'],
     'jquery.flot.stackpercent':['jquery', 'jquery.flot'],
     'jquery.flot.time':     ['jquery', 'jquery.flot'],
-
+	'jquery.ajax.download':	['jquery','jquery-ui','jquery-ui-dialog'],
     'angular-sanitize':     ['angular'],
     'angular-cookies':      ['angular'],
     'angular-dragdrop':     ['jquery','jquery-ui','angular'],

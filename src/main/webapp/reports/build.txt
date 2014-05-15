@@ -131,6 +131,8 @@ app/panels/stats/module.js
 
 app/panels/table/module.js
 ----------------
+vendor/jquery/jquery-ui-dialog.js
+vendor/jquery/jquery.ajax.download.js
 app/panels/table/module.js
 
 app/panels/terms/module.js

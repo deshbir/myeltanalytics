@@ -103,14 +103,18 @@
           <i ng-click="panel.offset = 0" ng-show="panel.offset > 0" class='icon-circle-arrow-left pointer'></i>
           <i ng-click="panel.offset = (panel.offset - panel.size)" ng-show="panel.offset > 0" class='icon-arrow-left pointer'></i>
         </div>
-        <div class="span8" style="text-align:center">
+        <div class="span7" style="text-align:center">
           <strong>{{panel.offset}}</strong> to <strong>{{panel.offset + data.slice(panel.offset,panel.offset+panel.size).length}}</strong>
           <small> of {{data.length}} available for paging</small>
         </div>
         <div class="span1" style="text-align:left">
           <i ng-click="panel.offset = (panel.offset + panel.size)" ng-show="data.length > panel.offset+panel.size" class='icon-arrow-right pointer'></i>
         </div>
+		<div class="span1" style="text-align:left">
+          <i ng-click="toggle_data_details(panel,data)"  class='icon-info-sign pointer'></i>
+        </div>
       </div>
+	  <pre bindonce="data" style="white-space:pre-wrap;word-wrap:break-word"  bo-html="data|tableJson:1" ng-show="panel.showData"></pre>
       <table class="table-hover table table-condensed" ng-style="panel.style">
         <thead ng-show="panel.header">
           <th ng-show="panel.fields.length<1">_source (select columns from the list to the left)</th>
