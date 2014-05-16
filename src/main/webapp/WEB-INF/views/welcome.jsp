@@ -23,8 +23,8 @@
            <!-- Collect the nav links, forms, and other content for toggling -->
            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
              <ul class="nav navbar-nav">
-               <li class="active"><a href="#"><i class="fa fa-home fa-lg"></i> Administration</a></li>
-               <li><a href="#"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>        
+               <li class="active"><a href="admin"><i class="fa fa-home fa-lg"></i> Administration</a></li>
+               <li><a href="reports"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>        
              </ul>
            </div>
          </div>

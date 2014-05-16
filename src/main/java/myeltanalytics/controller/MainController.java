@@ -17,8 +17,14 @@ public class MainController {
     @Autowired
     private SubmissionsSyncService submissionsSyncService;
     
+    
     @RequestMapping("/")
-    public String getIndex(Model model) {
+    public String index() {        
+        return "redirect:/admin";
+    }
+    
+    @RequestMapping("/admin")
+    public String admin(Model model) {
         
         long usersProcessedRecords = usersSyncService.jobInfo.getSuccessRecords() + usersSyncService.jobInfo.getErrorRecords();
         int usersPercentProcessed = (int)(((double)usersProcessedRecords / (double)usersSyncService.jobInfo.getTotalRecords()) * 100);
@@ -32,6 +38,11 @@ public class MainController {
         model.addAttribute("submissionsJobInfo", submissionsSyncService.jobInfo);
         
         return "welcome";
+    }
+    
+    @RequestMapping("/reports")
+    public String reports(Model model) {        
+        return "redirect:/reports/index.html";
     }
     
 }
