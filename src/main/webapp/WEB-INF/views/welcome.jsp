@@ -3,10 +3,10 @@
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="<c:url value="styles/libs/bootstrap.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="styles/libs/font-awesome.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="styles/main.css"/>" rel="stylesheet">
-        <link href="<c:url value="styles/libs/odometer-theme-default.css"/>" rel="stylesheet">
+        <link href="<c:url value="/styles/libs/bootstrap.min.css"/>" rel="stylesheet">
+        <link href="<c:url value="/styles/libs/font-awesome.min.css"/>" rel="stylesheet">
+        <link href="<c:url value="/styles/main.css"/>" rel="stylesheet">
+        <link href="<c:url value="/styles/libs/odometer-theme-default.css"/>" rel="stylesheet">
         <script src="<c:url value="/scripts/UsersSyncHelper.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/SubmissionsSyncHelper.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/libs/jquery-1.11.1.min.js"/>" type="text/javascript"></script>
