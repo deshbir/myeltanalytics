@@ -34,9 +34,9 @@ public class UsersSyncController {
     @ResponseBody
     String getSyncStatus() { 
         try {
-            JSONObject jobInfoJson = new JSONObject(usersSyncService.jobInfo);
-            long processedRecords = usersSyncService.jobInfo.getSuccessRecords() + usersSyncService.jobInfo.getErrorRecords();
-            int percentageProcessed = (int)(((double)processedRecords / (double)usersSyncService.jobInfo.getTotalRecords()) * 100);
+            JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
+            long processedRecords = UsersSyncService.jobInfo.getSuccessRecords() + UsersSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)UsersSyncService.jobInfo.getTotalRecords()) * 100);
             jobInfoJson.put("percent", percentageProcessed);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
@@ -51,7 +51,7 @@ public class UsersSyncController {
     String startFreshSync() throws JsonProcessingException{
         try {
             usersSyncService.startFreshSync();
-            JSONObject jobInfoJson = new JSONObject(usersSyncService.jobInfo);
+            JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class UsersSyncController {
     String resumeSync() throws JsonProcessingException{ 
         try {
             usersSyncService.resumeSync();
-            JSONObject jobInfoJson = new JSONObject(usersSyncService.jobInfo);
+            JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (Exception e) {

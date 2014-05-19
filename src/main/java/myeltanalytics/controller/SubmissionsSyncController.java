@@ -34,9 +34,9 @@ public class SubmissionsSyncController {
     @ResponseBody
     String getSyncStatus() { 
         try {
-            JSONObject jobInfoJson = new JSONObject(submissionsSyncService.jobInfo);
-            long processedRecords = submissionsSyncService.jobInfo.getSuccessRecords() + submissionsSyncService.jobInfo.getErrorRecords();
-            int percentageProcessed = (int)(((double)processedRecords / (double)submissionsSyncService.jobInfo.getTotalRecords()) * 100);
+            JSONObject jobInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
+            long processedRecords = SubmissionsSyncService.jobInfo.getSuccessRecords() + SubmissionsSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)SubmissionsSyncService.jobInfo.getTotalRecords()) * 100);
             jobInfoJson.put("percent", percentageProcessed);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
@@ -51,7 +51,7 @@ public class SubmissionsSyncController {
     String startFreshSync() throws JsonProcessingException{
         try {
             submissionsSyncService.startFreshSync();
-            JSONObject jobInfoJson = new JSONObject(submissionsSyncService.jobInfo);
+            JSONObject jobInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class SubmissionsSyncController {
     String resumeSync() throws JsonProcessingException{ 
         try {
             submissionsSyncService.resumeSync();
-            JSONObject jobInfoJson = new JSONObject(submissionsSyncService.jobInfo);
+            JSONObject jobInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (Exception e) {

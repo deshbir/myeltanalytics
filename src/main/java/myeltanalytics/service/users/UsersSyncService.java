@@ -59,12 +59,13 @@ public class UsersSyncService
     
     private ExecutorService userSyncExecutor = null;
     
-    public JobInfo jobInfo = new JobInfo();
-    
-    private long recordsProcessed;
+    public static JobInfo jobInfo = new JobInfo();
     
     public void startFreshSync() throws JsonProcessingException {
-        String newJobId = UUID.randomUUID().toString();        
+        
+        String newJobId = UUID.randomUUID().toString();  
+        LOGGER.info("Starting a fresh UsersSyncJob with syncJobId=" + newJobId);
+        
         updateLastJobInfoInES(newJobId);
         
         jobInfo.setJobId(newJobId);
@@ -79,6 +80,7 @@ public class UsersSyncService
     }
     
     public void stopSync() throws InterruptedException, JsonProcessingException {
+        LOGGER.info("Aborting UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_PAUSED);
         updateLastSyncedUserStatus();
         
@@ -87,6 +89,7 @@ public class UsersSyncService
     }
     
     public void resumeSync() throws JsonProcessingException {
+        LOGGER.info("Resuming old UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
         updateLastSyncedUserStatus();
        
@@ -97,7 +100,7 @@ public class UsersSyncService
         
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
-        List<Map<String,Object>> usersList = jdbcTemplate.queryForList("select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + " and id > ? order by id", new Object[] { jobInfo.getLastId()});
+        List<Map<String,Object>> usersList = jdbcTemplate.queryForList("select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + " LIMIT 10000");
         
         Iterator<Map<String,Object>> usersListIter = usersList.iterator();
         
@@ -116,12 +119,6 @@ public class UsersSyncService
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
         elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
-        
-        recordsProcessed++;
-        if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
-            recordsProcessed = 0;
-            startSyncJob();
-        }
     }
     
     public void createUsersIndex() throws IOException {
@@ -141,7 +138,7 @@ public class UsersSyncService
     public long getTotalUsersCount() throws JsonProcessingException {
         String sql = "select count(*) from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
-        return usersCount;
+        return 10000;
     }
     
     public void updateLastJobInfoInES(String jobId) throws JsonProcessingException {       

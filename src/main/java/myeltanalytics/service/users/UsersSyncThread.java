@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import myeltanalytics.model.AccessCode;
 import myeltanalytics.model.Country;
@@ -15,6 +16,7 @@ import myeltanalytics.service.ApplicationContextProvider;
 import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,39 +43,62 @@ public class UsersSyncThread implements Runnable
     
     @Override
     public void run() {
-        if(usersSyncService.jobInfo != null && !(usersSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){
+        if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){            
             try
             {
+                boolean isRecordSkipped = false;
                 User user = populateUser(userId);
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){
-                    ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",usersSyncService.jobInfo.getJobId());
-                    pushuser(esUser);
-                }
-                else {
-                    for(int i = 0 ;i < accessCodes.size(); i++){
-                        ElasticSearchUser esUser = null;
-                        AccessCode accessCode  =  accessCodes.get(i);
-                        if(i == 0){
-                            esUser  = ElasticSearchUser.transformUser(user,accessCode,"USER_WITH_ACCESSCODE",usersSyncService.jobInfo.getJobId());
-                            
-                        } else {
-                            esUser = ElasticSearchUser.transformUser(user,accessCode,"ADDITIONAL_ACCESSCODE",usersSyncService.jobInfo.getJobId());
-                        }
+                    GetResponse response = elasticSearchClient.prepareGet(UsersSyncService.USERS_INDEX, UsersSyncService.USERS_TYPE, userId).execute().actionGet();
+                    Map<String,Object> sourceMap = response.getSourceAsMap();
+                    if (sourceMap != null && ((String)sourceMap.get(Helper.SYNC_JOB_ID)).equals(UsersSyncService.jobInfo.getJobId())) {
+                        isRecordSkipped = true;
+                    } else {
+                        ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",UsersSyncService.jobInfo.getJobId());
                         pushuser(esUser);
                     }
                 }
-                usersSyncService.jobInfo.setSuccessRecords(usersSyncService.jobInfo.getSuccessRecords() + 1);
-                usersSyncService.jobInfo.setLastId(userId);
-                usersSyncService.updateLastSyncedUserStatus();
-                LOGGER.debug("User with UserId= " + userId + " synced successfully");
+                else {
+                    String id = userId + accessCodes.get(0).getCode();
+                    GetResponse response = elasticSearchClient.prepareGet(UsersSyncService.USERS_INDEX, UsersSyncService.USERS_TYPE, id).execute().actionGet();
+                    Map<String,Object> sourceMap = response.getSourceAsMap();
+                    if (sourceMap != null && ((String)sourceMap.get(Helper.SYNC_JOB_ID)).equals(UsersSyncService.jobInfo.getJobId())) {
+                        isRecordSkipped = true;
+                    } else {
+                        for(int i = 0 ;i < accessCodes.size(); i++){
+                            ElasticSearchUser esUser = null;
+                            AccessCode accessCode  =  accessCodes.get(i);
+                            String userType = null; 
+                            
+                            if(i == 0){
+                                userType = "USER_WITH_ACCESSCODE";
+                            } else {
+                                userType = "ADDITIONAL_ACCESSCODE";
+                            }
+                            
+                            esUser = ElasticSearchUser.transformUser(user, accessCode, userType, UsersSyncService.jobInfo.getJobId());
+                            pushuser(esUser);
+                        }
+                    }
+                }
+                
+                if (isRecordSkipped) {
+                    LOGGER.debug("User with UserId= " + userId + " skipped");
+                } else {
+                    UsersSyncService.jobInfo.incrementSuccessRecords();
+                    UsersSyncService.jobInfo.setLastId(userId);
+                    usersSyncService.updateLastSyncedUserStatus();
+                    LOGGER.debug("User with UserId= " + userId + " synced successfully");
+                }
+               
             }
             catch(Exception e){
                 //e.printStackTrace();
-                usersSyncService.jobInfo.setErrorRecords(usersSyncService.jobInfo.getErrorRecords() + 1);
+                UsersSyncService.jobInfo.incrementErrorRecords();
                 try
                 {
-                    usersSyncService.jobInfo.setLastId(userId);
+                    UsersSyncService.jobInfo.setLastId(userId);
                     usersSyncService.updateLastSyncedUserStatus();
                 }
                 catch (JsonProcessingException e1)
@@ -88,7 +113,10 @@ public class UsersSyncThread implements Runnable
     }
     
     private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
-        String id = String.valueOf(esUser.getId()) + esUser.getAccessCode();
+        String id = String.valueOf(esUser.getId());
+        if (esUser.getAccessCode() != null ) {
+            id = id + esUser.getAccessCode().getCode();
+        }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
         elasticSearchClient.prepareIndex(UsersSyncService.USERS_INDEX, UsersSyncService.USERS_TYPE, id).setSource(json).execute().actionGet();

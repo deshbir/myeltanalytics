@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ElasticSearchUser extends AbstractUser {
-        private String jobId;
+        private String syncJobId;
         private String recordType; 
         private String studentType;
         private AccessCode accessCode;
@@ -18,7 +18,7 @@ public class ElasticSearchUser extends AbstractUser {
         public static ElasticSearchUser transformUser(User user, AccessCode ac,String recordType, String jobId)
         {
             ElasticSearchUser esUser = new ElasticSearchUser();
-            esUser.setJobId(jobId);
+            esUser.setSyncJobId(jobId);
             esUser.setAccessCode(ac);
             esUser.setId(user.getId());
             esUser.setFirstName(user.getFirstName());
@@ -207,17 +207,17 @@ public class ElasticSearchUser extends AbstractUser {
 
 
 
-        public String getJobId()
+        public String getSyncJobId()
         {
-            return jobId;
+            return syncJobId;
         }
 
 
 
 
-        public void setJobId(String jobId)
+        public void setSyncJobId(String syncJobId)
         {
-            this.jobId = jobId;
+            this.syncJobId = syncJobId;
         }
 
         

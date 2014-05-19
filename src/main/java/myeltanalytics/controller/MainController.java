@@ -44,16 +44,16 @@ public class MainController {
     @RequestMapping("/admin")
     public String admin(Model model) {
         
-        long usersProcessedRecords = usersSyncService.jobInfo.getSuccessRecords() + usersSyncService.jobInfo.getErrorRecords();
-        int usersPercentProcessed = (int)(((double)usersProcessedRecords / (double)usersSyncService.jobInfo.getTotalRecords()) * 100);
+        long usersProcessedRecords = UsersSyncService.jobInfo.getSuccessRecords() + UsersSyncService.jobInfo.getErrorRecords();
+        int usersPercentProcessed = (int)(((double)usersProcessedRecords / (double)UsersSyncService.jobInfo.getTotalRecords()) * 100);
         
         model.addAttribute("usersJobPercent", usersPercentProcessed);
-        model.addAttribute("usersJobInfo",usersSyncService.jobInfo);
+        model.addAttribute("usersJobInfo",UsersSyncService.jobInfo);
         
-        long submissionsRecordsProcessed = submissionsSyncService.jobInfo.getSuccessRecords() + submissionsSyncService.jobInfo.getErrorRecords();
-        int submissionsPercentProcessed = (int)(((double)submissionsRecordsProcessed / (double)submissionsSyncService.jobInfo.getTotalRecords()) * 100);        
+        long submissionsRecordsProcessed = SubmissionsSyncService.jobInfo.getSuccessRecords() + SubmissionsSyncService.jobInfo.getErrorRecords();
+        int submissionsPercentProcessed = (int)(((double)submissionsRecordsProcessed / (double)SubmissionsSyncService.jobInfo.getTotalRecords()) * 100);        
         model.addAttribute("submissionsJobPercent", submissionsPercentProcessed);
-        model.addAttribute("submissionsJobInfo", submissionsSyncService.jobInfo);
+        model.addAttribute("submissionsJobInfo", SubmissionsSyncService.jobInfo);
         
         return "welcome";
     }

@@ -34,6 +34,8 @@ public class Helper
     public static final String ERROR_RECORDS = "errorRecords";    
     public static final String LAST_ID = "lastId";    
     public static final String JOB_STATUS = "jobStatus";
+    public static final String SYNC_JOB_ID = "syncJobId";
+    
     public static final String STATUS_INPROGRESS = "InProgress";
     public static final String STATUS_PAUSED = "Paused";
     public static final String STATUS_COMPLETED = "Completed";
