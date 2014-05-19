@@ -34,7 +34,7 @@ dependencies {
     compile group: 'log4j', name: 'log4j', version: '1.2.16'
     compile group: 'org.json', name: 'json', version: '20090211'
     compile 'dom4j:dom4j:1.5.1'
-    
+    compile('net.sf.opencsv:opencsv:2.0')
     testCompile("junit:junit")
 
     //Elasticsearch
