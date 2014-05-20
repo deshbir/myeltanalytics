@@ -4,6 +4,7 @@ package myeltanalytics.model;
 public class ActivitySubmission
 {
     private long id;
+    private String syncJobId;
     private String dateSubmitted;
     private double studentScore;
     private double maxScore;
@@ -351,5 +352,13 @@ public class ActivitySubmission
     
     public Book getBook(){
         return assignment.getBook();
+    }
+    public String getSyncJobId()
+    {
+        return syncJobId;
+    }
+    public void setSyncJobId(String syncJobId)
+    {
+        this.syncJobId = syncJobId;
     }
 }

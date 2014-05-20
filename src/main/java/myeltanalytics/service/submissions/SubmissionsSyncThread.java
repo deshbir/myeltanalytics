@@ -92,7 +92,7 @@ public class SubmissionsSyncThread implements Runnable
                     if (rs.getTimestamp("CompletedAt") != null) {
                         activitySubmission.setDateSubmitted(dateFormat.format(rs.getTimestamp("CompletedAt").getTime())); 
                     } 
-                    
+                    activitySubmission.setSyncJobId(SubmissionsSyncService.jobInfo.getJobId());
                     activitySubmission.setStudentScore(rs.getDouble("Score"));
                     activitySubmission.setMaxScore(rs.getDouble("PossibleScore"));
                     activitySubmission.setAssignment(populateAssignment(rs.getLong("assignmentId")));
