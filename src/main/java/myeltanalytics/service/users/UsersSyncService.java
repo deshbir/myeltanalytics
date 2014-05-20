@@ -100,7 +100,7 @@ public class UsersSyncService
         
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
-        List<Map<String,Object>> usersList = jdbcTemplate.queryForList("select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + " LIMIT 10000");
+        List<Map<String,Object>> usersList = jdbcTemplate.queryForList("select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS);
         
         Iterator<Map<String,Object>> usersListIter = usersList.iterator();
         
@@ -138,7 +138,7 @@ public class UsersSyncService
     public long getTotalUsersCount() throws JsonProcessingException {
         String sql = "select count(*) from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
-        return 10000;
+        return usersCount;
     }
     
     public void updateLastJobInfoInES(String jobId) throws JsonProcessingException {       
