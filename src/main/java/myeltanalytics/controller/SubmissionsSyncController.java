@@ -1,9 +1,5 @@
 package myeltanalytics.controller;
 
-import java.io.IOException;
-
-import javax.annotation.PostConstruct;
-
 import myeltanalytics.service.submissions.SubmissionsSyncService;
 
 import org.apache.log4j.Logger;
@@ -23,13 +19,7 @@ public class SubmissionsSyncController {
     private SubmissionsSyncService submissionsSyncService;
     
     private final Logger LOGGER = Logger.getLogger(SubmissionsSyncController.class);
-    
-    @PostConstruct
-    void setup() throws IOException{
-        submissionsSyncService.refreshJobStatusFromES();
-        submissionsSyncService.createSubmissionsIndex();
-    }   
-       
+         
     @RequestMapping(value= "/getSyncStatus")
     @ResponseBody
     String getSyncStatus() { 

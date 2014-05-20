@@ -1,9 +1,5 @@
 package myeltanalytics.controller;
 
-import java.io.IOException;
-
-import javax.annotation.PostConstruct;
-
 import myeltanalytics.service.users.UsersSyncService;
 
 import org.apache.log4j.Logger;
@@ -24,12 +20,6 @@ public class UsersSyncController {
     
     private final Logger LOGGER = Logger.getLogger(UsersSyncController.class);
     
-    @PostConstruct
-    void setup() throws IOException{
-        usersSyncService.refreshJobStatusFromES();
-        usersSyncService.createUsersIndex();
-    }   
-       
     @RequestMapping(value= "/getSyncStatus")
     @ResponseBody
     String getSyncStatus() { 
