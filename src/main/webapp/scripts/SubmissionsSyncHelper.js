@@ -10,7 +10,12 @@ var SubmissionsSyncHelper = new function() {
               $("#submissionsProgressContainer .progress-bar").html(responseJson.percent + '%');
               if (responseJson.jobStatus == "Completed") {
                   $("#submissionsJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
-                  $("#submissionsProgressContainer").removeClass().addClass("progress progress-striped");  
+                  $("#submissionsProgressContainer").removeClass().addClass("progress progress-striped"); 
+                  $("#submissionsSyncPanel .panel-heading i").removeClass("fa-gear-animated"); 
+                  $("#submissionsStopButton").hide();
+                  $("#submissionsResumeButton").hide();
+                  $("#submissionsStartButton").show();
+                  SubmissionsSyncHelper.abortFetchingSyncStatus();
               }
               $("#submissionsJobStatus").html(responseJson.jobStatus);
               $("#submissionsSuccessRecords").html(responseJson.successRecords);
@@ -37,16 +42,17 @@ var SubmissionsSyncHelper = new function() {
     };
     
     this.startSync= function () {
+        
+        $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+        $("#submissionsJobStatus").html("InProgress");
+        $("#submissionsProgressContainer .progress-bar").css('width', '0%');
+        $("#submissionsProgressContainer .progress-bar").html('0%');
+        $("#submissionsSuccessRecords").html("0");
+        $("#submissionsErrorRecords").html("0");
+        
         $.get("/myeltanalytics/submissions/startSync", function(data){
             var responseJson = eval("(" + data + ")");
-            
-            $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-            $("#submissionsJobStatus").html("InProgress");
-            
             $("#submissionsTotalRecords").html(responseJson.totalRecords);
-            $("#submissionsSuccessRecords").html("0");
-            $("#submissionsErrorRecords").html("0");
-            
             $("#submissionsProgressContainer").addClass("active"); 
             $("#submissionsSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
             $("#submissionsResumeButton").hide();

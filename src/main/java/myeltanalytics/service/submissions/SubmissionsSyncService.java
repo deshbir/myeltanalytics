@@ -81,6 +81,7 @@ public class SubmissionsSyncService
     public void resumeSync() throws JsonProcessingException {
         LOGGER.info("Resuming old SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
+        jobInfo.setTotalRecords(getTotalSubmissionsCount());
         updateLastSyncedSubmissionStatus();
        
         startSyncJob();

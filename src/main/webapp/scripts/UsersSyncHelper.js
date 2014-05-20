@@ -11,6 +11,11 @@ var UsersSyncHelper = new function() {
               if (responseJson.jobStatus == "Completed") {
                   $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
+                  $("#usersSyncPanel .panel-heading i").removeClass("fa-gear-animated");
+                  $("#usersStopButton").hide();
+                  $("#usersResumeButton").hide();
+                  $("#usersStartButton").show();
+                  UsersSyncHelper.abortFetchingSyncStatus();
               }
               $("#usersJobStatus").html(responseJson.jobStatus);
               $("#usersSuccessRecords").html(responseJson.successRecords);
@@ -37,16 +42,16 @@ var UsersSyncHelper = new function() {
     };
     
     this.startSync= function () {
+        $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+        $("#usersJobStatus").html("InProgress");
+        $("#usersProgressContainer .progress-bar").css('width', '0%');
+        $("#usersProgressContainer .progress-bar").html('0%');
+        $("#usersSuccessRecords").html("0");
+        $("#usersErrorRecords").html("0");
+        
         $.get("/myeltanalytics/users/startSync", function(data){
             var responseJson = eval("(" + data + ")");
-            
-            $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-            $("#usersJobStatus").html("InProgress");
-            
             $("#usersTotalRecords").html(responseJson.totalRecords);
-            $("#usersSuccessRecords").html("0");
-            $("#usersErrorRecords").html("0");
-            
             $("#usersProgressContainer").addClass("active"); 
             $("#usersSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
             $("#usersResumeButton").hide();

@@ -92,6 +92,7 @@ public class UsersSyncService
     public void resumeSync() throws JsonProcessingException {
         LOGGER.info("Resuming old UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
+        jobInfo.setTotalRecords(getTotalUsersCount());
         updateLastSyncedUserStatus();
        
         startSyncJob();
