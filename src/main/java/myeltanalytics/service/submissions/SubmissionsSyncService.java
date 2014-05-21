@@ -115,6 +115,7 @@ public class SubmissionsSyncService
     private long getTotalSubmissionsCount() throws JsonProcessingException {
         String sql = "select count(*) from assignmentresults";
         long submissionsCount = jdbcTemplate.queryForObject(sql, Long.class);
+        LOGGER.info("Total submissions to sync= " + submissionsCount + " for syncJobId= " + SubmissionsSyncService.jobInfo.getJobId());
         return submissionsCount;
     }
     

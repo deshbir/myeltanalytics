@@ -158,6 +158,7 @@ public class UsersSyncService
     public long getTotalUsersCount() throws JsonProcessingException {
         String sql = "select count(*) from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
+        LOGGER.info("Total users to sync= " + usersCount + " for syncJobId= " + UsersSyncService.jobInfo.getJobId());
         return usersCount;
     }
     

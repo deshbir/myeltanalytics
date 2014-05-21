@@ -40,11 +40,11 @@ public class Application {
         UsersSyncService usersSyncService = (UsersSyncService) ctx.getBean("usersSyncService");
         SubmissionsSyncService submissionsSyncService = (SubmissionsSyncService) ctx.getBean("submissionsSyncService");
         
-        usersSyncService.refreshJobStatusFromES();
         usersSyncService.createUsersIndex();
-        
-        submissionsSyncService.refreshJobStatusFromES();
         submissionsSyncService.createSubmissionsIndex();
+        
+        usersSyncService.refreshJobStatusFromES();        
+        submissionsSyncService.refreshJobStatusFromES();       
         
 		System.out.println("************************************");
 		System.out.println("MyELT Analytics Application Started");
