@@ -1,11 +1,9 @@
 package myeltanalytics.service;
 
-import java.io.File;
-
 import myeltanalytics.model.Country;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.elasticsearch.action.ActionFuture;
@@ -14,6 +12,8 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRespon
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
 import org.elasticsearch.client.Client;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class Helper
 {
@@ -49,17 +49,20 @@ public class Helper
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;
     
+    private static final Logger LOGGER = Logger.getLogger(Helper.class);
+    
     static {
         SAXReader reader = new SAXReader();
         try
         {
-            countryDocument = reader.read(new File(COUNTRY_XML_FILE_NAME));
-            institutionDocument = reader.read(new File(INSTITUTION_XML_FILE_NAME));
+            Resource countryResource = new ClassPathResource(COUNTRY_XML_FILE_NAME);
+            Resource institutionResource = new ClassPathResource(INSTITUTION_XML_FILE_NAME);
+            countryDocument = reader.read(countryResource.getInputStream());
+            institutionDocument = reader.read(institutionResource.getInputStream());
         }
-        catch (DocumentException e)
+        catch (Exception e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error("Error reading Country/Institution XML file", e);
         }
         
     }
