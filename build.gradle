@@ -45,14 +45,14 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
 
-Properties props = new Properties()
-props.load(new FileInputStream("src/main/resources/application.properties"))
-
-war {
-    baseName = 'myeltanalytics'  
-}
-
-task deploy (dependsOn: war){
+task deploy (dependsOn: build){
+    
+    Properties props = new Properties()
+    props.load(new FileInputStream("src/main/resources/application.properties"))
+    
+    war {
+        baseName = 'myeltanalytics'  
+    }
     
     delete props["tomcat.path"] + '/webapps/myeltanalytics.war', props["tomcat.path"]+ '/webapps/myeltanalytics'
         
