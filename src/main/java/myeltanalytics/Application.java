@@ -2,9 +2,6 @@ package myeltanalytics;
 
 import java.io.IOException;
 
-import myeltanalytics.service.submissions.SubmissionsSyncService;
-import myeltanalytics.service.users.UsersSyncService;
-
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -36,16 +33,6 @@ public class Application {
     public static void main(String[] args) throws IOException {  
         ApplicationContext ctx = SpringApplication.run(Application.class, args);        
         ctx.getBeanDefinitionNames();
-        
-        UsersSyncService usersSyncService = (UsersSyncService) ctx.getBean("usersSyncService");
-        SubmissionsSyncService submissionsSyncService = (SubmissionsSyncService) ctx.getBean("submissionsSyncService");
-        
-        usersSyncService.createUsersIndex();
-        submissionsSyncService.createSubmissionsIndex();
-        
-        usersSyncService.refreshJobStatusFromES();        
-        submissionsSyncService.refreshJobStatusFromES();       
-        
 		System.out.println("************************************");
 		System.out.println("MyELT Analytics Application Started");
 		System.out.println("************************************");
