@@ -41,24 +41,25 @@ dependencies {
     compile group: 'org.elasticsearch', name: 'elasticsearch', version: '1.1.1'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
+war {
+    baseName = 'myeltanalytics'  
 }
 
-task deploy (dependsOn: build){
-    
+task deploy << {
     Properties props = new Properties()
     props.load(new FileInputStream("src/main/resources/application.properties"))
-    
-    war {
-        baseName = 'myeltanalytics'  
-    }
-    
-    delete props["tomcat.path"] + '/webapps/myeltanalytics.war', props["tomcat.path"]+ '/webapps/myeltanalytics'
         
+    println "Deleting old WAR files..."
+    delete props["tomcat.path"] + '/webapps/myeltanalytics.war', props["tomcat.path"]+ '/webapps/myeltanalytics'
+    println "...Successfully deleted old WAR files"
+    
+    println "Copying WAR file to '" + props["tomcat.path"] + "/webapps' ..."  
     copy {
         from "build/libs"
         into props["tomcat.path"] + "/webapps"
         include "myeltanalytics.war"
     }
+    println "...Successfully copied WAR file"
 }
+
+deploy.dependsOn build
