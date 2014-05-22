@@ -1,5 +1,5 @@
 {
-  "title": "Users",
+  "title": "Access Codes",
   "services": {
     "query": {
       "list": {
@@ -111,6 +111,84 @@
             "query_as_alias": true
           },
           "title": "Access Codes activated VS Time"
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "Row1.1",
+      "height": "250px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
+          "span": 6,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "studentType",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              2
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Accesscodes by learning model"
+        },
+        {
+          "error": false,
+          "span": 6,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "institution.name",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "bar",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              2
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Accesscodes By Institution"
         }
       ],
       "notice": false
@@ -251,7 +329,13 @@
             "font-size": "9pt"
           },
           "overflow": "min-height",
-          "fields": [],
+          "fields": [
+            "accessCode.code",
+            "accessCode.productName",
+            "accessCode.productCode",
+            "accessCode.discipline",
+            "accessCode.dateCreated"
+          ],
           "highlight": [],
           "sortable": true,
           "header": true,
@@ -268,7 +352,7 @@
           "status": "Stable",
           "trimFactor": 300,
           "normTimes": true,
-          "title": "Documents",
+          "title": "AccessCodes Sample report",
           "all_fields": false,
           "localTime": false,
           "timeField": "@timestamp"

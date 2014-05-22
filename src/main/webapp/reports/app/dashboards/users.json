@@ -87,7 +87,7 @@
             "1d",
             "1w",
             "1y",
-			"1M"
+            "1M"
           ],
           "lines": false,
           "fill": 0,
@@ -154,7 +154,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Users by learning type"
+          "title": "Users by learning model"
         },
         {
           "error": false,
@@ -329,7 +329,13 @@
             "font-size": "9pt"
           },
           "overflow": "min-height",
-          "fields": [],
+          "fields": [
+            "name",
+            "email",
+            "institution.id",
+            "institution.name",
+            "userType"
+          ],
           "highlight": [],
           "sortable": true,
           "header": true,
