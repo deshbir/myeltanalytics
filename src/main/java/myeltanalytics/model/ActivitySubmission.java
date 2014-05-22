@@ -8,49 +8,21 @@ public class ActivitySubmission
     private String dateSubmitted;
     private double studentScore;
     private double maxScore;
-    private Assignment assignment;
+    private Activity activity;
     private User user;
+    private int progressSaved;
+    private int timeSpent;
     
-    public enum ActivtiyType{
-        TYPE_BOOK(2,"book"),TYPE_LINKEDTEST(5,"linked test");
-        private String type;
-        private int code;
-        
-        ActivtiyType(int code, String type){
-            this.setType(type);
-            this.setCode(code);
-        }
-
-        public String getTypeString()
-        {
-            return type;
-        }
-
-        public void setType(String type)
-        {
-            this.type = type;
-        }
-
-        public int getCode()
-        {
-            return code;
-        }
-
-        public void setCode(int code)
-        {
-            this.code = code;
-        }
-        
-        
-    }
-    public static class Assignment{
+    
+    public static class Activity{
         private long id;
         private String name;
         private int maxTakesAllowed;
         private int sectionId;
-        private String activityType;
+        private int activityType;
         private Book book;
-        public Assignment(long id)
+        private String assignmentData;
+        public Activity(long id)
         {
             this.id = id;
         }
@@ -104,21 +76,15 @@ public class ActivitySubmission
         {
             this.sectionId = sectionId;
         }
-        public String getActivityType()
-        {
-            return activityType;
-        }
+        
         public void setActivityType(int activityType)
         {
-            switch(activityType){
-                case 2:
-                    this.activityType = ActivtiyType.TYPE_BOOK.getTypeString();
-                    break;
-                case 5:
-                    this.activityType = ActivtiyType.TYPE_LINKEDTEST.getTypeString();
-                    break;
-                
-            }
+            this.activityType = activityType;
+        }
+        
+        protected int getActivityType()
+        {
+            return this.activityType;
         }
         
         /**
@@ -134,6 +100,17 @@ public class ActivitySubmission
         public void setBook(Book book)
         {
             this.book = book;
+        }
+        
+        public void setAssignmentData(String assignmentData)
+        {
+            this.assignmentData = assignmentData; 
+            
+        }
+        
+        protected String getAssignmentData()
+        {
+            return this.assignmentData;
         }
     }
     
@@ -316,16 +293,16 @@ public class ActivitySubmission
     /**
      * @return the assignment
      */
-    public Assignment getAssignment()
+    public Activity getActivity()
     {
-        return assignment;
+        return activity;
     }
     /**
      * @param assignment the assignment to set
      */
-    public void setAssignment(Assignment assignment)
+    public void setActivity(Activity activity)
     {
-        this.assignment = assignment;
+        this.activity = activity;
     }
     
     /**
@@ -351,7 +328,7 @@ public class ActivitySubmission
     }
     
     public Book getBook(){
-        return assignment.getBook();
+        return activity.getBook();
     }
     public String getSyncJobId()
     {
@@ -360,5 +337,40 @@ public class ActivitySubmission
     public void setSyncJobId(String syncJobId)
     {
         this.syncJobId = syncJobId;
+    }
+    
+    public void setProgressSaved(int progressSaved)
+    {
+        this.progressSaved =  progressSaved; 
+    }
+    
+    public String getStatus(){
+        if(progressSaved == 0){
+            return "Submitted";
+        } else {
+            return "In-Progress";  
+        }
+    }
+    
+    public String getActivityType()
+    {
+        int activityType = activity.getActivityType();
+        if(activityType == 5){
+            return "ExamView";
+        } else if(("").equals(activity.getAssignmentData())){
+            return "ExamView";
+        } else {
+            return "Assignment";
+        }
+    }
+    
+    public void setTimeSpent(int timeSpent)
+    {
+        this.timeSpent = timeSpent;
+    }
+    
+    public int getTimeSpent()
+    {
+        return this.timeSpent;
     }
 }

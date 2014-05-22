@@ -12,6 +12,7 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRespon
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -126,5 +127,23 @@ public class Helper
             return node.getParent().valueOf("name");
         }
         return null;
+    }
+    
+    /**
+     * Deletes the user records with different sync id on job completion 
+     * @param index: index whose records are to be deleted
+     * @param type: type for which records are to be deleted
+     * @param jobId: which has to be checked for calculating out of sync.
+     */
+    public static void deleteUnsyncedRecords(Client elasticSearchClient, String index, String type, String jobId)
+    {
+        elasticSearchClient.prepareDeleteByQuery(index)
+            .setQuery(
+                QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery("_type", type))
+                .mustNot(QueryBuilders.matchQuery("syncJobId",jobId))
+                )
+            .execute()
+            .actionGet();        
     }
 }

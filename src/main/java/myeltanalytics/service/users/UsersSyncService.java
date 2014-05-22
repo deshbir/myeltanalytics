@@ -20,7 +20,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -118,28 +117,14 @@ public class UsersSyncService
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
             jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
             //delete the records that have not been update/synced; they are records that have been deleted in database
-            deleteUnsyncedRecords();
+            Helper.deleteUnsyncedRecords(elasticSearchClient, USERS_INDEX, USERS_TYPE, jobInfo.getJobId());
         }
-        deleteUnsyncedRecords();
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
         elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
     }
     
-    /**
-     * Deletes the user records with different sync id mon job completion 
-     */
-    private void deleteUnsyncedRecords()
-    {
-        elasticSearchClient.prepareDeleteByQuery(USERS_INDEX)
-            .setQuery(
-                QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery("_type", USERS_TYPE))
-                .mustNot(QueryBuilders.matchQuery("syncJobId", jobInfo.getJobId()))
-                )
-            .execute()
-            .actionGet();        
-    }
+   
 
     public void createUsersIndex() throws IOException {
         if (!Helper.isIndexExist(USERS_INDEX, elasticSearchClient)) {

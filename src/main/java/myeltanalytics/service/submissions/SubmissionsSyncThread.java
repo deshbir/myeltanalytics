@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import myeltanalytics.model.ActivitySubmission;
-import myeltanalytics.model.ActivitySubmission.Assignment;
+import myeltanalytics.model.ActivitySubmission.Activity;
 import myeltanalytics.model.ActivitySubmission.Book;
 import myeltanalytics.model.Institution;
 import myeltanalytics.service.ApplicationContextProvider;
@@ -81,7 +81,7 @@ public class SubmissionsSyncThread implements Runnable
     private ActivitySubmission populateSubmission(String activitySubmissionId)
     {
         ActivitySubmission activitySubmission = jdbcTemplate.queryForObject(
-            "select id,CompletedAt,Score,PossibleScore,assignmentId,userId from assignmentResults where id = ?", new Object[] { activitySubmissionId },
+            "select id,CompletedAt,Score,PossibleScore,assignmentId,userId,ProgressSaved,TimeSpent from assignmentResults where id = ?", new Object[] { activitySubmissionId },
             new RowMapper<ActivitySubmission>() {
                 @Override
                 public ActivitySubmission mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -95,7 +95,9 @@ public class SubmissionsSyncThread implements Runnable
                     activitySubmission.setSyncJobId(SubmissionsSyncService.jobInfo.getJobId());
                     activitySubmission.setStudentScore(rs.getDouble("Score"));
                     activitySubmission.setMaxScore(rs.getDouble("PossibleScore"));
-                    activitySubmission.setAssignment(populateAssignment(rs.getLong("assignmentId")));
+                    activitySubmission.setProgressSaved(rs.getInt("ProgressSaved"));
+                    activitySubmission.setTimeSpent(rs.getInt("TimeSpent"));
+                    activitySubmission.setActivity(populateActivity(rs.getLong("assignmentId")));
                     activitySubmission.setUser(populateUserForSubmission(rs.getLong("userId")));
                     return activitySubmission;
                 }
@@ -121,25 +123,26 @@ public class SubmissionsSyncThread implements Runnable
         return user;
     }
    
-    protected Assignment populateAssignment(long assignmentId)
+    protected Activity populateActivity(long assignmentId)
     {
-        Assignment assignment = jdbcTemplate.queryForObject(
+        Activity activity = jdbcTemplate.queryForObject(
             "select id,name,NumRetakes,AssignmentType,AssignmentData from assignments where id = ?", new Object[] { assignmentId },
-            new RowMapper<Assignment>() {
+            new RowMapper<Activity>() {
 
                 @Override
-                public Assignment mapRow(ResultSet rs, int rowNum) throws SQLException
+                public Activity mapRow(ResultSet rs, int rowNum) throws SQLException
                 {
-                    Assignment assignment = new Assignment(rs.getLong("id"));
+                    Activity assignment = new Activity(rs.getLong("id"));
                     assignment.setName(rs.getString("name"));
                     assignment.setMaxTakesAllowed(rs.getInt("NumRetakes"));
                     assignment.setActivityType(rs.getInt("AssignmentType"));
+                    assignment.setAssignmentData(rs.getString("AssignmentData"));
                     assignment.setBook(populateBookDetails(rs.getString("AssignmentData")));
                     return assignment;
                 }
             
             });
-        return assignment;
+        return activity;
     }
     
     protected Book populateBookDetails(String assignmentData)

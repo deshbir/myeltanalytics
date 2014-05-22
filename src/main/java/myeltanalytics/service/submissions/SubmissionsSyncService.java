@@ -122,6 +122,8 @@ public class SubmissionsSyncService
     public synchronized void updateLastSyncedSubmissionStatus() throws JsonProcessingException {
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
             jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
+            //delete the records that have not been update/synced; they are records that have been deleted in database
+            Helper.deleteUnsyncedRecords(elasticSearchClient, SUBMISSIONS_INDEX, SUBMISSIONS_TYPE, jobInfo.getJobId());
         }
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
@@ -201,5 +203,7 @@ public class SubmissionsSyncService
         }
         return builder;
     }
+    
+   
     
 }
