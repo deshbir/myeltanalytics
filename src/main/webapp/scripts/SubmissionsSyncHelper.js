@@ -10,8 +10,8 @@ var SubmissionsSyncHelper = new function() {
               $("#submissionsProgressContainer .progress-bar").html(responseJson.percent + '%');
               if (responseJson.jobStatus == "Completed") {
                   $("#submissionsJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
-                  $("#submissionsProgressContainer").removeClass().addClass("progress progress-striped"); 
-                  $("#submissionsSyncPanel .panel-heading i").removeClass("fa-gear-animated"); 
+                  $("#submissionsProgressContainer").removeClass().addClass("progress progress-striped");  
+                  $("#submissionsSyncPanel .panel-heading i").removeClass("fa-spin");
                   $("#submissionsStopButton").hide();
                   $("#submissionsResumeButton").hide();
                   $("#submissionsStartButton").show();
@@ -29,12 +29,25 @@ var SubmissionsSyncHelper = new function() {
     };
     
     this.stopSync= function () {
+        
         SubmissionsSyncHelper.abortFetchingSyncStatus();
+        
+        $("#submissionsStopButton").attr("disabled","disabled");
+        $("#submissionsStopButton i.fa-stop").hide();
+        $("#submissionsStopButton i.fa-spin").show();
+        
         $.get("/myeltanalytics/submissions/stopSync", function(data){
+            
+           $("#submissionsStopButton").removeAttr("disabled");
+           $("#submissionsStopButton i.fa-stop").show();
+           $("#submissionsStopButton i.fa-spin").hide();
+            
            $("#submissionsJobStatus").removeClass("badge-info").addClass("badge-error");
            $("#submissionsJobStatus").html("Paused");
+           
            $("#submissionsProgressContainer").removeClass("active");
-           $("#submissionsSyncPanel .panel-heading i").removeClass("fa-gear-animated"); 
+           $("#submissionsSyncPanel .panel-heading i").removeClass("fa-spin"); 
+           
            $("#submissionsStopButton").hide();
            $("#submissionsResumeButton").show();
            $("#submissionsStartButton").show();
@@ -43,36 +56,63 @@ var SubmissionsSyncHelper = new function() {
     
     this.startSync= function () {
         
-        $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-        $("#submissionsJobStatus").html("InProgress");
-        $("#submissionsProgressContainer .progress-bar").css('width', '0%');
-        $("#submissionsProgressContainer .progress-bar").html('0%');
-        $("#submissionsSuccessRecords").html("0");
-        $("#submissionsErrorRecords").html("0");
+        $("#submissionsStartButton").attr("disabled","disabled");
+        $("#submissionsResumeButton").attr("disabled","disabled");
+        $("#submissionsStartButton i.fa-play").hide();
+        $("#submissionsStartButton i.fa-spin").show();
         
         $.get("/myeltanalytics/submissions/startSync", function(data){
+            
             var responseJson = eval("(" + data + ")");
             $("#submissionsTotalRecords").html(responseJson.totalRecords);
+            $("#submissionsSuccessRecords").html("0");
+            $("#submissionsErrorRecords").html("0");
+            
+            $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+            $("#submissionsJobStatus").html("InProgress");
+            
+            $("#submissionsProgressContainer .progress-bar").css('width', '0%');
+            $("#submissionsProgressContainer .progress-bar").html('0%');
             $("#submissionsProgressContainer").addClass("active"); 
-            $("#submissionsSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
+            
+            $("#submissionsStartButton").removeAttr("disabled");
+            $("#submissionsResumeButton").removeAttr("disabled");
+            $("#submissionsStartButton i.fa-play").show();
+            $("#submissionsStartButton i.fa-spin").hide();
             $("#submissionsResumeButton").hide();
             $("#submissionsStartButton").hide();
             $("#submissionsStopButton").show();
+          
+            $("#submissionsSyncPanel .panel-heading i").addClass("fa-spin"); 
+           
             SubmissionsSyncHelper.triggerFetchingSyncStatus();
         });
     };
     
     this.resumeSync= function () {
+        
+        $("#submissionsStartButton").attr("disabled","disabled");
+        $("#submissionsResumeButton").attr("disabled","disabled");
+        $("#submissionsResumeButton i.fa-play-circle-o").hide();
+        $("#submissionsResumeButton i.fa-spin").show();
+        
         $.get("/myeltanalytics/submissions/resumeSync", function(data){
             var responseJson = eval("(" + data + ")");
+            $("#submissionsTotalRecords").html(responseJson.totalRecords);
+            
             $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
             $("#submissionsJobStatus").html("InProgress");
-            $("#submissionsTotalRecords").html(responseJson.totalRecords);
-            $("#submissionsProgressContainer").addClass("active"); 
-            $("#submissionsSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
+            
+            $("#submissionsStartButton").removeAttr("disabled");
+            $("#submissionsResumeButton").removeAttr("disabled");
+            $("#submissionsResumeButton i.fa-play-circle-o").show();
+            $("#submissionsResumeButton i.fa-spin").hide();
             $("#submissionsResumeButton").hide();
             $("#submissionsStartButton").hide();
             $("#submissionsStopButton").show();
+          
+            $("#submissionsSyncPanel .panel-heading i").addClass("fa-spin"); 
+           
             SubmissionsSyncHelper.triggerFetchingSyncStatus();
         });
     };

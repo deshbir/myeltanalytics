@@ -11,7 +11,7 @@ var UsersSyncHelper = new function() {
               if (responseJson.jobStatus == "Completed") {
                   $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
-                  $("#usersSyncPanel .panel-heading i").removeClass("fa-gear-animated");
+                  $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
                   $("#usersStopButton").hide();
                   $("#usersResumeButton").hide();
                   $("#usersStartButton").show();
@@ -29,12 +29,25 @@ var UsersSyncHelper = new function() {
     };
     
     this.stopSync= function () {
+        
         UsersSyncHelper.abortFetchingSyncStatus();
+        
+        $("#usersStopButton").attr("disabled","disabled");
+        $("#usersStopButton i.fa-stop").hide();
+        $("#usersStopButton i.fa-spin").show();
+        
         $.get("/myeltanalytics/users/stopSync", function(data){
+            
+           $("#usersStopButton").removeAttr("disabled");
+           $("#usersStopButton i.fa-stop").show();
+           $("#usersStopButton i.fa-spin").hide();
+            
            $("#usersJobStatus").removeClass("badge-info").addClass("badge-error");
            $("#usersJobStatus").html("Paused");
+           
            $("#usersProgressContainer").removeClass("active");
-           $("#usersSyncPanel .panel-heading i").removeClass("fa-gear-animated"); 
+           $("#usersSyncPanel .panel-heading i").removeClass("fa-spin"); 
+           
            $("#usersStopButton").hide();
            $("#usersResumeButton").show();
            $("#usersStartButton").show();
@@ -42,36 +55,64 @@ var UsersSyncHelper = new function() {
     };
     
     this.startSync= function () {
-        $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-        $("#usersJobStatus").html("InProgress");
-        $("#usersProgressContainer .progress-bar").css('width', '0%');
-        $("#usersProgressContainer .progress-bar").html('0%');
-        $("#usersSuccessRecords").html("0");
-        $("#usersErrorRecords").html("0");
+        
+        $("#usersStartButton").attr("disabled","disabled");
+        $("#usersResumeButton").attr("disabled","disabled");
+        $("#usersStartButton i.fa-play").hide();
+        $("#usersStartButton i.fa-spin").show();
         
         $.get("/myeltanalytics/users/startSync", function(data){
+            
             var responseJson = eval("(" + data + ")");
             $("#usersTotalRecords").html(responseJson.totalRecords);
+            $("#usersSuccessRecords").html("0");
+            $("#usersErrorRecords").html("0");
+            
+            $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+            $("#usersJobStatus").html("InProgress");
+            
+            $("#usersProgressContainer .progress-bar").css('width', '0%');
+            $("#usersProgressContainer .progress-bar").html('0%');
             $("#usersProgressContainer").addClass("active"); 
-            $("#usersSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
+            
+            $("#usersStartButton").removeAttr("disabled");
+            $("#usersResumeButton").removeAttr("disabled");
+            $("#usersStartButton i.fa-play").show();
+            $("#usersStartButton i.fa-spin").hide();
             $("#usersResumeButton").hide();
             $("#usersStartButton").hide();
             $("#usersStopButton").show();
+          
+            $("#usersSyncPanel .panel-heading i").addClass("fa-spin"); 
+           
             UsersSyncHelper.triggerFetchingSyncStatus();
         });
     };
     
     this.resumeSync= function () {
+        
+        $("#usersStartButton").attr("disabled","disabled");
+        $("#usersResumeButton").attr("disabled","disabled");
+        $("#usersResumeButton i.fa-play-circle-o").hide();
+        $("#usersResumeButton i.fa-spin").show();
+        
         $.get("/myeltanalytics/users/resumeSync", function(data){
             var responseJson = eval("(" + data + ")");
+            $("#usersTotalRecords").html(responseJson.totalRecords);
+            
             $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
             $("#usersJobStatus").html("InProgress");
-            $("#usersTotalRecords").html(responseJson.totalRecords);
-            $("#usersProgressContainer").addClass("active"); 
-            $("#usersSyncPanel .panel-heading i").addClass("fa-gear-animated"); 
+            
+            $("#usersStartButton").removeAttr("disabled");
+            $("#usersResumeButton").removeAttr("disabled");
+            $("#usersResumeButton i.fa-play-circle-o").show();
+            $("#usersResumeButton i.fa-spin").hide();
             $("#usersResumeButton").hide();
             $("#usersStartButton").hide();
             $("#usersStopButton").show();
+          
+            $("#usersSyncPanel .panel-heading i").addClass("fa-spin"); 
+           
             UsersSyncHelper.triggerFetchingSyncStatus();
         });
     };
