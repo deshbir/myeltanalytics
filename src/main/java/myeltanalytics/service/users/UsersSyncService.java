@@ -1,9 +1,9 @@
 package myeltanalytics.service.users;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +24,7 @@ import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -103,16 +104,22 @@ public class UsersSyncService
         
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
-        List<Map<String,Object>> usersList = jdbcTemplate.queryForList("select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS);
-        
-        Iterator<Map<String,Object>> usersListIter = usersList.iterator();
-        
-        while(usersListIter.hasNext()) {
-            Map<String,Object> userMap = usersListIter.next();
-            String userId = String.valueOf(userMap.get("id"));
-            Runnable worker = new UsersSyncThread(userId);
-            userSyncExecutor.execute(worker);            
-        }
+        jdbcTemplate.query(
+            "select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS ,
+            new RowCallbackHandler()
+            {
+                @Override
+                public void processRow(ResultSet rs) throws SQLException
+                {
+                    try {
+                        String currentId = rs.getString("id");
+                        Runnable worker = new UsersSyncThread(currentId);
+                        userSyncExecutor.execute(worker);    
+                    } catch (Exception e) {
+                        LOGGER.error("Error while processing User row" ,e);
+                    }
+                }
+            });
     }
     
     public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
