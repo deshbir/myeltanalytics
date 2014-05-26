@@ -50,6 +50,8 @@ public class SubmissionsSyncService
     
     public static JobInfo jobInfo = new JobInfo();
     
+    private static long recordsProcessed = 0l;
+    
     public void startFreshSync() throws JsonProcessingException {
         String newJobId = UUID.randomUUID().toString();  
         
@@ -81,9 +83,6 @@ public class SubmissionsSyncService
     public void resumeSync() throws JsonProcessingException {
         LOGGER.info("Resuming old SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
-        //Set errorRecords to zero as resume sync will try again to sync errorRecords.
-        jobInfo.setErrorRecords(0);
-        jobInfo.setTotalRecords(getTotalSubmissionsCount());
         updateLastSyncedSubmissionStatus();
        
         startSyncJob();
@@ -94,7 +93,7 @@ public class SubmissionsSyncService
         submissionsSyncExecutor = Executors.newFixedThreadPool(submissionsSyncThreadPoolSize);
         
         jdbcTemplate.query(
-            "select id from assignmentresults",
+            "select id from assignmentresults where id > ? order by id limit " + Helper.SQL_RECORDS_LIMIT, new Object[] { jobInfo.getLastId() },
             new RowCallbackHandler()
             {
                 @Override
@@ -130,6 +129,12 @@ public class SubmissionsSyncService
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
         elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
+        
+        recordsProcessed++;
+        if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
+            recordsProcessed = 0;
+            startSyncJob();
+        }
     }
    
     public void updateLastJobInfoInES(String jobId) throws JsonProcessingException {       

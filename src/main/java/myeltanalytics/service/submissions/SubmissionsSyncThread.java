@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Map;
 
 import myeltanalytics.model.ActivitySubmission;
 import myeltanalytics.model.ActivitySubmission.Activity;
@@ -14,7 +13,6 @@ import myeltanalytics.service.ApplicationContextProvider;
 import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -44,20 +42,14 @@ public class SubmissionsSyncThread implements Runnable
         if(SubmissionsSyncService.jobInfo != null && !(SubmissionsSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){
             try
             {
-                GetResponse response = elasticSearchClient.prepareGet(SubmissionsSyncService.SUBMISSIONS_INDEX, SubmissionsSyncService.SUBMISSIONS_TYPE, submissionId).execute().actionGet();
-                Map<String,Object> sourceMap = response.getSourceAsMap();
-                if (sourceMap != null && ((String)sourceMap.get(Helper.SYNC_JOB_ID)).equals(SubmissionsSyncService.jobInfo.getJobId())) {
-                    LOGGER.debug("Submssion with SubmissionId= " + submissionId + " skipped");
-                } else {
-                    ActivitySubmission activitySubmission = populateSubmission(submissionId);
-                    ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-                    String json = mapper.writeValueAsString(activitySubmission);
-                    elasticSearchClient.prepareIndex(SubmissionsSyncService.SUBMISSIONS_INDEX, SubmissionsSyncService.SUBMISSIONS_TYPE, submissionId).setSource(json).execute().actionGet();
-                    SubmissionsSyncService.jobInfo.incrementSuccessRecords();
-                    SubmissionsSyncService.jobInfo.setLastId(submissionId);
-                    submissionsSyncService.updateLastSyncedSubmissionStatus();
-                    LOGGER.debug("Submssion with SubmissionId= " + submissionId + " synced successfully");
-                }
+                ActivitySubmission activitySubmission = populateSubmission(submissionId);
+                ObjectMapper mapper = new ObjectMapper(); // create once, reuse
+                String json = mapper.writeValueAsString(activitySubmission);
+                elasticSearchClient.prepareIndex(SubmissionsSyncService.SUBMISSIONS_INDEX, SubmissionsSyncService.SUBMISSIONS_TYPE, submissionId).setSource(json).execute().actionGet();
+                SubmissionsSyncService.jobInfo.incrementSuccessRecords();
+                SubmissionsSyncService.jobInfo.setLastId(submissionId);
+                submissionsSyncService.updateLastSyncedSubmissionStatus();
+                LOGGER.debug("Submssion with SubmissionId= " + submissionId + " synced successfully");
             }
             catch(Exception e){
                 //e.printStackTrace();

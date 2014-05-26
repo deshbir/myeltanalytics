@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
 
 import myeltanalytics.model.AccessCode;
 import myeltanalytics.model.Country;
@@ -16,7 +15,6 @@ import myeltanalytics.service.ApplicationContextProvider;
 import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -46,52 +44,33 @@ public class UsersSyncThread implements Runnable
         if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){            
             try
             {
-                boolean isRecordSkipped = false;
                 User user = populateUser(userId);
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){
-                    GetResponse response = elasticSearchClient.prepareGet(UsersSyncService.USERS_INDEX, UsersSyncService.USERS_TYPE, userId).execute().actionGet();
-                    Map<String,Object> sourceMap = response.getSourceAsMap();
-                    if (sourceMap != null && ((String)sourceMap.get(Helper.SYNC_JOB_ID)).equals(UsersSyncService.jobInfo.getJobId())) {
-                        isRecordSkipped = true;
-                    } else {
-                        ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",UsersSyncService.jobInfo.getJobId());
+                    ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",UsersSyncService.jobInfo.getJobId());
+                    pushuser(esUser);
+                }
+                else {
+                    for(int i = 0 ;i < accessCodes.size(); i++){
+                        ElasticSearchUser esUser = null;
+                        AccessCode accessCode  =  accessCodes.get(i);
+                        String userType = null; 
+                        
+                        if(i == 0){
+                            userType = "USER_WITH_ACCESSCODE";
+                        } else {
+                            userType = "ADDITIONAL_ACCESSCODE";
+                        }
+                        
+                        esUser = ElasticSearchUser.transformUser(user, accessCode, userType, UsersSyncService.jobInfo.getJobId());
                         pushuser(esUser);
                     }
                 }
-                else {
-                    String id = userId + accessCodes.get(0).getCode();
-                    GetResponse response = elasticSearchClient.prepareGet(UsersSyncService.USERS_INDEX, UsersSyncService.USERS_TYPE, id).execute().actionGet();
-                    Map<String,Object> sourceMap = response.getSourceAsMap();
-                    if (sourceMap != null && ((String)sourceMap.get(Helper.SYNC_JOB_ID)).equals(UsersSyncService.jobInfo.getJobId())) {
-                        isRecordSkipped = true;
-                    } else {
-                        for(int i = 0 ;i < accessCodes.size(); i++){
-                            ElasticSearchUser esUser = null;
-                            AccessCode accessCode  =  accessCodes.get(i);
-                            String userType = null; 
-                            
-                            if(i == 0){
-                                userType = "USER_WITH_ACCESSCODE";
-                            } else {
-                                userType = "ADDITIONAL_ACCESSCODE";
-                            }
-                            
-                            esUser = ElasticSearchUser.transformUser(user, accessCode, userType, UsersSyncService.jobInfo.getJobId());
-                            pushuser(esUser);
-                        }
-                    }
-                }
                 
-                if (isRecordSkipped) {
-                    LOGGER.debug("User with UserId= " + userId + " skipped");
-                } else {
-                    UsersSyncService.jobInfo.incrementSuccessRecords();
-                    UsersSyncService.jobInfo.setLastId(userId);
-                    usersSyncService.updateLastSyncedUserStatus();
-                    LOGGER.debug("User with UserId= " + userId + " synced successfully");
-                }
-               
+                UsersSyncService.jobInfo.incrementSuccessRecords();
+                UsersSyncService.jobInfo.setLastId(userId);
+                usersSyncService.updateLastSyncedUserStatus();
+                LOGGER.debug("User with UserId= " + userId + " synced successfully");
             }
             catch(Exception e){
                 //e.printStackTrace();
