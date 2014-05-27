@@ -19,6 +19,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,20 +42,6 @@ public class UsersSyncService
     
     @Value("${users.threadpoolsize}")
     private int userSyncThreadPoolSize;
-    
-    public static final String USERS_INDEX = "users";
-    
-    public static final String USERS_TYPE = "users_info";
-    
-    public static final String USERS_ONLY_ALIAS = "users_only";
-    
-    public static final String ACCESS_CODES_ONLY_ALIAS = "accesscodes_only";
-    
-    public static final String USER_WITH_ACCESSCODE = "user_with_accesscode";
-    
-    public static final String USER_WITHOUT_ACCESSCODE = "user_without_accesscode";
-    
-    public static final String ADDITIONAL_ACCESSCODE = "additional_accesscode";
     
     private final Logger LOGGER = Logger.getLogger(UsersSyncService.class);
     
@@ -126,7 +113,7 @@ public class UsersSyncService
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
             jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
             //delete the records that have not been update/synced; they are records that have been deleted in database
-            Helper.deleteUnsyncedRecords(elasticSearchClient, USERS_INDEX, USERS_TYPE, jobInfo.getJobId());
+            Helper.deleteUnsyncedRecords(elasticSearchClient, Helper.USERS_INDEX, Helper.USERS_TYPE, jobInfo.getJobId());
         }
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
@@ -141,16 +128,19 @@ public class UsersSyncService
    
 
     public void createUsersIndex() throws IOException {
-        if (!Helper.isIndexExist(USERS_INDEX, elasticSearchClient)) {
+        if (!Helper.isIndexExist(Helper.USERS_INDEX, elasticSearchClient)) {
             
-            elasticSearchClient.admin().indices().create(new CreateIndexRequest(USERS_INDEX)
-                    .mapping(USERS_TYPE, buildUserTypeMappings())).actionGet();      
+            elasticSearchClient.admin().indices().create(new CreateIndexRequest(Helper.USERS_INDEX)
+                    .mapping(Helper.USERS_TYPE, buildUserTypeMappings())).actionGet();      
             
-            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", USER_WITH_ACCESSCODE, USER_WITHOUT_ACCESSCODE);
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(USERS_INDEX, USERS_ONLY_ALIAS, usersOnlyFilter).execute().actionGet();
+            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE);
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_ALL_ALIAS, usersOnlyFilter).execute().actionGet();
             
-            TermsFilterBuilder accessCodesOnlyFilter = FilterBuilders.termsFilter("recordType", USER_WITH_ACCESSCODE, ADDITIONAL_ACCESSCODE);
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(USERS_INDEX, ACCESS_CODES_ONLY_ALIAS, accessCodesOnlyFilter).execute().actionGet();
+            TermsFilterBuilder accessCodesOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.ADDITIONAL_ACCESSCODE);
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.ACCESS_CODES_ALL_ALIAS, accessCodesOnlyFilter).execute().actionGet();
+            
+            AndFilterBuilder capesModelUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("studentType", Helper.CAPES_MODEL));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_CAPES_ALIAS, capesModelUsersFilter).execute().actionGet();
         }      
     }
     

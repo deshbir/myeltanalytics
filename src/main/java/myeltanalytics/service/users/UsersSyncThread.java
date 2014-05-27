@@ -98,7 +98,7 @@ public class UsersSyncThread implements Runnable
         }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(UsersSyncService.USERS_INDEX, UsersSyncService.USERS_TYPE, id).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Helper.USERS_INDEX, Helper.USERS_TYPE, id).setSource(json).execute().actionGet();
     }
     
     private User populateUser(String userId)

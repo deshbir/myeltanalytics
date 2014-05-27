@@ -45,7 +45,7 @@ public class SubmissionsSyncThread implements Runnable
                 ActivitySubmission activitySubmission = populateSubmission(submissionId);
                 ObjectMapper mapper = new ObjectMapper(); // create once, reuse
                 String json = mapper.writeValueAsString(activitySubmission);
-                elasticSearchClient.prepareIndex(SubmissionsSyncService.SUBMISSIONS_INDEX, SubmissionsSyncService.SUBMISSIONS_TYPE, submissionId).setSource(json).execute().actionGet();
+                elasticSearchClient.prepareIndex(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_TYPE, submissionId).setSource(json).execute().actionGet();
                 SubmissionsSyncService.jobInfo.incrementSuccessRecords();
                 SubmissionsSyncService.jobInfo.setLastId(submissionId);
                 submissionsSyncService.updateLastSyncedSubmissionStatus();

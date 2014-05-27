@@ -40,10 +40,6 @@ public class SubmissionsSyncService
     @Value("${submissions.threadpoolsize}")
     private int submissionsSyncThreadPoolSize;
     
-    public static final String SUBMISSIONS_INDEX = "submissions";
-    
-    public static final String SUBMISSIONS_TYPE = "submissions_info";
-    
     private final Logger LOGGER = Logger.getLogger(SubmissionsSyncService.class);
     
     private ExecutorService submissionsSyncExecutor = null;
@@ -125,7 +121,7 @@ public class SubmissionsSyncService
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
             jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
             //delete the records that have not been update/synced; they are records that have been deleted in database
-            Helper.deleteUnsyncedRecords(elasticSearchClient, SUBMISSIONS_INDEX, SUBMISSIONS_TYPE, jobInfo.getJobId());
+            Helper.deleteUnsyncedRecords(elasticSearchClient, Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_TYPE, jobInfo.getJobId());
         }
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
@@ -172,10 +168,10 @@ public class SubmissionsSyncService
     }
     
     public void createSubmissionsIndex() throws IOException {
-        if (!Helper.isIndexExist(SUBMISSIONS_INDEX, elasticSearchClient)) {
+        if (!Helper.isIndexExist(Helper.SUBMISSIONS_INDEX, elasticSearchClient)) {
             
-            elasticSearchClient.admin().indices().create(new CreateIndexRequest(SUBMISSIONS_INDEX)
-                    .mapping(SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();      
+            elasticSearchClient.admin().indices().create(new CreateIndexRequest(Helper.SUBMISSIONS_INDEX)
+                    .mapping(Helper.SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();      
         }      
     }
     

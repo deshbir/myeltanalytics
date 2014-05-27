@@ -35,14 +35,27 @@ public class Helper
     public static final String ERROR_RECORDS = "errorRecords";    
     public static final String LAST_ID = "lastId";    
     public static final String JOB_STATUS = "jobStatus";
-    public static final String SYNC_JOB_ID = "syncJobId";
-    
+    public static final String SYNC_JOB_ID = "syncJobId";    
     public static final String STATUS_INPROGRESS = "InProgress";
     public static final String STATUS_PAUSED = "Paused";
     public static final String STATUS_COMPLETED = "Completed";
     
+    //Users constants
+    public static final String USER_WITH_ACCESSCODE = "user_with_accesscode";
+    public static final String USER_WITHOUT_ACCESSCODE = "user_without_accesscode";
+    public static final String ADDITIONAL_ACCESSCODE = "additional_accesscode";
     public static final String CAPES_MODEL = "capes_model";
-        
+    public static final String USERS_INDEX = "users";
+    public static final String USERS_TYPE = "users_info";
+    public static final String USERS_ALL_ALIAS = "users_all";
+    public static final String ACCESS_CODES_ALL_ALIAS = "accesscodes_all";
+    public static final String USERS_CAPES_ALIAS = "users_capes";
+   
+    
+    //Submissions Constants
+    public static final String SUBMISSIONS_INDEX = "submissions";    
+    public static final String SUBMISSIONS_TYPE = "submissions_info";
+    
     public static final String ID = "id";    
     public static final String BLANK = "";
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
