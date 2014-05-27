@@ -20,7 +20,7 @@ public class MainController {
     
     @RequestMapping("/")
     public String index() {        
-        return "redirect:/admin";
+        return "redirect:/reports";
     }
     
     @RequestMapping("/admin")
@@ -37,7 +37,7 @@ public class MainController {
         model.addAttribute("submissionsJobPercent", submissionsPercentProcessed);
         model.addAttribute("submissionsJobInfo", SubmissionsSyncService.jobInfo);
         
-        return "welcome";
+        return "admin";
     }
     
     

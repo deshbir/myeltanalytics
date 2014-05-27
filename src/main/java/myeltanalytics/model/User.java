@@ -117,7 +117,7 @@ public class User extends AbstractUser {
         if((institution.getName().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTHideAssignment=true") != -1)){
             return "self_paced";
         } else if(("OCC").equals(institution.getDistrict()) || (("CAPES").equals(institution.getDistrict()))){
-            return "capes_model";
+            return Helper.CAPES_MODEL;
         } else if(institution.getOther().indexOf("MyELTSelfLearner=false") != -1){
             return "classroom";
         }

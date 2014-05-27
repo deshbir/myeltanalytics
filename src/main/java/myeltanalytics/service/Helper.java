@@ -40,6 +40,8 @@ public class Helper
     public static final String STATUS_INPROGRESS = "InProgress";
     public static final String STATUS_PAUSED = "Paused";
     public static final String STATUS_COMPLETED = "Completed";
+    
+    public static final String CAPES_MODEL = "capes_model";
         
     public static final String ID = "id";    
     public static final String BLANK = "";

@@ -1,5 +1,5 @@
 {
-  "title": "Access Codes",
+  "title": "All Access Codes Dashboard",
   "services": {
     "query": {
       "list": {
@@ -365,7 +365,7 @@
   "index": {
     "interval": "none",
     "pattern": "[logstash-]YYYY.MM.DD",
-    "default": "accesscodes_only",
+    "default": "accesscodes_all",
     "warm_fields": true
   },
   "style": "light",
