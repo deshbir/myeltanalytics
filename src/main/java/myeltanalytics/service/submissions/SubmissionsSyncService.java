@@ -90,6 +90,7 @@ public class SubmissionsSyncService
     
     private void startSyncJob() {
         
+        recordsProcessed = 0;
         submissionsSyncExecutor = Executors.newFixedThreadPool(submissionsSyncThreadPoolSize);
         
         jdbcTemplate.query(
@@ -132,7 +133,6 @@ public class SubmissionsSyncService
         
         recordsProcessed++;
         if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
-            recordsProcessed = 0;
             startSyncJob();
         }
     }

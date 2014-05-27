@@ -101,6 +101,7 @@ public class UsersSyncService
     
     private void startSyncJob() {
         
+        recordsProcessed = 0;
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
         jdbcTemplate.query(
@@ -133,7 +134,6 @@ public class UsersSyncService
         
         recordsProcessed++;
         if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
-            recordsProcessed = 0;
             startSyncJob();
         }
     }
