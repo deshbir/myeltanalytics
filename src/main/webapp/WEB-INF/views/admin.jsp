@@ -35,23 +35,23 @@
                 <div class="col-md-6">
                     <div id="usersSyncPanel" class="panel panel-primary">
                            <c:if test="${usersJobInfo.jobStatus eq 'InProgress'}">
-                                <c:set var="spinClass" value="fa-spin"></c:set>
+                                <c:set var="usersSpinClass" value="fa-spin"></c:set>
                            </c:if>  
-                           <div class="panel-heading"><i class="fa fa-gear fa-lg ${spinClass}"></i><strong> Users Sync Engine</strong></div>
+                           <div class="panel-heading"><i class="fa fa-gear fa-lg ${usersSpinClass}"></i><strong> Users</strong></div>
                            <div class="panel-body">
                                <c:choose>
                                    <c:when test="${usersJobInfo.jobStatus eq 'Completed'}">
-                                       <c:set var="badgeClass" value="badge-success"></c:set>
+                                       <c:set var="usersBadgeClass" value="badge-success"></c:set>
                                    </c:when>
                                    <c:when test="${usersJobInfo.jobStatus eq 'Paused'}">
-                                       <c:set var="badgeClass" value="badge-error"></c:set>
+                                       <c:set var="usersBadgeClass" value="badge-error"></c:set>
                                    </c:when>
                                    <c:otherwise>
-                                       <c:set var="badgeClass" value="badge-info"></c:set>
-                                       <c:set var="activeClass" value="active"></c:set>
+                                       <c:set var="usersBadgeClass" value="badge-info"></c:set>
+                                       <c:set var="usersActiveClass" value="active"></c:set>
                                    </c:otherwise>
                                </c:choose>
-                               <div id="usersProgressContainer" class="progress progress-striped ${activeClass}">
+                               <div id="usersProgressContainer" class="progress progress-striped ${usersActiveClass}">
                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${usersJobPercent}" aria-valuemin="0" aria-valuemax="100" style="width:${usersJobPercent}%;">
                                        ${usersJobPercent}%
                                    </div>
@@ -60,7 +60,7 @@
                                    <tbody>
                                        <tr>
                                            <td>
-                                               <span id="usersJobStatus" class="syncinfo badge pull-right ${badgeClass}">${usersJobInfo.jobStatus}</span>
+                                               <span id="usersJobStatus" class="syncinfo badge pull-right ${usersBadgeClass}">${usersJobInfo.jobStatus}</span>
                                                <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
                                            </td>
                                        </tr>
@@ -86,52 +86,52 @@
                                </table>
                                <c:choose>
                                     <c:when test="${usersJobInfo.jobStatus eq 'Paused'}">
-                                          <c:set var="startButtonDisplay" value=""></c:set>
-                                          <c:set var="resumeButtonDisplay" value=""></c:set>
-                                          <c:set var="stopButtonDisplay" value="display:none"></c:set>  
+                                          <c:set var="usersStartButtonDisplay" value=""></c:set>
+                                          <c:set var="usersResumeButtonDisplay" value=""></c:set>
+                                          <c:set var="usersStopButtonDisplay" value="display:none"></c:set>  
                                     </c:when>
                                     <c:when test="${usersJobInfo.jobStatus eq 'InProgress'}">
-                                          <c:set var="startButtonDisplay" value="display:none"></c:set>
-                                          <c:set var="resumeButtonDisplay" value="display:none"></c:set>
-                                          <c:set var="stopButtonDisplay" value=""></c:set>  
+                                          <c:set var="usersStartButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="usersResumeButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="usersStopButtonDisplay" value=""></c:set>  
                                     </c:when>
                                     <c:when test="${usersJobInfo.jobStatus eq 'Completed'}">
-                                          <c:set var="startButtonDisplay" value=""></c:set>
-                                          <c:set var="resumeButtonDisplay" value="display:none"></c:set>
-                                          <c:set var="stopButtonDisplay" value="display:none"></c:set>  
+                                          <c:set var="usersStartButtonDisplay" value=""></c:set>
+                                          <c:set var="usersResumeButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="usersStopButtonDisplay" value="display:none"></c:set>  
                                     </c:when>
                                     <c:otherwise>
-                                          <c:set var="startButtonDisplay" value=""></c:set>
-                                          <c:set var="resumeButtonDisplay" value="display:none"></c:set>
-                                          <c:set var="stopButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="usersStartButtonDisplay" value=""></c:set>
+                                          <c:set var="usersResumeButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="usersStopButtonDisplay" value="display:none"></c:set>
                                     </c:otherwise>
                                </c:choose>
-                               <button id="usersResumeButton" style="${resumeButtonDisplay}" class="btn btn-primary" onclick="UsersSyncHelper.resumeSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
-                               <button id="usersStartButton" style="${startButtonDisplay}" class="btn btn-primary" onclick="UsersSyncHelper.startSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
-                               <button id="usersStopButton" style="${stopButtonDisplay}" class="btn btn-danger" onclick="UsersSyncHelper.stopSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
+                               <button id="usersResumeButton" style="${usersResumeButtonDisplay}" class="btn btn-primary" onclick="UsersSyncHelper.resumeSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
+                               <button id="usersStartButton" style="${usersStartButtonDisplay}" class="btn btn-primary" onclick="UsersSyncHelper.startSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
+                               <button id="usersStopButton" style="${usersStopButtonDisplay}" class="btn btn-danger" onclick="UsersSyncHelper.stopSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
                            </div>
                        </div>
                    </div>  
                    <div class="col-md-6">
                     <div id="submissionsSyncPanel" class="panel panel-primary">
                        <c:if test="${submissionsJobInfo.jobStatus eq 'InProgress'}">
-                            <c:set var="spinClass" value="fa-spin"></c:set>
+                            <c:set var="submissionsSpinClass" value="fa-spin"></c:set>
                        </c:if>  
-                       <div class="panel-heading"><i class="fa fa-gear fa-lg ${spinClass}"></i><strong> Submissions Sync Engine</strong></div>
+                       <div class="panel-heading"><i class="fa fa-gear fa-lg ${submissionsSpinClass}"></i><strong> Submissions </strong></div>
                        <div class="panel-body">
                            <c:choose>
                            <c:when test="${submissionsJobInfo.jobStatus eq 'Completed'}">
-                               <c:set var="badgeClass" value="badge-success"></c:set>
+                               <c:set var="submissionsBadgeClass" value="badge-success"></c:set>
                            </c:when>
                            <c:when test="${submissionsJobInfo.jobStatus eq 'Paused'}">
-                               <c:set var="badgeClass" value="badge-error"></c:set>
+                               <c:set var="submissionsBadgeClass" value="badge-error"></c:set>
                            </c:when>
                            <c:otherwise>
-                               <c:set var="badgeClass" value="badge-info"></c:set>
-                               <c:set var="activeClass" value="active"></c:set>
+                               <c:set var="submissionsBadgeClass" value="badge-info"></c:set>
+                               <c:set var="submissionsActiveClass" value="active"></c:set>
                            </c:otherwise>
                            </c:choose>
-                           <div id="submissionsProgressContainer" class="progress progress-striped ${activeClass}">
+                           <div id="submissionsProgressContainer" class="progress progress-striped ${submissionsActiveClass}">
                            <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${submissionsJobPercent}" aria-valuemin="0" aria-valuemax="100" style="width:${submissionsJobPercent}%;">
                                ${submissionsJobPercent}%
                            </div>
@@ -140,7 +140,7 @@
                            <tbody>
                                <tr>
                                <td>
-                                   <span id="submissionsJobStatus" class="syncinfo badge pull-right ${badgeClass}">${submissionsJobInfo.jobStatus}</span>
+                                   <span id="submissionsJobStatus" class="syncinfo badge pull-right ${submissionsBadgeClass}">${submissionsJobInfo.jobStatus}</span>
                                    <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
                                </td>
                                </tr>
@@ -166,29 +166,29 @@
                            </table>
                            <c:choose>
                             <c:when test="${submissionsJobInfo.jobStatus eq 'Paused'}">
-                              <c:set var="startButtonDisplay" value=""></c:set>
-                              <c:set var="resumeButtonDisplay" value=""></c:set>
-                              <c:set var="stopButtonDisplay" value="display:none"></c:set>  
+                              <c:set var="submissionsStartButtonDisplay" value=""></c:set>
+                              <c:set var="submissionsResumeButtonDisplay" value=""></c:set>
+                              <c:set var="submissionsStopButtonDisplay" value="display:none"></c:set>  
                             </c:when>
                             <c:when test="${submissionsJobInfo.jobStatus eq 'InProgress'}">
-                              <c:set var="startButtonDisplay" value="display:none"></c:set>
-                              <c:set var="resumeButtonDisplay" value="display:none"></c:set>
-                              <c:set var="stopButtonDisplay" value=""></c:set>  
+                              <c:set var="submissionsStartButtonDisplay" value="display:none"></c:set>
+                              <c:set var="submissionsResumeButtonDisplay" value="display:none"></c:set>
+                              <c:set var="submissionsStopButtonDisplay" value=""></c:set>  
                             </c:when>
                             <c:when test="${submissionsJobInfo.jobStatus eq 'Completed'}">
-                              <c:set var="startButtonDisplay" value=""></c:set>
-                              <c:set var="resumeButtonDisplay" value="display:none"></c:set>
-                              <c:set var="stopButtonDisplay" value="display:none"></c:set>  
+                              <c:set var="submissionsStartButtonDisplay" value=""></c:set>
+                              <c:set var="submissionsResumeButtonDisplay" value="display:none"></c:set>
+                              <c:set var="submissionsStopButtonDisplay" value="display:none"></c:set>  
                             </c:when>
                             <c:otherwise>
-                              <c:set var="startButtonDisplay" value=""></c:set>
-                              <c:set var="resumeButtonDisplay" value="display:none"></c:set>
-                              <c:set var="stopButtonDisplay" value="display:none"></c:set>
+                              <c:set var="submissionsStartButtonDisplay" value=""></c:set>
+                              <c:set var="submissionsResumeButtonDisplay" value="display:none"></c:set>
+                              <c:set var="submissionsStopButtonDisplay" value="display:none"></c:set>
                             </c:otherwise>
                            </c:choose>
-                           <button id="submissionsResumeButton" style="${resumeButtonDisplay}" class="btn btn-primary" onclick="SubmissionsSyncHelper.resumeSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
-                           <button id="submissionsStartButton" style="${startButtonDisplay}" class="btn btn-primary" onclick="SubmissionsSyncHelper.startSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
-                           <button id="submissionsStopButton" style="${stopButtonDisplay}" class="btn btn-danger" onclick="SubmissionsSyncHelper.stopSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
+                           <button id="submissionsResumeButton" style="${submissionsResumeButtonDisplay}" class="btn btn-primary" onclick="SubmissionsSyncHelper.resumeSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
+                           <button id="submissionsStartButton" style="${submissionsStartButtonDisplay}" class="btn btn-primary" onclick="SubmissionsSyncHelper.startSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
+                           <button id="submissionsStopButton" style="${submissionsStopButtonDisplay}" class="btn btn-danger" onclick="SubmissionsSyncHelper.stopSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
                        </div>
                     </div>
                 </div>  
@@ -198,7 +198,6 @@
             $(document).ready(function(){
                 <c:if test="${usersJobInfo.jobStatus eq 'InProgress'}">
                     UsersSyncHelper.triggerFetchingSyncStatus();
-                    $("#usersSyncPanel .panel-heading i").addClass("fa-spin");
                </c:if> 
                <c:if test="${submissionsJobInfo.jobStatus eq 'InProgress'}">
                     SubmissionsSyncHelper.triggerFetchingSyncStatus();

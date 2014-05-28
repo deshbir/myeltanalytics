@@ -52,46 +52,10 @@ body {
   background-color: #3a87ad;
 }
 
-.reports-heading {
-    background-color: #2A333B;
-    border-radius: 5px;
-    color: #EAEAEA;
-    font-weight: bold;
-    padding: 4px;
-    position: absolute;
-}
-
-.reports-list {
-    border: 2px solid #DDDDDD;
-    border-radius: 4px;
-    list-style: none outside none;
-    margin: 12px 0 0 -10px;
-    padding: 20px 10px 10px 15px;
-}
-
-.reports-list-seperator {
-    border-bottom: 1px solid rgba(204, 204, 204, 0.6);
-    line-height: 30px;
-    font-weight: bold;
-}
-
-.reports-category {
+.reports-list li {
   font-weight: bold;
-  padding-bottom: 20px;
-  text-decoration: underline;
+  line-height: 30px;
 }
 
-.reports-list-seperator a {
-  color:#2EACD5; 
-}
-
-.reports-list-seperator a.disabled {
-  color:#A0A0A0;
-  cursor:default; 
-}
-
-.reports-list-seperator a.disabled:hover {
-  text-decoration:none;
-}
 
 

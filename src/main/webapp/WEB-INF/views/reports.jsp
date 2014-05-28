@@ -30,182 +30,116 @@
            </div>
          </div>
        </nav>
-       <div class="container">
-            <div class="row">
-                <h3 class="reports-category">Unique Users / Logins / Registrations</h3>
-                <div class="col-md-6">
-                   <span class="reports-heading">Dashboards</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a onclick="Util.openReport('index.html#/dashboard/file/users_all.json')" href="#">All Users</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a onclick="Util.openReport('index.html#/dashboard/file/users_capes.json')" href="#">CAPES</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">ELTeach</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">ICPNA</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">eStudy</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Seven</a></span>
-                        </li>
-                   </ul>
-               </div>
-               <div class="col-md-6">    
-                   <span class="reports-heading">Reports</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Registrations FY11</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Registrations FY12</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Registrations FY13</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Registrations FY14(Current)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Users by product(year, last month or as specified)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Users by country/region(year, last month or as specified)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Self-paced vs instructor led(year, last month or as specified)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">New Users(year, last month or as specified)</a></span>
-                        </li>
-                   </ul>                   
+       <div class="container">           
+           <div class="panel panel-primary">
+             <div class="panel-heading"><strong>Unique Users / Logins / Registrations</strong></div>
+             <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Dashboards</h4>
+                        <ul class="reports-list">
+                            <li><a onclick="Util.openReport('index.html#/dashboard/file/users_all.json')" href="#">All Users</a></li>
+                            <li><a onclick="Util.openReport('index.html#/dashboard/file/users_capes.json')" href="#">CAPES</a></li>
+                            <li><a href="#">ELTeach</a></li>
+                            <li><a href="#">ICPNA</a></li>
+                            <li><a href="#">eStudy</a></li>
+                            <li><a href="#">Seven</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Reports</h4>
+                        <ul class="reports-list">
+                            <li><a href="#">Registrations FY11</a></li>
+                            <li><a href="#">Registrations FY12</a></li>
+                            <li><a href="#">Registrations FY12</a></li>
+                            <li><a href="#">Registrations FY14(Current)</a></li>
+                            <li><a href="#">Users by product(year, last month or as specified)</a></li>
+                            <li><a href="#">Users by country/region(year, last month or as specified)</a></li>
+                            <li><a href="#">Self-paced vs instructor led(year, last month or as specified)</a></li>
+                            <li><a href="#">New Users(year, last month or as specified)</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </div> 
-            <div class="row">
-                <h3 class="reports-category">Activated Access Codes</h3>
-                <div class="col-md-6">
-                   <span class="reports-heading">Dashboards</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a onclick="Util.openReport('index.html#/dashboard/file/accesscodes_all.json')"  href="#">All Users</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">CAPES</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">ELTeach</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">ICPNA</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">eStudy</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Seven</a></span>
-                        </li>
-                   </ul>
-               </div>
-               <div class="col-md-6">    
-                   <span class="reports-heading">Reports</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">AACR FY11</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">AACR FY12</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">AACR FY13</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">AACR FY14(Current)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Access codes activated by product</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Access codes activated by time period</a></span>
-                        </li>
-                   </ul>                   
+             </div>  
+           </div>
+           <div class="panel panel-primary">
+             <div class="panel-heading"><strong>Activated Access Codes</strong></div>
+             <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Dashboards</h4>
+                        <ul class="reports-list"> 
+                            <li><a href="#">All Users</a></li>
+                            <li><a href="#">CAPES</a></li>                           
+                            <li><a href="#">ELTeach</a></li>
+                            <li><a href="#">ICPNA</a></li>
+                            <li><a href="#">eStudy</a></li>
+                            <li><a href="#">Seven</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Reports</h4>
+                        <ul class="reports-list">
+                            <li><a href="#">AACR FY11</a></li>
+                            <li><a href="#">AACR FY12</a></li>
+                            <li><a href="#">AACR FY12</a></li>
+                            <li><a href="#">AACR FY14(Current)</a></li>
+                            <li><a href="#">Access codes activated by product</a></li>
+                            <li><a href="#">Access codes activated by time period</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </div>  
-            <div class="row">
-                <h3 class="reports-category">CAPES</h3>
-                <div class="col-md-6">
-                   <span class="reports-heading">Dashboards</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">CAPES(Brazil)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">All CAPES Model(OCC etc.)</a></span>
-                        </li>
-                   </ul>
-               </div>
-               <div class="col-md-6">    
-                   <span class="reports-heading">Reports</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#"># Users changed levels</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#"># Users had not started level after placement test</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Average time spent per level</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#"># Users without access for more than 30 days</a></span>
-                        </li>
-                   </ul>                   
+             </div>  
+           </div> 
+           <div class="panel panel-primary">
+             <div class="panel-heading"><strong>CAPES</strong></div>
+             <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Dashboards</h4>
+                        <ul class="reports-list"> 
+                            <li><a href="#">CAPES(Brazil)</a></li>
+                            <li><a href="#">All CAPES Model(OCC etc.)</a></li>                           
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Reports</h4>
+                        <ul class="reports-list">
+                            <li><a href="#"># Users changed levels</a></li>
+                            <li><a href="#"># Users had not started level after placement test</a></li>
+                            <li><a href="#">Average time spent per level</a></li>
+                            <li><a href="#"># Users without access for more than 30 days</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </div> 
-              <div class="row">
-                <h3 class="reports-category">Completed Activities</h3>
-                <div class="col-md-6">
-                   <span class="reports-heading">Dashboards</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">All Activities and Assignments</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Assignments only</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Examview</a></span>
-                        </li>
-                   </ul>
-               </div>
-               <div class="col-md-6">    
-                   <span class="reports-heading">Reports</span>
-                   <ul compact="1" class="reports-list">
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Submissions FY11</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Submissions FY12</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Submissions FY13</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Submissions FY14(Current)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Completed activities(grades posted)(last month or as specified)</a></span>
-                        </li>
-                        <li class="reports-list-seperator">
-                            <span class="preferred"><a class="disabled" href="#">Grades posted VS activity(last month or as specified)</a></span>
-                        </li>
-                   </ul>                   
+             </div>  
+           </div> 
+           <div class="panel panel-primary">
+             <div class="panel-heading"><strong>Completed Activities</strong></div>
+             <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Dashboards</h4>
+                        <ul class="reports-list"> 
+                            <li><a href="#">All Activities and Assignments</a></li>
+                            <li><a href="#">Assignments only</a></li>
+                            <li><a href="#">Examview</a></li>                           
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Reports</h4>
+                        <ul class="reports-list">
+                            <li><a href="#">Submissions FY11</a></li>
+                            <li><a href="#">Submissions FY12</a></li>
+                            <li><a href="#">Submissions FY12</a></li>
+                            <li><a href="#">Submissions FY14(Current)</a></li>
+                            <li><a href="#">Completed activities(grades posted)(last month or as specified)</a></li>
+                            <li><a href="#">Grades posted VS activity(last month or as specified)</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </div>                                           
-       </div>
+             </div>  
+           </div>             
+       </div>                   
     </body>
 </html>
