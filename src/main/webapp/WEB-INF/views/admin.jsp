@@ -66,6 +66,12 @@
                                        </tr>
                                        <tr>
                                            <td>
+                                               <span id="usersJobStartDateTime" class="syncinfo pull-right">${usersJobInfo.startDateTime}</span>
+                                               <i class="fa fa-calendar fa-lg"></i><span class="syncinfoHeading">Started At</span>
+                                           </td>
+                                       </tr> 
+                                       <tr>
+                                           <td>
                                                <span id="usersTotalRecords" class="syncinfo odometer pull-right">${usersJobInfo.totalRecords}</span> 
                                                <i class="fa fa-road fa-lg"></i><span class="syncinfoHeading">Total records to Sync</span>
                                            </td>
@@ -139,11 +145,17 @@
                            <table class="table table-bordered">
                            <tbody>
                                <tr>
-                               <td>
-                                   <span id="submissionsJobStatus" class="syncinfo badge pull-right ${submissionsBadgeClass}">${submissionsJobInfo.jobStatus}</span>
-                                   <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
-                               </td>
+                                <td>
+                                    <span id="submissionsJobStatus" class="syncinfo badge pull-right ${submissionsBadgeClass}">${submissionsJobInfo.jobStatus}</span>
+                                    <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
+                                </td>
                                </tr>
+                               <tr>
+                                   <td>
+                                       <span id="submissionsJobStartDateTime" class="syncinfo pull-right">${submissionsJobInfo.startDateTime}</span>
+                                       <i class="fa fa-calendar fa-lg"></i><span class="syncinfoHeading">Started At</span>
+                                   </td>
+                               </tr> 
                                <tr>
                                <td>
                                    <span id="submissionsTotalRecords" class="syncinfo odometer pull-right">${submissionsJobInfo.totalRecords}</span> 

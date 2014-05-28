@@ -3,6 +3,9 @@ package myeltanalytics.service.submissions;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -60,8 +63,13 @@ public class SubmissionsSyncService
         jobInfo.setSuccessRecords(0);
         jobInfo.setErrorRecords(0);
         jobInfo.setTotalRecords(getTotalSubmissionsCount());
+        
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        jobInfo.setStartDateTime(dateFormat.format(date));
+        
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);        
-        updateLastSyncedSubmissionStatus();
+        updateSubmissionStatus();
         
         startSyncJob();
     }
@@ -70,7 +78,7 @@ public class SubmissionsSyncService
         LOGGER.info("Aborting SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         
         jobInfo.setJobStatus(Helper.STATUS_PAUSED);
-        updateLastSyncedSubmissionStatus();
+        updateSubmissionStatus();
         
         submissionsSyncExecutor.shutdown();
         submissionsSyncExecutor.awaitTermination(1, TimeUnit.MINUTES);    
@@ -79,7 +87,7 @@ public class SubmissionsSyncService
     public void resumeSync() throws JsonProcessingException {
         LOGGER.info("Resuming old SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
-        updateLastSyncedSubmissionStatus();
+        updateSubmissionStatus();
        
         startSyncJob();
     }
@@ -118,19 +126,29 @@ public class SubmissionsSyncService
     }
     
     public synchronized void updateLastSyncedSubmissionStatus() throws JsonProcessingException {
+        boolean isCompleted = false;
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
+            isCompleted = true;
             jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
+        }
+       
+        updateSubmissionStatus();        
+        recordsProcessed++;
+        
+        if (isCompleted) {
             //delete the records that have not been update/synced; they are records that have been deleted in database
             Helper.deleteUnsyncedRecords(elasticSearchClient, Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_TYPE, jobInfo.getJobId());
-        }
+         } else {
+             if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
+                 startSyncJob();
+             }
+         }
+    }
+    
+    public synchronized void updateSubmissionStatus() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
         elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
-        
-        recordsProcessed++;
-        if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
-            startSyncJob();
-        }
     }
    
     public void updateLastJobInfoInES(String jobId) throws JsonProcessingException {       
@@ -155,10 +173,11 @@ public class SubmissionsSyncService
                 jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
                 jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
                 String jobStatus = (String) map.get(Helper.JOB_STATUS);
+                jobInfo.setStartDateTime((String) map.get(Helper.START_DATETIME));
                 //If server shut-down while job is running, status is still "InProgress" in Database, but the job is actually terminated/paused
                 if (jobStatus.equals(Helper.STATUS_INPROGRESS)) {
                     jobInfo.setJobStatus(Helper.STATUS_PAUSED);
-                    updateLastSyncedSubmissionStatus();
+                    updateSubmissionStatus();
                 } else {
                     jobInfo.setJobStatus((String) map.get(Helper.JOB_STATUS));
                 }

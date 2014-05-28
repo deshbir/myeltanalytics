@@ -8,6 +8,7 @@ public class JobInfo
     private long totalRecords;
     private long successRecords;
     private long errorRecords;
+    private String startDateTime;
     
     public long getTotalRecords()
     {
@@ -69,5 +70,15 @@ public class JobInfo
     
     public synchronized void incrementErrorRecords() {
         this.errorRecords++;
+    }
+
+    public String getStartDateTime()
+    {
+        return startDateTime;
+    }
+
+    public void setStartDateTime(String startDateTime)
+    {
+        this.startDateTime = startDateTime;
     }
 }

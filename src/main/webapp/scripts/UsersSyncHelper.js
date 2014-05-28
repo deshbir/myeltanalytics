@@ -17,6 +17,7 @@ var UsersSyncHelper = new function() {
                   $("#usersStartButton").show();
                   UsersSyncHelper.abortFetchingSyncStatus();
               }
+              $("#usersJobStartDateTime").html(responseJson.startDateTime);
               $("#usersJobStatus").html(responseJson.jobStatus);
               $("#usersSuccessRecords").html(responseJson.successRecords);
               $("#usersErrorRecords").html(responseJson.errorRecords);
@@ -65,6 +66,7 @@ var UsersSyncHelper = new function() {
             
             var responseJson = eval("(" + data + ")");
             $("#usersTotalRecords").html(responseJson.totalRecords);
+            $("#usersJobStartDateTime").html(responseJson.startDateTime);
             $("#usersSuccessRecords").html("0");
             $("#usersErrorRecords").html("0");
             

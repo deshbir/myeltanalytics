@@ -17,6 +17,7 @@ var SubmissionsSyncHelper = new function() {
                   $("#submissionsStartButton").show();
                   SubmissionsSyncHelper.abortFetchingSyncStatus();
               }
+              $("#submissionsJobStartDateTime").html(responseJson.startDateTime);
               $("#submissionsJobStatus").html(responseJson.jobStatus);
               $("#submissionsSuccessRecords").html(responseJson.successRecords);
               $("#submissionsErrorRecords").html(responseJson.errorRecords);
@@ -65,6 +66,7 @@ var SubmissionsSyncHelper = new function() {
             
             var responseJson = eval("(" + data + ")");
             $("#submissionsTotalRecords").html(responseJson.totalRecords);
+            $("#submissionsJobStartDateTime").html(responseJson.startDateTime);
             $("#submissionsSuccessRecords").html("0");
             $("#submissionsErrorRecords").html("0");
             

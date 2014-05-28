@@ -3,6 +3,9 @@ package myeltanalytics.service.users;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -63,8 +66,13 @@ public class UsersSyncService
         jobInfo.setSuccessRecords(0);
         jobInfo.setErrorRecords(0);
         jobInfo.setTotalRecords(getTotalUsersCount());
+        
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        jobInfo.setStartDateTime(dateFormat.format(date));
+        
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);        
-        updateLastSyncedUserStatus();
+        updateUserStatus();
         
         startSyncJob();
     }
@@ -72,7 +80,7 @@ public class UsersSyncService
     public void stopSync() throws InterruptedException, JsonProcessingException {
         LOGGER.info("Aborting UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_PAUSED);
-        updateLastSyncedUserStatus();
+        updateUserStatus();
         
         userSyncExecutor.shutdown();
         userSyncExecutor.awaitTermination(1, TimeUnit.MINUTES);    
@@ -81,7 +89,7 @@ public class UsersSyncService
     public void resumeSync() throws JsonProcessingException {
         LOGGER.info("Resuming old UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
-        updateLastSyncedUserStatus();
+        updateUserStatus();
        
         startSyncJob();
     }
@@ -110,19 +118,30 @@ public class UsersSyncService
     }
     
     public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
+        
+        boolean isCompleted = false;
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
+            isCompleted = true;
             jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
-            //delete the records that have not been update/synced; they are records that have been deleted in database
-            Helper.deleteUnsyncedRecords(elasticSearchClient, Helper.USERS_INDEX, Helper.USERS_TYPE, jobInfo.getJobId());
         }
+        
+        updateUserStatus();
+        recordsProcessed++;
+        
+        if (isCompleted) {
+           //delete the records that have not been update/synced; they are records that have been deleted in database
+            Helper.deleteUnsyncedRecords(elasticSearchClient, Helper.USERS_INDEX, Helper.USERS_TYPE, jobInfo.getJobId());
+        } else {
+            if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
+                startSyncJob();
+            }
+        }
+    }
+    
+    public synchronized void updateUserStatus() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
         elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
-        
-        recordsProcessed++;
-        if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
-            startSyncJob();
-        }
     }
     
    
@@ -172,11 +191,12 @@ public class UsersSyncService
                 jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
                 jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
                 jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
+                jobInfo.setStartDateTime((String) map.get(Helper.START_DATETIME));
                 String jobStatus = (String) map.get(Helper.JOB_STATUS);
                 //If server shut-down while job is running, status is still "InProgress" in Database, but the job is actually terminated/paused
                 if (jobStatus.equals(Helper.STATUS_INPROGRESS)) {
                     jobInfo.setJobStatus(Helper.STATUS_PAUSED);
-                    updateLastSyncedUserStatus();
+                    updateUserStatus();
                 } else {
                     jobInfo.setJobStatus((String) map.get(Helper.JOB_STATUS));
                 }
