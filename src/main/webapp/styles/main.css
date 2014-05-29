@@ -35,6 +35,14 @@ body {
     font-weight:bold;
 }
 
+.reportsHeading {
+  font-weight:bold;
+}
+
+.reports-panel {
+  /**min-height:350px;**/
+}
+
 .syncinfo {
    font-weight:bold; 
    font-size:1.2em

@@ -30,116 +30,280 @@
            </div>
          </div>
        </nav>
-       <div class="container">           
-           <div class="panel panel-primary">
-             <div class="panel-heading"><strong>Unique Users / Logins / Registrations</strong></div>
-             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Dashboards</h4>
-                        <ul class="reports-list">
-                            <li><a onclick="Util.openReport('index.html#/dashboard/file/users_all.json')" href="#">All Users</a></li>
-                            <li><a onclick="Util.openReport('index.html#/dashboard/file/users_capes.json')" href="#">CAPES</a></li>
-                            <li><a href="#">ELTeach</a></li>
-                            <li><a href="#">ICPNA</a></li>
-                            <li><a href="#">eStudy</a></li>
-                            <li><a href="#">Seven</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Reports</h4>
-                        <ul class="reports-list">
-                            <li><a href="#">Registrations FY11</a></li>
-                            <li><a href="#">Registrations FY12</a></li>
-                            <li><a href="#">Registrations FY12</a></li>
-                            <li><a href="#">Registrations FY14(Current)</a></li>
-                            <li><a href="#">Users by product(year, last month or as specified)</a></li>
-                            <li><a href="#">Users by country/region(year, last month or as specified)</a></li>
-                            <li><a href="#">Self-paced vs instructor led(year, last month or as specified)</a></li>
-                            <li><a href="#">New Users(year, last month or as specified)</a></li>
-                        </ul>
-                    </div>
+       <div class="container"> 
+            <div class="row">
+                <div class="col-md-4">
+                     <div class="panel panel-primary reports-panel">
+                        <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> Registrations</strong></div>
+                         <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                     <td>
+                                         <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                         <span class="reportsHeading">Registrations FY11</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Registrations FY12</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Registrations FY13</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Registrations FY14(Current)</span>
+                                     </td>
+                                </tr>
+                            </table>
+                         </div>
+                     </div>
                 </div>
-             </div>  
-           </div>
-           <div class="panel panel-primary">
-             <div class="panel-heading"><strong>Activated Access Codes</strong></div>
-             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Dashboards</h4>
-                        <ul class="reports-list"> 
-                            <li><a href="#">All Users</a></li>
-                            <li><a href="#">CAPES</a></li>                           
-                            <li><a href="#">ELTeach</a></li>
-                            <li><a href="#">ICPNA</a></li>
-                            <li><a href="#">eStudy</a></li>
-                            <li><a href="#">Seven</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Reports</h4>
-                        <ul class="reports-list">
-                            <li><a href="#">AACR FY11</a></li>
-                            <li><a href="#">AACR FY12</a></li>
-                            <li><a href="#">AACR FY12</a></li>
-                            <li><a href="#">AACR FY14(Current)</a></li>
-                            <li><a href="#">Access codes activated by product</a></li>
-                            <li><a href="#">Access codes activated by time period</a></li>
-                        </ul>
-                    </div>
+                <div class="col-md-4">
+                     <div class="panel panel-primary reports-panel">
+                        <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> Unique users</strong></div>
+                         <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('index.html#/dashboard/file/users_all.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">All users</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Users by product</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Users by country / region</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Self-paced vs instructor-led</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">New Users</span>
+                                     </td>
+                                </tr>
+                            </table>
+                         </div>
+                     </div>
+                </div>           
+                <div class="col-md-4">
+                     <div class="panel panel-primary reports-panel">
+                        <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> Users by Institutes / Customers</strong></div>
+                         <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('index.html#/dashboard/file/users_capes.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">CAPES</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">ELTeach</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>                                        
+                                        <span class="reportsHeading">ICPNA</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">eStudy</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Seven</span>
+                                     </td>
+                                </tr>
+                            </table>
+                         </div>
+                     </div>
                 </div>
-             </div>  
-           </div> 
-           <div class="panel panel-primary">
-             <div class="panel-heading"><strong>CAPES</strong></div>
-             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Dashboards</h4>
-                        <ul class="reports-list"> 
-                            <li><a href="#">CAPES(Brazil)</a></li>
-                            <li><a href="#">All CAPES Model(OCC etc.)</a></li>                           
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Reports</h4>
-                        <ul class="reports-list">
-                            <li><a href="#"># Users changed levels</a></li>
-                            <li><a href="#"># Users had not started level after placement test</a></li>
-                            <li><a href="#">Average time spent per level</a></li>
-                            <li><a href="#"># Users without access for more than 30 days</a></li>
-                        </ul>
-                    </div>
+            </div>
+            <div class="row">  
+                <div class="col-md-4">
+                     <div class="panel panel-primary reports-panel">
+                        <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> Activated Access Codes</strong></div>
+                         <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">AACR FY11</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">AACR FY12</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">AACR FY13</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">AACR FY14 (Current)</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>   
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Access codes activated by product</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Access codes activated by time period</span>
+                                     </td>
+                                </tr>
+                            </table>
+                         </div>
+                     </div>
+                </div>           
+                <div class="col-md-4">
+                     <div class="panel panel-primary reports-panel">
+                        <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> CAPES Reports</strong></div>
+                         <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">All CAPES Model(OCC etc.)</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">CAPES (Brazil)</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Users changed levels</span>                                                                              
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Users had not started level after placement test</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Average time spent per level</span>
+                                     </td>
+                                </tr>
+                                 <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Users without access for more than 30 days</span>
+                                     </td>
+                                </tr>
+                            </table>
+                         </div>
+                     </div>
                 </div>
-             </div>  
-           </div> 
-           <div class="panel panel-primary">
-             <div class="panel-heading"><strong>Completed Activities</strong></div>
-             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Dashboards</h4>
-                        <ul class="reports-list"> 
-                            <li><a href="#">All Activities and Assignments</a></li>
-                            <li><a href="#">Assignments only</a></li>
-                            <li><a href="#">Examview</a></li>                           
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Reports</h4>
-                        <ul class="reports-list">
-                            <li><a href="#">Submissions FY11</a></li>
-                            <li><a href="#">Submissions FY12</a></li>
-                            <li><a href="#">Submissions FY12</a></li>
-                            <li><a href="#">Submissions FY14(Current)</a></li>
-                            <li><a href="#">Completed activities(grades posted)(last month or as specified)</a></li>
-                            <li><a href="#">Grades posted VS activity(last month or as specified)</a></li>
-                        </ul>
-                    </div>
+                <div class="col-md-4">
+                     <div class="panel panel-primary reports-panel">
+                        <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> Completed Activities</strong></div>
+                         <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">All Activities and Assignments</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Assignments only</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Examview</span>
+                                     </td>
+                                </tr>
+                            </table>
+                         </div>
+                     </div>
                 </div>
-             </div>  
-           </div>             
+            </div>   
+            <div class="row">
+                <div class="col-md-4">
+                     <div class="panel panel-primary reports-panel">
+                        <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> Submissions</strong></div>
+                         <div class="panel-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Submissions FY11</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Submissions FY12</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Submissions FY13</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Submissions FY14 (Current)</span>
+                                     </td>
+                                </tr>
+                                <tr>
+                                     <td>
+                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="reportsHeading">Grades posted VS activity</span>
+                                     </td>
+                                </tr>
+                            </table>
+                         </div>
+                     </div>
+                </div>
+            </div>                                                
        </div>                   
     </body>
 </html>
