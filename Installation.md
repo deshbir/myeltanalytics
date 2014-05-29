@@ -17,8 +17,10 @@ Linux (Ubuntu) Installation Steps
 3. wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb
 4. sudo dpkg -i elasticsearch-1.1.1.deb
 5. sudo update-rc.d elasticsearch defaults 95 10
-6. sudo /etc/init.d/elasticsearch start
-7. sudo /etc/init.d/elasticsearch stop
+6. sudo nano /etc/elasticsearch/elasticsearch.yml
+7. Add "script.disable_dynamic: true" at the end of file and save.  
+8. sudo /etc/init.d/elasticsearch start  
+9. sudo /etc/init.d/elasticsearch stop  
 
 ###Install Git 
 1. sudo apt-get install git-core
