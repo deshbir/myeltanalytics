@@ -97,8 +97,14 @@ public class SubmissionsSyncService
         recordsProcessed = 0;
         submissionsSyncExecutor = Executors.newFixedThreadPool(submissionsSyncThreadPoolSize);
         
-        jdbcTemplate.query(
-            "select id from assignmentresults where id > ? order by id limit " + Helper.SQL_RECORDS_LIMIT, new Object[] { jobInfo.getLastId() },
+        String query = "select id from assignmentresults";
+        if (jobInfo.getLastId().equals("")) {
+            query = query + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+        } else {
+            query = query + " and id > " + jobInfo.getLastId() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+        }
+        
+        jdbcTemplate.query(query,
             new RowCallbackHandler()
             {
                 @Override

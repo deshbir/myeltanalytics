@@ -103,6 +103,17 @@ public class UsersSyncThread implements Runnable
     
     private User populateUser(String userId)
     {
+        /**
+         * UserInstitutionMap handling
+         * 1. Instead of default jdbcTemplate (which maps to the Master DB), use institution DB specific jdbcTemplate
+         * 2. select DatabaseURL from institutions where Id=instId
+         * 3. Use DatabaseURl to lookup URL for dataSource.
+         * 4. Make a jdbcTemplate and query it
+         * 
+         * ---
+         * 
+         * 1. Add databaseURL as a field in USER ES record.
+         */
        User user = jdbcTemplate.queryForObject(
             "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,countryCode,InstitutionID from users where id = ?", new Object[] { userId },
             new RowMapper<User>() {

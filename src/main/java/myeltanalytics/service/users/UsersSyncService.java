@@ -99,8 +99,19 @@ public class UsersSyncService
         recordsProcessed = 0;
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
-        jdbcTemplate.query(
-            "select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + " and id > ? order by id limit " + Helper.SQL_RECORDS_LIMIT, new Object[] { jobInfo.getLastId()},
+        String query = "select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
+        if (jobInfo.getLastId().equals("")) {
+            query = query + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+        } else {
+            query = query + " and id > " + jobInfo.getLastId() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+        }
+        
+        /**
+         * UserInstitutionMap handling
+         * 1. Change query to use loginName instead of id  --- and change table to UserInstitutionMap
+         * 2. Additinally select instId and pass it as a argument to Thread.
+         */
+        jdbcTemplate.query(query,
             new RowCallbackHandler()
             {
                 @Override
