@@ -19,8 +19,10 @@ Linux (Ubuntu) Installation Steps
 5. sudo update-rc.d elasticsearch defaults 95 10
 6. sudo nano /etc/elasticsearch/elasticsearch.yml
 7. Add "script.disable_dynamic: true" at the end of file and save.  
-8. sudo /etc/init.d/elasticsearch start  
-9. sudo /etc/init.d/elasticsearch stop  
+8. cd /usr/share/elasticsearch/bin
+9. Run "sudo ./plugin -install royrusso/elasticsearch-HQ" to install ElasticSearch-HQ plugin (http://www.elastichq.org/)
+10. sudo /etc/init.d/elasticsearch start  
+11. sudo /etc/init.d/elasticsearch stop  
 
 ###Install Git 
 1. sudo apt-get install git-core
