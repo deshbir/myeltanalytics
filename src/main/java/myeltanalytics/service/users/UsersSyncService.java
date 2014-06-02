@@ -139,11 +139,15 @@ public class UsersSyncService
         recordsProcessed = 0;
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
-        String query = "select LoginName,InstitutionID from userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
+        String query = null;
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = query + " order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
+            query = "(SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS 
+                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + ")"
+                + " order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
         } else {
-            query = query + " and LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
+            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS 
+                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + "))"
+                + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
         }
         
         /**
@@ -220,11 +224,14 @@ public class UsersSyncService
     }
     
     public long getTotalUsersCount() throws JsonProcessingException {
-        String sql = "select count(*) from userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
+        String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS 
+            + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + ")) as allusers";
+        
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
         LOGGER.info("Total users to sync= " + usersCount + " for syncJobId= " + UsersSyncService.jobInfo.getJobId());
         return usersCount;
     }
+    
     
     public void updateLastJobInfoInES(String jobId) throws JsonProcessingException {       
         Map<String, Object> jsonMap = new HashMap<String, Object>();
