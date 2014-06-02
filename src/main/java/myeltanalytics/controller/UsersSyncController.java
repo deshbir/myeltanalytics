@@ -26,8 +26,7 @@ public class UsersSyncController {
     
     @PostConstruct
     void setup() throws IOException{
-        usersSyncService.refreshJobStatusFromES();
-        usersSyncService.createUsersIndex();
+        usersSyncService.setup();
     }   
     
     @RequestMapping(value= "/getSyncStatus")

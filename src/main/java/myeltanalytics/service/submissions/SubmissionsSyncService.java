@@ -59,7 +59,7 @@ public class SubmissionsSyncService
         updateLastJobInfoInES(newJobId);
         
         jobInfo.setJobId(newJobId);
-        jobInfo.setLastId("");
+        jobInfo.setLastIdentifier("");
         jobInfo.setSuccessRecords(0);
         jobInfo.setErrorRecords(0);
         jobInfo.setTotalRecords(getTotalSubmissionsCount());
@@ -98,10 +98,10 @@ public class SubmissionsSyncService
         submissionsSyncExecutor = Executors.newFixedThreadPool(submissionsSyncThreadPoolSize);
         
         String query = "select id from assignmentresults";
-        if (jobInfo.getLastId().equals("")) {
+        if (jobInfo.getLastIdentifier().equals("")) {
             query = query + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
         } else {
-            query = query + " and id > " + jobInfo.getLastId() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+            query = query + " and id > " + jobInfo.getLastIdentifier() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
         }
         
         jdbcTemplate.query(query,
@@ -174,7 +174,7 @@ public class SubmissionsSyncService
                 jobInfo.setJobId(lastJobId);
                 GetResponse lastJobResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
                 Map<String,Object> map  = lastJobResponse.getSourceAsMap();
-                jobInfo.setLastId((String) map.get(Helper.LAST_ID));
+                jobInfo.setLastIdentifier((String) map.get(Helper.LAST_IDENTIFIER));
                 jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
                 jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
                 jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));

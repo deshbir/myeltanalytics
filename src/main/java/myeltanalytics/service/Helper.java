@@ -33,7 +33,7 @@ public class Helper
     public static final String TOTAL_RECORDS = "totalRecords";    
     public static final String SUCCESSFULL_RECORDS = "successRecords";    
     public static final String ERROR_RECORDS = "errorRecords";    
-    public static final String LAST_ID = "lastId";    
+    public static final String LAST_IDENTIFIER = "lastIdentifier";
     public static final String JOB_STATUS = "jobStatus";
     public static final String START_DATETIME = "startDateTime";    
     public static final String SYNC_JOB_ID = "syncJobId";    

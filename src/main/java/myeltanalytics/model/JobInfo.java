@@ -4,7 +4,12 @@ public class JobInfo
 {
     private String jobId;
     private String jobStatus;
-    private String lastId;
+    /**
+     * Unique Identifier
+     * 1. "loginName" in case of users
+     * 2. "id" in case of submissions
+     */
+    private String lastIdentifier;
     private long totalRecords;
     private long successRecords;
     private long errorRecords;
@@ -30,9 +35,9 @@ public class JobInfo
         return jobId;
     }
     
-    public String getLastId()
+    public String getLastIdentifier()
     {
-        return lastId;
+        return lastIdentifier;
     }
 
     public String getJobStatus()
@@ -60,8 +65,8 @@ public class JobInfo
         this.jobId = jobId;
     }
     
-    public synchronized void setLastId(String lastId) {
-        this.lastId = lastId;
+    public synchronized void setLastIdentifier(String lastIdentifier) {
+        this.lastIdentifier = lastIdentifier;
     }
     
     public synchronized void incrementSuccessRecords() {

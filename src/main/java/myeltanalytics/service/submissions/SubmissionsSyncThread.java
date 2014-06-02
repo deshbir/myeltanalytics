@@ -47,7 +47,7 @@ public class SubmissionsSyncThread implements Runnable
                 String json = mapper.writeValueAsString(activitySubmission);
                 elasticSearchClient.prepareIndex(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_TYPE, submissionId).setSource(json).execute().actionGet();
                 SubmissionsSyncService.jobInfo.incrementSuccessRecords();
-                SubmissionsSyncService.jobInfo.setLastId(submissionId);
+                SubmissionsSyncService.jobInfo.setLastIdentifier(submissionId);
                 submissionsSyncService.updateLastSyncedSubmissionStatus();
                 LOGGER.debug("Submssion with SubmissionId= " + submissionId + " synced successfully");
             }
@@ -56,7 +56,7 @@ public class SubmissionsSyncThread implements Runnable
                 SubmissionsSyncService.jobInfo.incrementErrorRecords();
                 try
                 {
-                    SubmissionsSyncService.jobInfo.setLastId(submissionId);
+                    SubmissionsSyncService.jobInfo.setLastIdentifier(submissionId);
                     submissionsSyncService.updateLastSyncedSubmissionStatus();
                 }
                 catch (JsonProcessingException e1)

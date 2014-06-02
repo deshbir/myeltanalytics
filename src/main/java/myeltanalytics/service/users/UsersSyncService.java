@@ -17,6 +17,7 @@ import myeltanalytics.model.JobInfo;
 import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
@@ -46,6 +47,29 @@ public class UsersSyncService
     @Value("${users.threadpoolsize}")
     private int userSyncThreadPoolSize;
     
+    @Value("${spring.datasource.username}")
+    private String dbUserName;
+    
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+    
+    @Value("${spring.datasource.driverClassName}")
+    private String dbDriverClassName;
+    
+    @Value("${spring.datasource.initialSize}")
+    private int dbInitialSize;
+    
+    @Value("${spring.datasource.maxActive}")
+    private int dbMaxActive;
+    
+    @Value("${spring.datasource.maxIdle}")
+    private int dbMaxIdle;
+    
+    @Value("${spring.datasource.url}")
+    private String mainDatabaseURLFull;   
+    
+    public static String mainDatabaseURL;
+    
     private final Logger LOGGER = Logger.getLogger(UsersSyncService.class);
     
     private ExecutorService userSyncExecutor = null;
@@ -53,6 +77,22 @@ public class UsersSyncService
     public static JobInfo jobInfo = new JobInfo();
     
     private static long recordsProcessed = 0l;
+    
+    private static Map<String, JdbcTemplate> jdbcTemplateMap = new HashMap<String,JdbcTemplate>();
+    
+    public JdbcTemplate getJdbcTemplate(String databaseURL) {
+        JdbcTemplate myJdbcTemplate = null;
+        if (databaseURL.equals(".") || databaseURL.equals(mainDatabaseURL)) {
+            myJdbcTemplate = jdbcTemplate;
+        } else {
+            myJdbcTemplate = jdbcTemplateMap.get(databaseURL);
+            if (myJdbcTemplate == null) {
+                myJdbcTemplate = buildJdbcTemplate(databaseURL);
+                jdbcTemplateMap.put(databaseURL, myJdbcTemplate);
+            }
+        }
+        return myJdbcTemplate;
+    }
     
     public void startFreshSync() throws JsonProcessingException {
         
@@ -62,7 +102,7 @@ public class UsersSyncService
         updateLastJobInfoInES(newJobId);
         
         jobInfo.setJobId(newJobId);
-        jobInfo.setLastId("");
+        jobInfo.setLastIdentifier("");
         jobInfo.setSuccessRecords(0);
         jobInfo.setErrorRecords(0);
         jobInfo.setTotalRecords(getTotalUsersCount());
@@ -99,11 +139,11 @@ public class UsersSyncService
         recordsProcessed = 0;
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
-        String query = "select id from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
-        if (jobInfo.getLastId().equals("")) {
-            query = query + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+        String query = "select LoginName,InstitutionID from userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
+        if (jobInfo.getLastIdentifier().equals("")) {
+            query = query + " order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
         } else {
-            query = query + " and id > " + jobInfo.getLastId() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+            query = query + " and LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
         }
         
         /**
@@ -118,8 +158,9 @@ public class UsersSyncService
                 public void processRow(ResultSet rs) throws SQLException
                 {
                     try {
-                        String currentId = rs.getString("id");
-                        Runnable worker = new UsersSyncThread(currentId);
+                        String loginName = rs.getString("LoginName");
+                        String institutionID = rs.getString("InstitutionID");
+                        Runnable worker = new UsersSyncThread(loginName, institutionID);
                         userSyncExecutor.execute(worker);    
                     } catch (Exception e) {
                         LOGGER.error("Error while processing User row" ,e);
@@ -156,7 +197,11 @@ public class UsersSyncService
     }
     
    
-
+    public void setup() throws IOException {
+        createUsersIndex();
+        refreshJobStatusFromES();
+        mainDatabaseURL = mainDatabaseURLFull.substring(0, mainDatabaseURLFull.indexOf("?"));
+    }
     public void createUsersIndex() throws IOException {
         if (!Helper.isIndexExist(Helper.USERS_INDEX, elasticSearchClient)) {
             
@@ -175,7 +220,7 @@ public class UsersSyncService
     }
     
     public long getTotalUsersCount() throws JsonProcessingException {
-        String sql = "select count(*) from users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
+        String sql = "select count(*) from userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS;
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
         LOGGER.info("Total users to sync= " + usersCount + " for syncJobId= " + UsersSyncService.jobInfo.getJobId());
         return usersCount;
@@ -198,7 +243,7 @@ public class UsersSyncService
                 jobInfo.setJobId(lastJobId);
                 GetResponse lastJobResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
                 Map<String,Object> map  = lastJobResponse.getSourceAsMap();
-                jobInfo.setLastId((String) map.get(Helper.LAST_ID));
+                jobInfo.setLastIdentifier((String) map.get(Helper.LAST_IDENTIFIER));
                 jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
                 jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
                 jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
@@ -298,6 +343,31 @@ public class UsersSyncService
         }
         return builder;
     }
+    
+    private JdbcTemplate buildJdbcTemplate(String databaseURL) {
+        
+        if (databaseURL.indexOf("?") == -1) {
+            databaseURL = databaseURL + "?zeroDateTimeBehavior=convertToNull";
+        } else {
+            databaseURL = databaseURL + "&zeroDateTimeBehavior=convertToNull";
+        }
+        
+        DataSource dataSource = new DataSource();
+        
+        dataSource.setDriverClassName(dbDriverClassName);
+        dataSource.setUrl(databaseURL);
+        dataSource.setUsername(dbUserName);
+        dataSource.setPassword(dbPassword);
+        dataSource.setInitialSize(dbInitialSize);
+        dataSource.setMaxIdle(dbMaxIdle);
+        dataSource.setMaxActive(dbMaxActive);
+        
+        JdbcTemplate template = new JdbcTemplate();
+        template.setDataSource(dataSource);
+        
+        return template;
+
+  }
     
 //  private void deletePreviousJobData()
 //  {

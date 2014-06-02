@@ -33,10 +33,13 @@ public class UsersSyncThread implements Runnable
     
     private final Logger LOGGER = Logger.getLogger(UsersSyncThread.class);
     
-    private String userId;
+    private String loginName;
     
-    public UsersSyncThread(String userId) {
-        this.userId = userId;
+    private String institutionId;
+    
+    public UsersSyncThread(String loginName, String institutionId) {
+        this.loginName = loginName;
+        this.institutionId = institutionId;
     }
     
     @Override
@@ -44,7 +47,7 @@ public class UsersSyncThread implements Runnable
         if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){            
             try
             {
-                User user = populateUser(userId);
+                User user = populateUser(loginName, institutionId);
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){
                     ElasticSearchUser esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE",UsersSyncService.jobInfo.getJobId());
@@ -68,40 +71,40 @@ public class UsersSyncThread implements Runnable
                 }
                 
                 UsersSyncService.jobInfo.incrementSuccessRecords();
-                UsersSyncService.jobInfo.setLastId(userId);
+                UsersSyncService.jobInfo.setLastIdentifier(loginName);
                 usersSyncService.updateLastSyncedUserStatus();
-                LOGGER.debug("User with UserId= " + userId + " synced successfully");
+                LOGGER.debug("User with LoginName= " + loginName + " synced successfully");
             }
             catch(Exception e){
                 //e.printStackTrace();
                 UsersSyncService.jobInfo.incrementErrorRecords();
                 try
                 {
-                    UsersSyncService.jobInfo.setLastId(userId);
+                    UsersSyncService.jobInfo.setLastIdentifier(loginName);
                     usersSyncService.updateLastSyncedUserStatus();
                 }
                 catch (JsonProcessingException e1)
                 {
                     // TODO Auto-generated catch block
-                    LOGGER.error("Failure for json processing= " + userId, e1);
+                    LOGGER.error("Failure for json processing= " + loginName, e1);
                 }
-                LOGGER.error("Failure for UserId= " + userId, e);
+                LOGGER.error("Failure for LoginName= " + loginName, e);
                 //TO-DO retry logic if neccessary
             }
         }
     }
     
     private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
-        String id = String.valueOf(esUser.getId());
+        String loginName = String.valueOf(esUser.getName());
         if (esUser.getAccessCode() != null ) {
-            id = id + esUser.getAccessCode().getCode();
+            loginName = loginName + esUser.getAccessCode().getCode();
         }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Helper.USERS_INDEX, Helper.USERS_TYPE, id).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Helper.USERS_INDEX, Helper.USERS_TYPE, loginName).setSource(json).execute().actionGet();
     }
     
-    private User populateUser(String userId)
+    private User populateUser(String loginName, String institutionId)
     {
         /**
          * UserInstitutionMap handling
@@ -114,8 +117,12 @@ public class UsersSyncThread implements Runnable
          * 
          * 1. Add databaseURL as a field in USER ES record.
          */
-       User user = jdbcTemplate.queryForObject(
-            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,countryCode,InstitutionID from users where id = ?", new Object[] { userId },
+       
+        String dbURL = jdbcTemplate.queryForObject("Select DatabaseURL from institutions where ID = ?", new Object[]{institutionId}, String.class);
+        JdbcTemplate myJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
+        
+        User user = myJdbcTemplate.queryForObject(
+            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,countryCode,InstitutionID from users where name = ?", new Object[] { loginName },
             new RowMapper<User>() {
                 
                 @Override
@@ -146,6 +153,15 @@ public class UsersSyncThread implements Runnable
                     return user;
                 }
             });
+        if (dbURL.equals(".")) {
+            dbURL = UsersSyncService.mainDatabaseURL;
+        } 
+        //cut "jdbc:mysql://" from starting
+        dbURL = dbURL.substring(13, dbURL.length());
+        if (dbURL.indexOf("?") != -1) {
+            dbURL = dbURL.substring(0, dbURL.indexOf("?"));
+        }
+        user.setDatabaseURL(dbURL);
         return user;
     }
     

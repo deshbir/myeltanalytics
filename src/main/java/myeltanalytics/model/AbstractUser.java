@@ -5,6 +5,7 @@ import java.util.List;
 public abstract class AbstractUser
 {
     private long id;
+    private String databaseURL;
     private String userName;
     private String email;
     private String userType;
@@ -196,5 +197,19 @@ public abstract class AbstractUser
     public void setUserCountry(Country userCountry)
     {
         this.userCountry = userCountry;
+    }
+
+
+
+    public String getDatabaseURL()
+    {
+        return databaseURL;
+    }
+
+
+
+    public void setDatabaseURL(String databaseURL)
+    {
+        this.databaseURL = databaseURL;
     }
 }

@@ -21,6 +21,7 @@ public class ElasticSearchUser extends AbstractUser {
             esUser.setSyncJobId(jobId);
             esUser.setAccessCode(ac);
             esUser.setId(user.getId());
+            esUser.setDatabaseURL(user.getDatabaseURL());
             esUser.setFirstName(user.getFirstName());
             esUser.setLastName(user.getLastName());
             esUser.setEmail(user.getEmail());
