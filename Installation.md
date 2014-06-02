@@ -15,14 +15,13 @@ Linux (Ubuntu) Installation Steps
 1. mkdir compro
 2. cd compro
 3. wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.2.0.deb  
-4. sudo dpkg -i elasticsearch-1.1.1.deb
+4. sudo dpkg -i elasticsearch-1.2.0.deb
 5. sudo update-rc.d elasticsearch defaults 95 10
 6. sudo nano /etc/elasticsearch/elasticsearch.yml
 7. Add "script.disable_dynamic: true" at the end of file and save.  
 8. cd /usr/share/elasticsearch/bin
 9. Run "sudo ./plugin -install royrusso/elasticsearch-HQ" to install ElasticSearch-HQ plugin (http://www.elastichq.org/)
-10. sudo /etc/init.d/elasticsearch start  
-11. sudo /etc/init.d/elasticsearch stop  
+10. sudo service elasticsearch start  
 
 ###Install Git 
 1. sudo apt-get install git-core
@@ -42,10 +41,10 @@ Linux (Ubuntu) Installation Steps
 
 
 ###Install Tomcat
-1. wget http://mirror.reverse.net/pub/apache/tomcat/tomcat-7/v7.0.53/bin/apache-tomcat-7.0.53.tar.gz
-2. tar xvzf apache-tomcat-7.0.53.tar.gz
-3. rm apache-tomcat-7.0.53.tar.gz
-4. sudo mv apache-tomcat-7.0.53/ /usr/share/tomcat7
+1. wget http://apache.mirrors.lucidnetworks.net/tomcat/tomcat-7/v7.0.54/bin/apache-tomcat-7.0.54.tar.gz  
+2. tar xvzf apache-tomcat-7.0.54.tar.gz
+3. rm apache-tomcat-7.0.54.tar.gz
+4. sudo mv apache-tomcat-7.0.54/ /usr/share/tomcat7
 5. sudo nano /etc/environment
 6. Add following enviornment variables and save file
   * CATALINA_HOME="/usr/share/tomcat7"
@@ -87,15 +86,15 @@ Linux (Ubuntu) Installation Steps
 15. sudo chmod 755 /etc/init.d/tomcat7
 16. sudo ln -s /etc/init.d/tomcat7 /etc/rc1.d/K99tomcat
 17. sudo ln -s /etc/init.d/tomcat7 /etc/rc2.d/S99tomcat
-18. sudo /etc/init.d/tomcat7 start
+18. sudo service tomcat7 start  
 
 ###Run Application
 1. cd compro
 2. git clone https://github.com/deshbir/myeltanalytics
 3. cd myeltanalytics
-4. sudo /etc/init.d/tomcat7 stop
+4. sudo service tomcat7 stop
 5. gradle deploy
-6. sudo /etc/init.d/tomcat7 start
+6. sudo service tomcat7 start  
 7. Open "http://localhost:8080/myeltanalytics/admin/" in browser
 
 
