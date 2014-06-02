@@ -14,7 +14,7 @@ Linux (Ubuntu) Installation Steps
 ###Install ElasticSearch
 1. mkdir compro
 2. cd compro
-3. wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb
+3. wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.2.0.deb  
 4. sudo dpkg -i elasticsearch-1.1.1.deb
 5. sudo update-rc.d elasticsearch defaults 95 10
 6. sudo nano /etc/elasticsearch/elasticsearch.yml
