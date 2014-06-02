@@ -1,5 +1,13 @@
-var Util = new function() {    
+var Util = new function() { 
+    var iframeWidth = $(window).width() - 100; 
+    var iframeHeight = $(window).height() - 50; 
     this.openReport = function (url) {
-        window.open(url,'_blank');           
-    };    
+        $.fancybox({
+            href: url,
+            type: "iframe",
+            autoSize: false,
+            minWidth:iframeWidth,
+            minHeight:iframeHeight
+        })         
+    };   
 }

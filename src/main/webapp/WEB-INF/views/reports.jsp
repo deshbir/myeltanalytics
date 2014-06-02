@@ -6,12 +6,10 @@
         <link href="<c:url value="/styles/libs/bootstrap.min.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/libs/font-awesome.min.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/main.css"/>" rel="stylesheet">
-        <link href="<c:url value="/styles/libs/odometer-theme-default.css"/>" rel="stylesheet">
-        <script src="<c:url value="/scripts/UsersSyncHelper.js"/>" type="text/javascript"></script>
-        <script src="<c:url value="/scripts/SubmissionsSyncHelper.js"/>" type="text/javascript"></script>
-         <script src="<c:url value="/scripts/Util.js"/>" type="text/javascript"></script>
+        <link href="<c:url value="/styles/libs/jquery.fancybox.css"/>" rel="stylesheet">
         <script src="<c:url value="/scripts/libs/jquery-1.11.1.min.js"/>" type="text/javascript"></script>
-        <script src="<c:url value="/scripts/libs/odometer.min.js"/>" type="text/javascript"></script>    
+        <script src="<c:url value="/scripts/libs/jquery.fancybox.js"/>" type="text/javascript"></script>
+        <script src="<c:url value="/scripts/Util.js"/>" type="text/javascript"></script>
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
