@@ -46,11 +46,15 @@ public class Helper
     public static final String USER_WITHOUT_ACCESSCODE = "user_without_accesscode";
     public static final String ADDITIONAL_ACCESSCODE = "additional_accesscode";
     public static final String CAPES_MODEL = "capes_model";
+    public static final String ICPNA_INSTITUTION = "ICPNA";
+    public static final String SEVEN_INSTITUTION = "7";
     public static final String USERS_INDEX = "users";
     public static final String USERS_TYPE = "users_info";
     public static final String USERS_ALL_ALIAS = "users_all";
     public static final String ACCESS_CODES_ALL_ALIAS = "accesscodes_all";
     public static final String USERS_CAPES_ALIAS = "users_capes";
+    public static final String USERS_ICPNA_ALIAS = "users_icpna";
+    public static final String USERS_SEVEN_ALIAS = "users_seven";
    
     
     //Submissions Constants

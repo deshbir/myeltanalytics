@@ -1,5 +1,5 @@
 {
-  "title": "CAPES Users",
+  "title": "Access Codes by Product",
   "services": {
     "query": {
       "list": {
@@ -73,7 +73,7 @@
           },
           "auto_int": false,
           "resolution": 100,
-          "interval": "1M",
+          "interval": "30d",
           "intervals": [
             "auto",
             "1s",
@@ -86,8 +86,7 @@
             "12h",
             "1d",
             "1w",
-            "1y",
-            "1M"
+            "1y"
           ],
           "lines": false,
           "fill": 0,
@@ -111,84 +110,7 @@
             "value_type": "cumulative",
             "query_as_alias": true
           },
-          "title": "New Users added VS Time"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Options",
-      "height": "280px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 6,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "studentType",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "unpinned",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "Users by learning model"
-        },
-        {
-          "error": false,
-          "span": 6,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "institution.name",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "bar",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              2
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "Users By Institution"
+          "title": "Access Codes activated VS Time"
         }
       ],
       "notice": false
@@ -231,7 +153,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Users By Product"
+          "title": "Access Codes By Product"
         },
         {
           "error": false,
@@ -265,97 +187,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Users By Discipline"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Row3",
-      "height": "250px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 12,
-          "editable": true,
-          "type": "map",
-          "loadingEditor": false,
-          "map": "world",
-          "colors": [
-            "#A0E2E2",
-            "#265656"
-          ],
-          "size": 100,
-          "exclude": [],
-          "spyable": true,
-          "queries": {
-            "mode": "unpinned",
-            "ids": [
-              0
-            ]
-          },
-          "title": "Users by country",
-          "field": "country.code"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Events",
-      "height": "650px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 12,
-          "editable": true,
-          "group": [
-            "default"
-          ],
-          "type": "table",
-          "size": 100,
-          "pages": 5,
-          "offset": 0,
-          "sort": [
-            "_score",
-            "desc"
-          ],
-          "style": {
-            "font-size": "9pt"
-          },
-          "overflow": "min-height",
-          "fields": [
-            "name",
-            "email",
-            "institution.id",
-            "institution.name",
-            "userType"
-          ],
-          "highlight": [],
-          "sortable": true,
-          "header": true,
-          "paging": true,
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              2
-            ]
-          },
-          "field_list": true,
-          "status": "Stable",
-          "trimFactor": 300,
-          "normTimes": true,
-          "title": "Documents",
-          "all_fields": false,
-          "localTime": false,
-          "timeField": "@timestamp"
+          "title": "Access Codes By Discipline"
         }
       ],
       "notice": false
@@ -365,7 +197,7 @@
   "index": {
     "interval": "none",
     "pattern": "[logstash-]YYYY.MM.DD",
-    "default": "users_capes",
+    "default": "accesscodes_all",
     "warm_fields": true
   },
   "style": "light",

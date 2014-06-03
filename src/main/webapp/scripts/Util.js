@@ -1,13 +1,17 @@
 var Util = new function() { 
-    var iframeWidth = $(window).width() - 100; 
-    var iframeHeight = $(window).height() - 100; 
-    this.openReport = function (url) {
+
+    this.openReport = function (filename) {
+        var iframeWidth = $(window).width() - 100; 
+        var iframeHeight = $(window).height() - 100; 
+        var fullURL = "index.html#/dashboard/file/" + filename;
+        
         $.fancybox({
-            href: url,
+            href: fullURL,
             type: "iframe",
             autoSize: false,
             minWidth:iframeWidth,
             minHeight:iframeHeight
         })         
-    };   
+    };
+    
 }

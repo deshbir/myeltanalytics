@@ -220,6 +220,12 @@ public class UsersSyncService
             
             AndFilterBuilder capesModelUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("studentType", Helper.CAPES_MODEL));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_CAPES_ALIAS, capesModelUsersFilter).execute().actionGet();
+            
+            AndFilterBuilder ICPNAInstUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("institution.id", Helper.ICPNA_INSTITUTION));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_ICPNA_ALIAS, ICPNAInstUsersFilter).execute().actionGet();
+            
+            AndFilterBuilder SevenInstUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("institution.id", Helper.SEVEN_INSTITUTION));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_SEVEN_ALIAS, SevenInstUsersFilter).execute().actionGet();
         }      
     }
     
@@ -330,6 +336,10 @@ public class UsersSyncService
                  .startObject("institution")
                      .startObject("properties")
                          .startObject("name")
+                             .field("type", "string")                      
+                             .field("index", "not_analyzed")
+                         .endObject()
+                         .startObject("id")
                              .field("type", "string")                      
                              .field("index", "not_analyzed")
                          .endObject()
