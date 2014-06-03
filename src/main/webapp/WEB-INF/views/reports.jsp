@@ -10,6 +10,7 @@
         <script src="<c:url value="/scripts/libs/jquery-1.11.1.min.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/libs/jquery.fancybox.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/Util.js"/>" type="text/javascript"></script>
+        <script src="https://rawgithub.com/kayahr/jquery-fullscreen-plugin/master/jquery.fullscreen.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
