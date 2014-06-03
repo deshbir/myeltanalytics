@@ -1,5 +1,5 @@
 {
-  "title": "CAPES Users",
+  "title": "SEVEN Users",
   "services": {
     "query": {
       "list": {
@@ -365,7 +365,7 @@
   "index": {
     "interval": "none",
     "pattern": "[logstash-]YYYY.MM.DD",
-    "default": "users_capes",
+    "default": "users_seven",
     "warm_fields": true
   },
   "style": "light",

@@ -38,25 +38,25 @@
                             <table class="table table-bordered">
                                 <tr>
                                      <td>
-                                         <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                         <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                          <span class="reportsHeading">Registrations FY11</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Registrations FY12</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Registrations FY13</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Registrations FY14(Current)</span>
                                      </td>
                                 </tr>
@@ -71,32 +71,26 @@
                             <table class="table table-bordered">
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#" onClick="Util.openReport('index.html#/dashboard/file/users_all.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('users_all.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">All users</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('users_by_product.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Users by product</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('users_by_country.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Users by country / region</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('users_by_learning_model.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Self-paced vs instructor-led</span>
-                                     </td>
-                                </tr>
-                                <tr>
-                                     <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
-                                        <span class="reportsHeading">New Users</span>
                                      </td>
                                 </tr>
                             </table>
@@ -110,31 +104,31 @@
                             <table class="table table-bordered">
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#" onClick="Util.openReport('index.html#/dashboard/file/users_capes.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('users_capes.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">CAPES</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">ELTeach</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>                                        
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('users_icpna.json')"><i class="fa fa-lg fa-external-link"></i></a></span>                                        
                                         <span class="reportsHeading">ICPNA</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">eStudy</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('users_seven.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Seven</span>
                                      </td>
                                 </tr>
@@ -151,37 +145,37 @@
                             <table class="table table-bordered">
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('accesscodes_all.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">All Access codes</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">AACR FY11</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">AACR FY12</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">AACR FY13</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">AACR FY14 (Current)</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>   
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a href="#" onClick="Util.openReport('accesscodes_by_product.json')"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Access codes activated by product</span>
                                      </td>
                                 </tr>                               
@@ -196,37 +190,37 @@
                             <table class="table table-bordered">
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">All CAPES Model(OCC etc.)</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">CAPES (Brazil)</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Users changed levels</span>                                                                              
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Users had not started level after placement test</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Average time spent per level</span>
                                      </td>
                                 </tr>
                                  <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Users without access for more than 30 days</span>
                                      </td>
                                 </tr>
@@ -241,19 +235,19 @@
                             <table class="table table-bordered">
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">All Activities and Assignments</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Assignments only</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Examview</span>
                                      </td>
                                 </tr>
@@ -270,31 +264,31 @@
                             <table class="table table-bordered">
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Submissions FY11</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Submissions FY12</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Submissions FY13</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Submissions FY14 (Current)</span>
                                      </td>
                                 </tr>
                                 <tr>
                                      <td>
-                                        <span class="pull-right"><a href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
+                                        <span class="pull-right"><a class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a></span>
                                         <span class="reportsHeading">Grades posted VS activity</span>
                                      </td>
                                 </tr>

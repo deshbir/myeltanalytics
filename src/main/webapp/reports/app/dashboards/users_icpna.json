@@ -1,5 +1,5 @@
 {
-  "title": "CAPES Users",
+  "title": "ICPNA Users",
   "services": {
     "query": {
       "list": {
@@ -365,7 +365,7 @@
   "index": {
     "interval": "none",
     "pattern": "[logstash-]YYYY.MM.DD",
-    "default": "users_capes",
+    "default": "users_icpna",
     "warm_fields": true
   },
   "style": "light",
