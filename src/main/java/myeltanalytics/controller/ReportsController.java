@@ -31,7 +31,7 @@ public class ReportsController
 
     @RequestMapping("")
     public String index(Model model) {        
-        return "reports";
+        return "reports.jsp";
     }
     
     
