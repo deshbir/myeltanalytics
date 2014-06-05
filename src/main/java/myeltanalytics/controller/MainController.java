@@ -37,7 +37,7 @@ public class MainController {
         model.addAttribute("submissionsJobPercent", submissionsPercentProcessed);
         model.addAttribute("submissionsJobInfo", SubmissionsSyncService.jobInfo);
         
-        return "admin.jsp";
+        return "admin";
     }
     
     

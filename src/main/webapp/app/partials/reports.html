@@ -1,0 +1,134 @@
+<div class="container" ng-controller="ReportsController">
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-primary reports-panel" ng-cloak>
+            <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> {{reports.registrations.title}}</strong></div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr ng-repeat="report in reports.registrations.list">
+                        <td>
+                            <span class="pull-right" ng-switch="report.disabled">
+                                <a ng-switch-when="true" class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a>
+                                <a href="#" ng-switch-default ng-click="openReport(report.file)"><i class="fa fa-lg fa-external-link"></i></a>
+                            </span>
+                            <span class="reportsHeading">{{report.name}}</span>
+                        </td>
+                    </tr>  
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary reports-panel" ng-cloak>
+            <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> {{reports.uniqueUsers.title}}</strong></div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr ng-repeat="report in reports.uniqueUsers.list">
+                        <td>
+                            <span class="pull-right" ng-switch="report.disabled">
+                                <a ng-switch-when="true" class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a>
+                                <a href="#" ng-switch-default ng-click="openReport(report.file)"><i class="fa fa-lg fa-external-link"></i></a>
+                            </span>
+                            <span class="reportsHeading">{{report.name}}</span>
+                        </td>
+                    </tr>                   
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary reports-panel" ng-cloak>
+            <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> {{reports.usersByInstitute.title}}</strong></div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr ng-repeat="report in reports.usersByInstitute.list">
+                        <td>
+                            <span class="pull-right" ng-switch="report.disabled">
+                                <a ng-switch-when="true" class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a>
+                                <a href="#" ng-switch-default ng-click="openReport(report.file)"><i class="fa fa-lg fa-external-link"></i></a>
+                            </span>
+                            <span class="reportsHeading">{{report.name}}</span>
+                        </td>
+                    </tr>      
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-primary reports-panel" ng-cloak>
+            <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> {{reports.accessCodes.title}}</strong></div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr ng-repeat="report in reports.accessCodes.list">
+                        <td>
+                            <span class="pull-right" ng-switch="report.disabled">
+                                <a ng-switch-when="true" class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a>
+                                <a href="#" ng-switch-default ng-click="openReport(report.file)"><i class="fa fa-lg fa-external-link"></i></a>
+                            </span>
+                            <span class="reportsHeading">{{report.name}}</span>
+                        </td>
+                    </tr>      
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary reports-panel" ng-cloak>
+            <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> {{reports.capes.title}}</strong></div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr ng-repeat="report in reports.capes.list">
+                        <td>
+                            <span class="pull-right" ng-switch="report.disabled">
+                                <a ng-switch-when="true" class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a>
+                                <a href="#" ng-switch-default ng-click="openReport(report.file)"><i class="fa fa-lg fa-external-link"></i></a>
+                            </span>
+                            <span class="reportsHeading">{{report.name}}</span>
+                        </td>
+                    </tr>      
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary reports-panel" ng-cloak>
+            <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> {{reports.completedActivities.title}}</strong></div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr ng-repeat="report in reports.completedActivities.list">
+                        <td>
+                            <span class="pull-right" ng-switch="report.disabled">
+                                <a ng-switch-when="true" class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a>
+                                <a href="#" ng-switch-default ng-click="openReport(report.file)"><i class="fa fa-lg fa-external-link"></i></a>
+                            </span>
+                            <span class="reportsHeading">{{report.name}}</span>
+                        </td>
+                    </tr>      
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-primary reports-panel" ng-cloak>
+            <div class="panel-heading"><strong><i class="fa fa-bar-chart-o fa-lg"></i> {{reports.submissions.title}}</strong></div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                     <tr ng-repeat="report in reports.submissions.list">
+                        <td>
+                            <span class="pull-right" ng-switch="report.disabled">
+                                <a ng-switch-when="true" class="disabled" href="#"><i class="fa fa-lg fa-external-link"></i></a>
+                                <a href="#" ng-switch-default ng-click="openReport(report.file)"><i class="fa fa-lg fa-external-link"></i></a>
+                            </span>
+                            <span class="reportsHeading">{{report.name}}</span>
+                        </td>
+                    </tr>      
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
