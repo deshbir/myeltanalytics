@@ -67,6 +67,9 @@ public class Helper
     public static final String IGNORE_INSTITUTIONS = "('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI')";
     public static final long SQL_RECORDS_LIMIT = 100000;
     
+    public static final String DEFAULT_ERROR_MESSAGE = "It looks like something went wrong and an error has occurred. Please try agin later.";
+    public static final String MYSQL_ERROR_MESSAGE = "Unable to communicate with MySQL Server. Please check MySQL Server configuration in Administration Tab.";
+    
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;
     
@@ -165,5 +168,14 @@ public class Helper
                 )
             .execute()
             .actionGet();        
+    }
+    
+    public static String constructErrorResponse(String errorMessage) {
+        String response = "{\"status\":\"error\",\"errorMessage\":\"" + errorMessage + "\"}";
+        return response;
+    }
+    
+    public static String constructSuccessResponse() {
+        return "{\"status\":\"success\"}";
     }
 }

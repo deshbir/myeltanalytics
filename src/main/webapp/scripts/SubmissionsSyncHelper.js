@@ -38,20 +38,24 @@ var SubmissionsSyncHelper = new function() {
         $("#submissionsStopButton i.fa-spin").show();
         
         $.get("/myeltanalytics/submissions/stopSync", function(data){
-            
+           
+           var responseJson = eval("(" + data + ")");
+           if (responseJson.status == "error") {
+               Util.showError(responseJson.errorMessage);
+           } else {
+               $("#submissionsJobStatus").removeClass("badge-info").addClass("badge-error");
+               $("#submissionsJobStatus").html("Paused");
+               
+               $("#submissionsProgressContainer").removeClass("active");
+               $("#submissionsSyncPanel .panel-heading i").removeClass("fa-spin"); 
+               
+               $("#submissionsStopButton").hide();
+               $("#submissionsResumeButton").show();
+               $("#submissionsStartButton").show();
+           }  
            $("#submissionsStopButton").removeAttr("disabled");
            $("#submissionsStopButton i.fa-stop").show();
            $("#submissionsStopButton i.fa-spin").hide();
-            
-           $("#submissionsJobStatus").removeClass("badge-info").addClass("badge-error");
-           $("#submissionsJobStatus").html("Paused");
-           
-           $("#submissionsProgressContainer").removeClass("active");
-           $("#submissionsSyncPanel .panel-heading i").removeClass("fa-spin"); 
-           
-           $("#submissionsStopButton").hide();
-           $("#submissionsResumeButton").show();
-           $("#submissionsStartButton").show();
         });
     };
     
@@ -65,29 +69,33 @@ var SubmissionsSyncHelper = new function() {
         $.get("/myeltanalytics/submissions/startSync", function(data){
             
             var responseJson = eval("(" + data + ")");
-            $("#submissionsTotalRecords").html(responseJson.totalRecords);
-            $("#submissionsJobStartDateTime").html(responseJson.startDateTime);
-            $("#submissionsSuccessRecords").html("0");
-            $("#submissionsErrorRecords").html("0");
-            
-            $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-            $("#submissionsJobStatus").html("InProgress");
-            
-            $("#submissionsProgressContainer .progress-bar").css('width', '0%');
-            $("#submissionsProgressContainer .progress-bar").html('0%');
-            $("#submissionsProgressContainer").addClass("active"); 
-            
+            if (responseJson.status == "error") {
+                Util.showError(responseJson.errorMessage);
+            } else {
+                $("#submissionsTotalRecords").html(responseJson.totalRecords);
+                $("#submissionsJobStartDateTime").html(responseJson.startDateTime);
+                $("#submissionsSuccessRecords").html("0");
+                $("#submissionsErrorRecords").html("0");
+                
+                $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+                $("#submissionsJobStatus").html("InProgress");
+                
+                $("#submissionsProgressContainer .progress-bar").css('width', '0%');
+                $("#submissionsProgressContainer .progress-bar").html('0%');
+                $("#submissionsProgressContainer").addClass("active"); 
+                
+                $("#submissionsResumeButton").hide();
+                $("#submissionsStartButton").hide();
+                $("#submissionsStopButton").show();
+              
+                $("#submissionsSyncPanel .panel-heading i").addClass("fa-spin"); 
+               
+                SubmissionsSyncHelper.triggerFetchingSyncStatus();
+            }   
             $("#submissionsStartButton").removeAttr("disabled");
             $("#submissionsResumeButton").removeAttr("disabled");
             $("#submissionsStartButton i.fa-play").show();
             $("#submissionsStartButton i.fa-spin").hide();
-            $("#submissionsResumeButton").hide();
-            $("#submissionsStartButton").hide();
-            $("#submissionsStopButton").show();
-          
-            $("#submissionsSyncPanel .panel-heading i").addClass("fa-spin"); 
-           
-            SubmissionsSyncHelper.triggerFetchingSyncStatus();
         });
     };
     
@@ -100,22 +108,26 @@ var SubmissionsSyncHelper = new function() {
         
         $.get("/myeltanalytics/submissions/resumeSync", function(data){
             var responseJson = eval("(" + data + ")");
-            $("#submissionsTotalRecords").html(responseJson.totalRecords);
-            
-            $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-            $("#submissionsJobStatus").html("InProgress");
-            
+            if (responseJson.status == "error") {
+                Util.showError(responseJson.errorMessage);
+            } else {
+                $("#submissionsTotalRecords").html(responseJson.totalRecords);
+                
+                $("#submissionsJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
+                $("#submissionsJobStatus").html("InProgress");
+                
+                $("#submissionsResumeButton").hide();
+                $("#submissionsStartButton").hide();
+                $("#submissionsStopButton").show();
+              
+                $("#submissionsSyncPanel .panel-heading i").addClass("fa-spin"); 
+               
+                SubmissionsSyncHelper.triggerFetchingSyncStatus();
+            }  
             $("#submissionsStartButton").removeAttr("disabled");
             $("#submissionsResumeButton").removeAttr("disabled");
             $("#submissionsResumeButton i.fa-play-circle-o").show();
             $("#submissionsResumeButton i.fa-spin").hide();
-            $("#submissionsResumeButton").hide();
-            $("#submissionsStartButton").hide();
-            $("#submissionsStopButton").show();
-          
-            $("#submissionsSyncPanel .panel-heading i").addClass("fa-spin"); 
-           
-            SubmissionsSyncHelper.triggerFetchingSyncStatus();
         });
     };
     

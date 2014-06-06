@@ -5,12 +5,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="<c:url value="/styles/libs/bootstrap.min.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/libs/font-awesome.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="/styles/main.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/libs/odometer-theme-default.css"/>" rel="stylesheet">
+        <link href="<c:url value="/styles/main.css"/>" rel="stylesheet">
+        <script src="<c:url value="/scripts/libs/jquery-1.11.1.min.js"/>" type="text/javascript"></script>
+        <script src="<c:url value="/scripts/libs/bootstrap.min.js"/>" type="text/javascript"></script>
+        <script src="<c:url value="/scripts/libs/odometer.min.js"/>" type="text/javascript"></script>
+        <script src="<c:url value="/scripts/Util.js"/>" type="text/javascript"></script>    
         <script src="<c:url value="/scripts/UsersSyncHelper.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/SubmissionsSyncHelper.js"/>" type="text/javascript"></script>
-        <script src="<c:url value="/scripts/libs/jquery-1.11.1.min.js"/>" type="text/javascript"></script>
-        <script src="<c:url value="/scripts/libs/odometer.min.js"/>" type="text/javascript"></script>    
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -23,14 +25,16 @@
            <!-- Collect the nav links, forms, and other content for toggling -->
            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
              <ul class="nav navbar-nav">
-               <li><a href="<c:url value="../app/index.html"/>"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>   
-               <li class="active"><a href="<c:url value="/admin"/>"><i class="fa fa-gear fa-lg"></i> Administration</a></li>
+               <li><a href="app/index.html"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>   
+               <li class="active"><a href="<c:url value="/sync"/>"><i class="fa fa-refresh fa-lg"></i> Sync</a></li>
+               <li><a href="app/index.html"><i class="fa fa-gear fa-lg"></i> Administration</a></li>
              </ul>
            </div>
          </div>
        </nav>
         
        <div class="container">
+             <div class="row" id="errorMessage"></div>
             <div class="row">
                 <div class="col-md-6">
                     <div id="usersSyncPanel" class="panel panel-primary">

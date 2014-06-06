@@ -123,7 +123,7 @@ public class UsersSyncService
         updateUserStatus();
         
         userSyncExecutor.shutdown();
-        userSyncExecutor.awaitTermination(1, TimeUnit.MINUTES);    
+        userSyncExecutor.awaitTermination(2, TimeUnit.MINUTES);    
     }
     
     public void resumeSync() throws JsonProcessingException {
@@ -256,20 +256,21 @@ public class UsersSyncService
                 jobInfo.setJobId(lastJobId);
                 GetResponse lastJobResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
                 Map<String,Object> map  = lastJobResponse.getSourceAsMap();
-                jobInfo.setLastIdentifier((String) map.get(Helper.LAST_IDENTIFIER));
-                jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
-                jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
-                jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
-                jobInfo.setStartDateTime((String) map.get(Helper.START_DATETIME));
-                String jobStatus = (String) map.get(Helper.JOB_STATUS);
-                //If server shut-down while job is running, status is still "InProgress" in Database, but the job is actually terminated/paused
-                if (jobStatus.equals(Helper.STATUS_INPROGRESS)) {
-                    jobInfo.setJobStatus(Helper.STATUS_PAUSED);
-                    updateUserStatus();
-                } else {
-                    jobInfo.setJobStatus((String) map.get(Helper.JOB_STATUS));
+                if (map != null) {
+                    jobInfo.setLastIdentifier((String) map.get(Helper.LAST_IDENTIFIER));
+                    jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
+                    jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
+                    jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
+                    jobInfo.setStartDateTime((String) map.get(Helper.START_DATETIME));
+                    String jobStatus = (String) map.get(Helper.JOB_STATUS);
+                    //If server shut-down while job is running, status is still "InProgress" in Database, but the job is actually terminated/paused
+                    if (jobStatus.equals(Helper.STATUS_INPROGRESS)) {
+                        jobInfo.setJobStatus(Helper.STATUS_PAUSED);
+                        updateUserStatus();
+                    } else {
+                        jobInfo.setJobStatus((String) map.get(Helper.JOB_STATUS));
+                    }
                 }
-                
             }
         }
     }
