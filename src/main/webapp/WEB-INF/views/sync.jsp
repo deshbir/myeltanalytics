@@ -25,9 +25,9 @@
            <!-- Collect the nav links, forms, and other content for toggling -->
            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
              <ul class="nav navbar-nav">
-               <li><a href="app/index.html"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>   
+               <li><a href="app/index.html#/reports"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>   
                <li class="active"><a href="<c:url value="/sync"/>"><i class="fa fa-refresh fa-lg"></i> Sync</a></li>
-               <li><a href="app/index.html"><i class="fa fa-gear fa-lg"></i> Administration</a></li>
+               <li><a href="app/index.html#/admin"><i class="fa fa-gear fa-lg"></i> Admin</a></li>
              </ul>
            </div>
          </div>
@@ -41,7 +41,7 @@
                            <c:if test="${usersJobInfo.jobStatus eq 'InProgress'}">
                                 <c:set var="usersSpinClass" value="fa-spin"></c:set>
                            </c:if>  
-                           <div class="panel-heading"><i class="fa fa-gear fa-lg ${usersSpinClass}"></i><strong> Users</strong></div>
+                           <div class="panel-heading"><i class="fa fa-refresh fa-lg ${usersSpinClass}"></i><strong> Users</strong></div>
                            <div class="panel-body">
                                <c:choose>
                                    <c:when test="${usersJobInfo.jobStatus eq 'Completed'}">
@@ -127,7 +127,7 @@
                        <c:if test="${submissionsJobInfo.jobStatus eq 'InProgress'}">
                             <c:set var="submissionsSpinClass" value="fa-spin"></c:set>
                        </c:if>  
-                       <div class="panel-heading"><i class="fa fa-gear fa-lg ${submissionsSpinClass}"></i><strong> Submissions </strong></div>
+                       <div class="panel-heading"><i class="fa fa-refresh fa-lg ${submissionsSpinClass}"></i><strong> Submissions </strong></div>
                        <div class="panel-body">
                            <c:choose>
                            <c:when test="${submissionsJobInfo.jobStatus eq 'Completed'}">

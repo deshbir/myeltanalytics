@@ -39,3 +39,21 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
        });
 
 }]);
+
+myeltAnalyticsControllers.controller('NavigationController', ['$scope', '$location',
+    function ($scope, $location) {
+       $scope.isActive = function (viewLocation) {
+            var active = (viewLocation == $location.path());
+            return active;
+       };
+    }
+]);
+
+myeltAnalyticsControllers.controller('AdminController', ['$scope','$http',
+   function ($scope, $http) {
+     $http.get('../admin/mysqlinfo').success(function(data) {
+        $scope.mysqlInfo = data;
+     });     
+   }
+]);
+

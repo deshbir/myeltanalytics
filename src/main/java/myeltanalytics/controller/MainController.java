@@ -5,10 +5,14 @@ import java.io.IOException;
 import myeltanalytics.service.submissions.SubmissionsSyncService;
 import myeltanalytics.service.users.UsersSyncService;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class MainController {  
@@ -18,6 +22,15 @@ public class MainController {
     
     @Autowired
     private SubmissionsSyncService submissionsSyncService;
+    
+    @Value("${spring.datasource.username}")
+    private String dbUserName;
+    
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+    
+    @Value("${spring.datasource.url}")
+    private String dbURL; 
     
     private static boolean isESSetup;
     
@@ -54,6 +67,16 @@ public class MainController {
     @RequestMapping("/admin")
     public String admin(Model model) throws IOException {
         return "redirect:/app/index.html";
+    }
+    
+    @RequestMapping("/admin/mysqlinfo")
+    @ResponseBody
+    public String mysqlInfo(Model model) throws IOException, JSONException {
+        JSONObject sqlInfoJSON = new JSONObject();
+        sqlInfoJSON.put("dbUserName", dbUserName);
+        sqlInfoJSON.put("dbPassword", dbPassword);
+        sqlInfoJSON.put("dbURL", dbURL.substring(0, dbURL.indexOf("?")));
+        return sqlInfoJSON.toString();
     }
     
     

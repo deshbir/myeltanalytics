@@ -1,0 +1,31 @@
+<div class="container" ng-controller="AdminController">
+ <div class="row">
+   <div class="col-md-12">
+         <div class="panel panel-primary reports-panel">
+             <div class="panel-heading"><strong><i class="fa fa-gear fa-lg"></i> MySQL Server Configuration</strong></div>
+             <div class="panel-body">
+                 <table class="table table-bordered">
+                     <tr>
+                         <td>
+                             <span class="pull-right">{{mysqlInfo.dbURL}}</span>
+                             <span class="reportsHeading">Server URL</span>
+                         </td>
+                     </tr> 
+                     <tr>
+                         <td>
+                             <span class="pull-right">{{mysqlInfo.dbUserName}}</span>
+                             <span class="reportsHeading">UserName</span>
+                         </td>
+                     </tr> 
+                     <tr>
+                         <td>
+                             <span class="pull-right">{{mysqlInfo.dbPassword}}</span>
+                             <span class="reportsHeading">Password</span>
+                         </td>
+                     </tr> 
+                 </table>
+             </div>
+         </div>
+     </div>
+ </div>
+</div> 

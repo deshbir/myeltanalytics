@@ -68,7 +68,7 @@ public class Helper
     public static final long SQL_RECORDS_LIMIT = 100000;
     
     public static final String DEFAULT_ERROR_MESSAGE = "It looks like something went wrong and an error has occurred. Please try agin later.";
-    public static final String MYSQL_ERROR_MESSAGE = "Unable to communicate with MySQL Server. Please check MySQL Server configuration in Administration Tab.";
+    public static final String MYSQL_ERROR_MESSAGE = "Unable to communicate with MySQL Server. Please check MySQL Server configuration in Admin Tab.";
     
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;
