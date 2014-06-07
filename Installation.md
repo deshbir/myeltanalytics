@@ -74,7 +74,7 @@ Linux (Ubuntu) Installation Steps
 	exit 0 
 	```
 
-11. sudo chmod 755 /etc/init.d/tomcat7
+11. sudo chmod 755 /etc/init.d/tomcat7  
 12. sudo ln -s /etc/init.d/tomcat7 /etc/rc1.d/K99tomcat
 13. sudo ln -s /etc/init.d/tomcat7 /etc/rc2.d/S99tomcat
 14. sudo service tomcat7 start  
@@ -83,10 +83,10 @@ Linux (Ubuntu) Installation Steps
 1. sudo apt-get install nginx
 2. sudo nano /etc/nginx/sites-enabled/default
 3. In the "server" section, disable following lines    
-```
-root /usr/share/nginx/html;   
-index index.html index.htm   
-```
+	```
+	root /usr/share/nginx/html;   
+	index index.html index.htm   
+	```
 4. In the "server" section, delete default mapping for "/" and add following mappings  
 	```
 	location /   
