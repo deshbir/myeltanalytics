@@ -53,23 +53,25 @@ Linux (Ubuntu) Installation Steps
   * JRE_HOME="/usr/lib/jvm/java-7-oracle/jre"
 9. sudo nano /etc/init.d/tomcat7
 10. Add following snippet and save file  
-`# Tomcat auto-start`  
-`# description: Auto-starts tomcat`  
-`# processname: tomcat`  
-`# pidfile: /var/run/tomcat.pid`  
-`case $1 in`  
-`start)`  
-`sh /usr/share/tomcat7/bin/startup.sh`  
-`;;`  
-`stop)`  
-`sh /usr/share/tomcat7/bin/shutdown.sh`  
-`;;`  
-`restart)`  
-`sh /usr/share/tomcat7/bin/shutdown.sh`  
-`sh /usr/share/tomcat7/bin/startup.sh`  
-`;;`  
-`esac`  
-`exit 0`  
+```
+# Tomcat auto-start  
+# description: Auto-starts tomcat  
+# processname: tomcat  
+# pidfile: /var/run/tomcat.pid  
+case $1 in  
+start)  
+sh /usr/share/tomcat7/bin/startup.sh  
+;;  
+stop)  
+sh /usr/share/tomcat7/bin/shutdown.sh  
+;;  
+restart)  
+sh /usr/share/tomcat7/bin/shutdown.sh  
+sh /usr/share/tomcat7/bin/startup.sh  
+;;  
+esac  
+exit 0 
+``` 
 11. sudo chmod 755 /etc/init.d/tomcat7
 12. sudo ln -s /etc/init.d/tomcat7 /etc/rc1.d/K99tomcat
 13. sudo ln -s /etc/init.d/tomcat7 /etc/rc2.d/S99tomcat
@@ -79,28 +81,32 @@ Linux (Ubuntu) Installation Steps
 1. sudo apt-get install nginx
 2. sudo nano /etc/nginx/sites-enabled/default
 3. In the "server" section, disable following lines    
-`root /usr/share/nginx/html;`   
-`index index.html index.htm`   
-4. In the "server" section, delete default mapping for "/" and add following mappings
-`location /`   
-`{`   
-`		proxy_pass				http://localhost:8080;`   
-`		proxy_set_header		X-Real-IP $remote_addr;`   
-`		proxy_set_header		X-Forwarded-For $proxy_add_x_forwarded_for;`   
-`		proxy_set_header		Host $http_host;`   
-`		proxy_connect_timeout	90000;`   
-`		proxy_send_timeout		90000;`   
-`		proxy_read_timeout		96000;`   
-`		client_max_body_size	10M;`   
-`	}`   
+```
+root /usr/share/nginx/html;   
+index index.html index.htm   
+```
+4. In the "server" section, delete default mapping for "/" and add following mappings  
+```
+location /   
+{   
+	proxy_pass				http://localhost:8080;   
+	proxy_set_header		X-Real-IP $remote_addr;   
+	proxy_set_header		X-Forwarded-For $proxy_add_x_forwarded_for;   
+	proxy_set_header		Host $http_host;   
+	proxy_connect_timeout	90000;   
+	proxy_send_timeout		90000;   
+	proxy_read_timeout		96000;   
+	client_max_body_size	10M;   
+}   
 	
-`	location /search/`  
-`	{`   
-`		proxy_pass			http://localhost:9200/;`   
-`		proxy_set_header	X-Real-IP $remote_addr;`   
-`		proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;`   
-`		proxy_set_header	Host $http_host;`   
-`	}`  
+location /search/  
+{   
+    proxy_pass			http://localhost:9200/;       
+    proxy_set_header	X-Real-IP $remote_addr;       
+    proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;       
+    proxy_set_header	Host $http_host;       
+}  
+```
 5. Save the file   
 6. sudo service nginx restart
 7. Open "http://IP/myeltanalytics/search" in browser to navigate to ElasticSearch.
