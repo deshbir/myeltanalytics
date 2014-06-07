@@ -84,8 +84,9 @@ Linux (Ubuntu) Installation Steps
 2. sudo nano /etc/nginx/sites-enabled/default
 3. In the "server" section, disable following lines    
 	```
-	root /usr/share/nginx/html;   
-	index index.html index.htm   
+	root /usr/share/nginx/html;
+
+	index index.html index.htm;
 	```
 4. In the "server" section, delete default mapping for "/" and add following mappings  
 	```
@@ -120,6 +121,6 @@ Linux (Ubuntu) Installation Steps
 4. sudo service tomcat7 stop
 5. gradle deploy
 6. sudo service tomcat7 start  
-7. Open "http://localhost:8080/myeltanalytics/admin/" in browser to navigate to MyELTAnalytics Application.
+7. Open "http://IP/myeltanalytics/admin/" in browser to navigate to MyELTAnalytics Application.
 
 
