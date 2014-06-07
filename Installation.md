@@ -90,36 +90,55 @@ Linux (Ubuntu) Installation Steps
 
 ###Install NGINX
 1. sudo apt-get install nginx
-2. sudo nano /etc/nginx/sites-enabled/default
-3. In the "server" section, disable following lines    
+2. sudo nano /etc/nginx/nginx.conf    
+3. In the "http" section, comment out following lines    
 	```
-	root /usr/share/nginx/html;
+        include /etc/nginx/conf.d/*.conf;
 
-	index index.html index.htm;
+        include /etc/nginx/sites-enabled/*;
 	```
-4. In the "server" section, delete default mapping for "/" and add following mappings  
+4. In the end of "http" section, add following mappings  
 	```
-	location /   
-	{   
-		proxy_pass				http://localhost:8080;   
-		proxy_set_header		X-Real-IP $remote_addr;   
-		proxy_set_header		X-Forwarded-For $proxy_add_x_forwarded_for;   
-		proxy_set_header		Host $http_host;   
-		proxy_connect_timeout	90000;   
-		proxy_send_timeout		90000;   
-		proxy_read_timeout		96000;   
-		client_max_body_size	10M;   
-	}   
+	server {
+        listen       80;
+	        server_name  localhost;   
+	
+	        	
+	        location /myeltanalytics/
+		{
+			proxy_pass		http://localhost:8080/myeltanalytics/;
+		        proxy_set_header	X-Real-IP $remote_addr;
+			proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header	Host $http_host;
+			proxy_connect_timeout	90000;
+			proxy_send_timeout	90000;
+			proxy_read_timeout	96000;
+			client_max_body_size	10M;
+		}
 		
-	location /search/  
-	{   
-	    proxy_pass			http://localhost:9200/;       
-	    proxy_set_header	X-Real-IP $remote_addr;       
-	    proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;       
-	    proxy_set_header	Host $http_host;       
-	}  
+		location /search/
+		{
+			proxy_pass		http://localhost:9200/;
+			proxy_set_header	X-Real-IP $remote_addr;
+			proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header	Host $http_host;
+		}
+	}
 	```
-5. Save the file   
+5. Save the file
+6. sudo nano /usr/share/nginx/html/index.html
+7. Replace the contents of file with following:  
+	```
+	<!DOCTYPE html>      
+	<html>      
+		<head>      
+			<meta http-equiv="refresh" content="0; url=myeltanalytics" />       
+		</head>       
+		<body>        
+			<h4>Redirecting to MyELTAnalytics...</h4>        
+		</body>       
+	</html>    
+	```
 6. sudo service nginx restart
 7. Open "http://IP/myeltanalytics/search" in browser to navigate to ElasticSearch.
 
