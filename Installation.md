@@ -149,6 +149,6 @@ Linux (Ubuntu) Installation Steps
 4. sudo service tomcat7 stop
 5. gradle deploy
 6. sudo service tomcat7 start  
-7. Open "http://IP/myeltanalytics/admin/" in browser to navigate to MyELTAnalytics Application.
+7. Open "http://IP/myeltanalytics/" and "http://IP/"in browser to navigate to MyELTAnalytics Application.
 
 
