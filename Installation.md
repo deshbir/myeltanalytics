@@ -90,14 +90,19 @@ Linux (Ubuntu) Installation Steps
 
 ###Install NGINX
 1. sudo apt-get install nginx
-2. sudo nano /etc/nginx/nginx.conf    
-3. In the "http" section, comment out following lines    
+2. sudo apt-get install apache2-utils    
+3. cd /home/ubuntu/compro   
+4. mkdir nginx    
+5. sudo htpasswd -c /home/ubuntu/compro/nginx/.htpasswd admin 
+6. Enter password.
+7. sudo nano /etc/nginx/nginx.conf    
+8. In the "http" section, comment out following lines    
 	```
         include /etc/nginx/conf.d/*.conf;
 
         include /etc/nginx/sites-enabled/*;
 	```
-4. In the end of "http" section, add following mappings  
+9. In the end of "http" section, add following mappings  
 	```
 	server {
         listen       80;
@@ -120,14 +125,16 @@ Linux (Ubuntu) Installation Steps
 		{
 			proxy_pass		http://localhost:9200/;
 			proxy_set_header	X-Real-IP $remote_addr;
-			proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;
-			proxy_set_header	Host $http_host;
-		}
+			proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;    
+			proxy_set_header	Host $http_host;    
+                        auth_basic "Restricted";
+                        auth_basic_user_file /home/ubuntu/compro/nginx/.htpasswd;
+ 		}
 	}
 	```
-5. Save the file
-6. sudo nano /usr/share/nginx/html/index.html
-7. Replace the contents of file with following:  
+10. Save the file
+11. sudo nano /usr/share/nginx/html/index.html
+12. Replace the contents of file with following:  
 	```
 	<!DOCTYPE html>      
 	<html>      
@@ -139,8 +146,8 @@ Linux (Ubuntu) Installation Steps
 		</body>       
 	</html>    
 	```
-6. sudo service nginx restart
-7. Open "http://IP/myeltanalytics/search" in browser to navigate to ElasticSearch.
+13. sudo service nginx restart
+14. Open "http://IP/myeltanalytics/search" in browser to navigate to ElasticSearch.
 
 ###Deploy Application
 1. cd compro
