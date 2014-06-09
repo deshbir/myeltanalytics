@@ -3,6 +3,7 @@
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>MyELT Reporting App</title>
         <link href="<c:url value="/styles/libs/bootstrap.min.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/libs/font-awesome.min.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/libs/odometer-theme-default.css"/>" rel="stylesheet">
@@ -19,7 +20,7 @@
          <div class="container-fluid">
            <!-- Brand and toggle get grouped for better mobile display -->
            <div class="navbar-header">
-             <a class="navbar-brand" href="#"> MyELT Analytics</a>
+             <a class="navbar-brand" href="#"> MyELT Reporting App</a>
            </div>
        
            <!-- Collect the nav links, forms, and other content for toggling -->
