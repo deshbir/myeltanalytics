@@ -142,7 +142,7 @@ Linux (Ubuntu) Installation Steps
 			<meta http-equiv="refresh" content="0; url=myeltanalytics" />       
 		</head>       
 		<body>        
-			<h4>Redirecting to MyELTAnalytics...</h4>        
+			<h4>Redirecting to MyELT Reporting App...</h4>        
 		</body>       
 	</html>    
 	```
