@@ -16,16 +16,17 @@ Linux (Ubuntu) Installation Steps
 5. sudo update-rc.d elasticsearch defaults 95 10
 6. sudo nano /etc/elasticsearch/elasticsearch.yml
 7. Add "script.disable_dynamic: true" at the end of file and save.  
-8. cd /usr/share/elasticsearch/bin    
-9. sudo ./plugin -i elasticsearch/marvel/latest    
-10. cd /usr/share/elasticsearch/plugins/marvel/_site/kibana
-11. sudo nano config.js   
-12. Update value of "elasticsearch" variable to :    
+8. cd /usr/share/elasticsearch/bin   
+9. sudo ./plugin -install mobz/elasticsearch-head    
+10. sudo ./plugin -i elasticsearch/marvel/latest    
+11. cd /usr/share/elasticsearch/plugins/marvel/_site/kibana
+12. sudo nano config.js   
+13. Update value of "elasticsearch" variable to :    
 	
 	```
 	window.location.protocol+"//"+window.location.hostname+(window.location.port !== '' ? ':'+window.location.port : '') + "/search"
 	```
-13. sudo service elasticsearch start  
+14. sudo service elasticsearch start  
 
 ###Install Git 
 1. sudo apt-get install git-core
