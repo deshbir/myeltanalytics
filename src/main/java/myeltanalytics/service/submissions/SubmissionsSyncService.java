@@ -101,7 +101,7 @@ public class SubmissionsSyncService
         if (jobInfo.getLastIdentifier().equals("")) {
             query = query + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
         } else {
-            query = query + " and id > " + jobInfo.getLastIdentifier() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+            query = query + " where id > " + jobInfo.getLastIdentifier() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
         }
         
         jdbcTemplate.query(query,
