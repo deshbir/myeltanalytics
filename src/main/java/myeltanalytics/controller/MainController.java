@@ -23,12 +23,6 @@ public class MainController {
     @Autowired
     private SubmissionsSyncService submissionsSyncService;
     
-    @Value("${spring.datasource.username}")
-    private String dbUserName;
-    
-    @Value("${spring.datasource.password}")
-    private String dbPassword;
-    
     @Value("${spring.datasource.url}")
     private String dbURL; 
     
@@ -73,8 +67,6 @@ public class MainController {
     @ResponseBody
     public String mysqlInfo(Model model) throws IOException, JSONException {
         JSONObject sqlInfoJSON = new JSONObject();
-        sqlInfoJSON.put("dbUserName", dbUserName);
-        sqlInfoJSON.put("dbPassword", dbPassword);
         sqlInfoJSON.put("dbURL", dbURL.substring(0, dbURL.indexOf("?")));
         return sqlInfoJSON.toString();
     }
