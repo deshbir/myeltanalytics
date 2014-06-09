@@ -56,6 +56,9 @@ public class Helper
     public static final String USERS_ICPNA_ALIAS = "users_icpna";
     public static final String USERS_SEVEN_ALIAS = "users_seven";
    
+    public static final String SUBMISSIONS_ALL_ALIAS = "submissions_all";
+    public static final String SUBMISSIONS_ASSIGNMENTS_ALIAS = "submissions_assignments";
+    public static final String SUBMISSIONS_EXAMVIEW_ALIAS = "submissions_examview";
     
     //Submissions Constants
     public static final String SUBMISSIONS_INDEX = "submissions";    

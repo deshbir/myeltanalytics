@@ -346,9 +346,9 @@ public class ActivitySubmission
     
     public String getStatus(){
         if(progressSaved == 0){
-            return "Submitted";
+            return "submitted";
         } else {
-            return "In-Progress";  
+            return "inprogress";  
         }
     }
     
@@ -356,11 +356,11 @@ public class ActivitySubmission
     {
         int activityType = activity.getActivityType();
         if(activityType == 5){
-            return "ExamView";
+            return "examView";
         } else if(("").equals(activity.getAssignmentData())){
-            return "ExamView";
+            return "activity";
         } else {
-            return "Assignment";
+            return "assignment";
         }
     }
     

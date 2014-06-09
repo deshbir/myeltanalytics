@@ -22,6 +22,9 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.AndFilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -197,7 +200,16 @@ public class SubmissionsSyncService
         if (!Helper.isIndexExist(Helper.SUBMISSIONS_INDEX, elasticSearchClient)) {
             
             elasticSearchClient.admin().indices().create(new CreateIndexRequest(Helper.SUBMISSIONS_INDEX)
-                    .mapping(Helper.SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();      
+                    .mapping(Helper.SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();    
+            
+            TermsFilterBuilder submissionsAllFilter = FilterBuilders.termsFilter("status", "submitted");
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_ALL_ALIAS, submissionsAllFilter).execute().actionGet();
+            
+            AndFilterBuilder submissionsAssignmentsFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("type", "assignment"));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_ASSIGNMENTS_ALIAS, submissionsAssignmentsFilter).execute().actionGet();
+            
+            AndFilterBuilder submissionsExamviewFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("type", "examview"));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_EXAMVIEW_ALIAS, submissionsExamviewFilter).execute().actionGet();
         }      
     }
     
