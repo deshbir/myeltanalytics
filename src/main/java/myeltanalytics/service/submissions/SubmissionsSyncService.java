@@ -205,10 +205,10 @@ public class SubmissionsSyncService
             TermsFilterBuilder submissionsAllFilter = FilterBuilders.termsFilter("status", "submitted");
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_ALL_ALIAS, submissionsAllFilter).execute().actionGet();
             
-            AndFilterBuilder submissionsAssignmentsFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("type", "assignment"));
+            AndFilterBuilder submissionsAssignmentsFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("activityType", "assignment"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_ASSIGNMENTS_ALIAS, submissionsAssignmentsFilter).execute().actionGet();
             
-            AndFilterBuilder submissionsExamviewFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("type", "examview"));
+            AndFilterBuilder submissionsExamviewFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("activityType", "examview"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_EXAMVIEW_ALIAS, submissionsExamviewFilter).execute().actionGet();
         }      
     }
