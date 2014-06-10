@@ -171,7 +171,7 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                afterShow: function () {
                    //Add a fullscreen button -- Improve this
 
-                   $('<div class="expander"></div>').appendTo(this.inner).click(function () {
+                   $('<div class="fancybox-fullscreen"></div>').appendTo(this.skin).click(function () {
                        //Hook iframe content to jquery.fullscreen.js
                        $('iframe').contents().toggleFullScreen();
                    });

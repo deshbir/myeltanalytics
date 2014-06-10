@@ -67,19 +67,16 @@ body {
 }
 
 /* Fullscreen button for Fancybox */
-.expander {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    width: 40px;
-    height: 36px;
-    padding: 4px;
-    background: black center center no-repeat;
-    border: 2px solid white;
-    border-radius: 2px;
-    -webkit-border-radius: 2px;
-    z-index: 99999;
-    cursor: pointer;
+.fancybox-fullscreen {
+  background-image: url('../img/fancybox/fancybox_sprite.png');
+  background-position: 0 -152px;
+  cursor: pointer;
+  height: 36px;
+  left: -18px;
+  position: absolute;
+  top: -18px;
+  width: 36px;
+  z-index: 8040;
 }
 
 
