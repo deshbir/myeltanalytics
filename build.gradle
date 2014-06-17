@@ -18,28 +18,37 @@ repositories {
     maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
-dependencies { 
+dependencies {
+    
+    //Spring-boot Starter 
     compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-jdbc:0.5.0.M6")
+
+    //Spring JDBC
+    compile("org.apache.tomcat:tomcat-jdbc")
     compile("org.springframework:spring-jdbc")
+    compile("org.springframework.boot:spring-boot-starter-jdbc:0.5.0.M6")
+    compile("mysql:mysql-connector-java")
+    
+    //Spring Security
     compile("org.springframework.boot:spring-boot-starter-security")
     
-    //Tomcat Container
+    //Elasticsearch
+    compile ("org.elasticsearch:elasticsearch:1.1.1")
+    
+    //Tomcat
     compile("org.springframework.boot:spring-boot-starter-tomcat")
     compile("org.apache.tomcat.embed:tomcat-embed-jasper")
     
     compile("javax.servlet:jstl")
-    compile group:'com.fasterxml.jackson.core', name:'jackson-databind'
-    compile group:'org.springframework', name:'spring-jdbc'
-    compile group:'mysql', name:'mysql-connector-java',version: '5.1.26'    
-    compile group: 'log4j', name: 'log4j', version: '1.2.16'
-    compile group: 'org.json', name: 'json', version: '20090211'
-    compile 'dom4j:dom4j:1.5.1'
+    compile("com.fasterxml.jackson.core:jackson-databind")
+    compile("log4j:log4j:1.2.16")
+    compile("org.json:json:20090211")
+    compile("dom4j:dom4j:1.5.1")
     compile('net.sf.supercsv:super-csv:2.2.0')
+    
     testCompile("junit:junit")
-    //Elasticsearch
-    compile group: 'org.elasticsearch', name: 'elasticsearch', version: '1.1.1'
 }
+
 
 war {
     baseName = 'myeltanalytics'  

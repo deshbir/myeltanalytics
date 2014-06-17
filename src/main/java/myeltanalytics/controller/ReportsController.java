@@ -10,7 +10,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,13 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/reports")
 public class ReportsController
 {
-
-    @RequestMapping("")
-    public String index(Model model) {        
-        return "reports";
-    }
-    
-    
+      
     @RequestMapping(value="/generateUsersCSVReport",method=RequestMethod.POST)
     public void convertJSONToCSV(@RequestBody String resultData,HttpServletResponse response) throws IOException {
         // take out json-data from the request data

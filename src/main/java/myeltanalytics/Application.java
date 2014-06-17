@@ -20,6 +20,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Application {
     
+    /******************************
+    * ElasticSearch Properties
+    ******************************/
     @Value("${elasticsearch.host}")
     private String elasticSearchHost;
     
