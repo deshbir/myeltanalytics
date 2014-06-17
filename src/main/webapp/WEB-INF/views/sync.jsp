@@ -35,14 +35,14 @@
        </nav>
         
        <div class="container">
-             <div class="row" id="errorMessage"></div>
+            <div class="row" id="errorMessage"></div>
             <div class="row">
                 <div class="col-md-6">
                     <div id="usersSyncPanel" class="panel panel-primary">
                            <c:if test="${usersJobInfo.jobStatus eq 'InProgress'}">
                                 <c:set var="usersSpinClass" value="fa-spin"></c:set>
                            </c:if>  
-                           <div class="panel-heading"><i class="fa fa-refresh fa-lg ${usersSpinClass}"></i><strong> Users</strong></div>
+                           <div class="panel-heading"><i class="fa fa-refresh fa-lg ${usersSpinClass}"></i><strong> Users (MySQL)</strong></div>
                            <div class="panel-body">
                                <c:choose>
                                    <c:when test="${usersJobInfo.jobStatus eq 'Completed'}">
@@ -128,7 +128,7 @@
                        <c:if test="${submissionsJobInfo.jobStatus eq 'InProgress'}">
                             <c:set var="submissionsSpinClass" value="fa-spin"></c:set>
                        </c:if>  
-                       <div class="panel-heading"><i class="fa fa-refresh fa-lg ${submissionsSpinClass}"></i><strong> Submissions </strong></div>
+                       <div class="panel-heading"><i class="fa fa-refresh fa-lg ${submissionsSpinClass}"></i><strong> Submissions (MySQL) </strong></div>
                        <div class="panel-body">
                            <c:choose>
                            <c:when test="${submissionsJobInfo.jobStatus eq 'Completed'}">
@@ -209,6 +209,50 @@
                        </div>
                     </div>
                 </div>  
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="gaSyncPanel" class="panel panel-primary">
+                           <div class="panel-heading"><i class="fa fa-refresh fa-lg"></i><strong> Visits (Google Analytics)</strong></div>
+                           <div class="panel-body">
+                               <table class="table table-bordered">
+                                   <tbody>
+                                       <tr>
+                                           <td>
+                                               <span id="usersJobStatus" class="syncinfo badge pull-right"></span>
+                                               <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersJobStartDateTime" class="syncinfo pull-right"></span>
+                                               <i class="fa fa-calendar fa-lg"></i><span class="syncinfoHeading">Started At</span>
+                                           </td>
+                                       </tr> 
+                                       <tr>
+                                           <td>
+                                               <span id="usersTotalRecords" class="syncinfo odometer pull-right"></span> 
+                                               <i class="fa fa-road fa-lg"></i><span class="syncinfoHeading">Total records to Sync</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersSuccessRecords" class="syncinfo pull-right odometer text-success"></span>
+                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with MyELT Analytics</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersErrorRecords" class="syncinfo pull-right odometer text-danger"></span>
+                                               <i class="fa fa-warning fa-lg"></i><span class="syncinfoHeading">Failed records</span>
+                                           </td>
+                                       </tr>
+                                   </tbody>
+                               </table>
+                               <button id="gaStartButton" class="btn btn-primary" onclick="void(0);"><i class="fa fa-play fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
+                           </div>
+                       </div>
+                   </div>
             </div>
         </div>
         <script>
