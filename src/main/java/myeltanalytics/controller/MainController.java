@@ -56,14 +56,9 @@ public class MainController {
         model.addAttribute("submissionsJobInfo", SubmissionsSyncService.jobInfo);
         
         return "sync";
-    }
+    }    
     
-    @RequestMapping("/admin")
-    public String admin(Model model) throws IOException {
-        return "redirect:/app/index.html";
-    }
-    
-    @RequestMapping("/admin/mysqlinfo")
+    @RequestMapping("/settings/mysqlinfo")
     @ResponseBody
     public String mysqlInfo(Model model) throws IOException, JSONException {
         JSONObject sqlInfoJSON = new JSONObject();

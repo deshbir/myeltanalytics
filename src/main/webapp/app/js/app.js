@@ -8,9 +8,13 @@ myeltAnalyticsApp.config(['$routeProvider',
           templateUrl: 'partials/reports.html',
           controller: 'ReportsController'
         }).
-        when('/admin', {
-            templateUrl: 'partials/admin.html',
-            controller: 'AdminController'
+        when('/settings', {
+            templateUrl: 'partials/settings.html',
+            controller: 'SettingsController'
+        }).
+        when('/rules', {
+            templateUrl: 'partials/rules.html',
+            controller: 'RulesController'
         }).
         otherwise({
           redirectTo: '/reports'

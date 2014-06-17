@@ -197,11 +197,17 @@ myeltAnalyticsControllers.controller('NavigationController', ['$scope', '$locati
     }
 ]);
 
-myeltAnalyticsControllers.controller('AdminController', ['$scope','$http',
+myeltAnalyticsControllers.controller('SettingsController', ['$scope','$http',
    function ($scope, $http) {
-     $http.get('../admin/mysqlinfo').success(function(data) {
+     $http.get('../settings/mysqlinfo').success(function(data) {
         $scope.mysqlInfo = data;
      });     
    }
 ]);
+
+myeltAnalyticsControllers.controller('RulesController', ['$scope',
+    function ($scope, $http) {
+       
+    }
+ ]);
 

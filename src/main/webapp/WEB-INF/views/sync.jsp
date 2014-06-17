@@ -28,7 +28,8 @@
              <ul class="nav navbar-nav">
                <li><a href="app/index.html#/reports"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>   
                <li class="active"><a href="<c:url value="/sync"/>"><i class="fa fa-refresh fa-lg"></i> Sync</a></li>
-               <li><a href="app/index.html#/admin"><i class="fa fa-gear fa-lg"></i> Admin</a></li>
+               <li><a href="app/index.html#/settings"><i class="fa fa-gear fa-lg"></i> Settings</a></li>
+                <li><a href="app/index.html#/rules"><i class="fa fa-tasks fa-lg"></i> Rules</a></li>
              </ul>
            </div>
          </div>
