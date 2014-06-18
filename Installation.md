@@ -56,9 +56,9 @@ Linux (Ubuntu) Installation Steps
   * CATALINA_BASE="/usr/share/tomcat7"
   * JAVA_HOME="/usr/lib/jvm/java-7-oracle"
   * JRE_HOME="/usr/lib/jvm/java-7-oracle/jre"
-  * PATH="...(other path):$JAVA_HOME:$JRE_HOME"`
+  * PATH="...(other path):$JAVA_HOME:$JRE_HOME"
 7. sudo nano /usr/share/tomcat7/bin/catalina.sh
-8. Add following entries and save file.
+8. Add following entries at the top and save file.
   * JAVA_HOME="/usr/lib/jvm/java-7-oracle"	   	   
   * JRE_HOME="/usr/lib/jvm/java-7-oracle/jre"
 9. sudo nano /etc/init.d/tomcat7
@@ -97,7 +97,7 @@ Linux (Ubuntu) Installation Steps
 5. sudo htpasswd -c /home/ubuntu/compro/nginx/.htpasswd admin 
 6. Enter password.
 7. sudo nano /etc/nginx/nginx.conf    
-8. In the "http" section, comment out following lines    
+8. In the end of "http" section, comment out following lines    
 	```
         include /etc/nginx/conf.d/*.conf;
 
@@ -106,7 +106,7 @@ Linux (Ubuntu) Installation Steps
 9. In the end of "http" section, add following mappings  
 	```
 	server {
-        listen       80;
+                listen       80;
 	        server_name  localhost;   
 	
 	        	
@@ -148,15 +148,20 @@ Linux (Ubuntu) Installation Steps
 	</html>    
 	```
 13. sudo service nginx restart
-14. Open "http://IP/myeltanalytics/search" in browser to navigate to ElasticSearch.
+14. Open "http://IP/search" in browser to navigate to ElasticSearch.
 
 ###Deploy Application
-1. cd compro
-2. git clone https://github.com/deshbir/myeltanalytics
-3. cd myeltanalytics
-4. sudo service tomcat7 stop
-5. gradle deploy
-6. sudo service tomcat7 start  
-7. Open "http://IP/myeltanalytics/" and "http://IP/"in browser to navigate to MyELTAnalytics Application.
+1. cd /home/ubuntu
+2. sudo nano .netrc
+3. Add "machine github.com login USERNAME password PASSWORD" snippet at the top of file (replace USERNAME and PASSWORD with actual values).
+4. Save and close file.
+5. sudo chmod 600 ~/.netrc
+6. cd compro
+7. sudo git clone https://github.com/deshbir/myeltanalytics
+8. cd myeltanalytics
+9. sudo service tomcat7 stop
+10. sudo gradle deploy
+11. sudo service tomcat7 start  
+12. Open "http://IP/myeltanalytics/" and "http://IP/"in browser to navigate to MyELTAnalytics Application.
 
 
