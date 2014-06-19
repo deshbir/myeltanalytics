@@ -2,7 +2,8 @@ package myeltanalytics.controller;
 
 import java.io.IOException;
 
-import myeltanalytics.service.Helper;
+import myeltanalytics.model.Constants;
+import myeltanalytics.service.HelperService;
 import myeltanalytics.service.submissions.SubmissionsSyncService;
 import myeltanalytics.service.users.UsersSyncService;
 
@@ -26,6 +27,9 @@ public class SyncController {
     
     @Autowired
     private SubmissionsSyncService submissionsSyncService;
+    
+    @Autowired
+    private HelperService helperService;
     
     private final Logger LOGGER = Logger.getLogger(SyncController.class);
     
@@ -67,7 +71,7 @@ public class SyncController {
             return jobInfoJson.toString();
         } catch (Exception e) {
             LOGGER.error("Error fetching Users Sync Job Status: ", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
     }  
 
@@ -81,10 +85,10 @@ public class SyncController {
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
-            return Helper.constructErrorResponse(Helper.MYSQL_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
         } catch (Exception e) {
             LOGGER.error("Error Startng Users Sync Job.", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
     }
     
@@ -93,13 +97,13 @@ public class SyncController {
     String pauseUsersSync() throws JsonProcessingException, InterruptedException{
         try {
             usersSyncService.stopSync();        
-            return Helper.constructSuccessResponse();
+            return helperService.constructSuccessResponse();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
-            return Helper.constructErrorResponse(Helper.MYSQL_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
         } catch (Exception e) {
             LOGGER.error("Error stopping Users Sync Job.", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
     }
     
@@ -113,10 +117,10 @@ public class SyncController {
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
-            return Helper.constructErrorResponse(Helper.MYSQL_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
         } catch (Exception e) {
             LOGGER.error("Error resuming Users Sync Job.", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
     } 
     
@@ -132,7 +136,7 @@ public class SyncController {
             return jobInfoJson.toString();
         } catch (Exception e) {
             LOGGER.error("Error fetching Submissions Sync Job Status: ", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
     }  
 
@@ -146,10 +150,10 @@ public class SyncController {
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
-            return Helper.constructErrorResponse(Helper.MYSQL_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
         } catch (Exception e) {
             LOGGER.error("Error Startng Submissions Sync Job.", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
        
     }
@@ -159,13 +163,13 @@ public class SyncController {
     String pauseSubmissionsSync() throws JsonProcessingException, InterruptedException{
         try {
             submissionsSyncService.stopSync();        
-            return Helper.constructSuccessResponse();
+            return helperService.constructSuccessResponse();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
-            return Helper.constructErrorResponse(Helper.MYSQL_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
         } catch (Exception e) {
             LOGGER.error("Error stopping Submissions Sync Job.", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
       
     }
@@ -180,10 +184,10 @@ public class SyncController {
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
-            return Helper.constructErrorResponse(Helper.MYSQL_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
         } catch (Exception e) {
             LOGGER.error("Error resuming Submissions Sync Job.", e);
-            return Helper.constructErrorResponse(Helper.DEFAULT_ERROR_MESSAGE);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
         
     } 

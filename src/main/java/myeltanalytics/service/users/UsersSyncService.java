@@ -13,8 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import myeltanalytics.model.Constants;
 import myeltanalytics.model.JobInfo;
-import myeltanalytics.service.Helper;
+import myeltanalytics.service.HelperService;
 
 import org.apache.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
@@ -40,6 +41,9 @@ public class UsersSyncService
 {
     @Autowired
     private Client elasticSearchClient;
+    
+    @Autowired
+    private HelperService helperService;
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -111,7 +115,7 @@ public class UsersSyncService
         Date date = new Date();
         jobInfo.setStartDateTime(dateFormat.format(date));
         
-        jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);        
+        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);        
         updateUserStatus();
         
         startSyncJob();
@@ -119,7 +123,7 @@ public class UsersSyncService
     
     public void stopSync() throws InterruptedException, JsonProcessingException {
         LOGGER.info("Aborting UsersSyncJob with syncJobId=" + jobInfo.getJobId());
-        jobInfo.setJobStatus(Helper.STATUS_PAUSED);
+        jobInfo.setJobStatus(Constants.STATUS_PAUSED);
         updateUserStatus();
         
         userSyncExecutor.shutdown();
@@ -128,7 +132,7 @@ public class UsersSyncService
     
     public void resumeSync() throws JsonProcessingException {
         LOGGER.info("Resuming old UsersSyncJob with syncJobId=" + jobInfo.getJobId());
-        jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
+        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
         updateUserStatus();
        
         startSyncJob();
@@ -141,13 +145,13 @@ public class UsersSyncService
         
         String query = null;
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = "(SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS 
-                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + ")"
-                + " order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
+            query = "(SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Constants.IGNORE_INSTITUTIONS 
+                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Constants.IGNORE_INSTITUTIONS + ")"
+                + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
-            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS 
-                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + "))"
-                + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Helper.SQL_RECORDS_LIMIT;
+            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Constants.IGNORE_INSTITUTIONS 
+                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Constants.IGNORE_INSTITUTIONS + "))"
+                + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         }
         
         /**
@@ -178,7 +182,7 @@ public class UsersSyncService
         boolean isCompleted = false;
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
             isCompleted = true;
-            jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
+            jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
         }
         
         updateUserStatus();
@@ -186,9 +190,9 @@ public class UsersSyncService
         
         if (isCompleted) {
            //delete the records that have not been update/synced; they are records that have been deleted in database
-            Helper.deleteUnsyncedRecords(elasticSearchClient, Helper.USERS_INDEX, Helper.USERS_TYPE, jobInfo.getJobId());
+            helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
         } else {
-            if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
+            if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
                 startSyncJob();
             }
         }
@@ -197,7 +201,7 @@ public class UsersSyncService
     public synchronized void updateUserStatus() throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.MYELT_ANALYTICS_INDEX, Constants.USERS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
     }
     
    
@@ -207,31 +211,31 @@ public class UsersSyncService
         mainDatabaseURL = mainDatabaseURLFull.substring(0, mainDatabaseURLFull.indexOf("?"));
     }
     public void createUsersIndex() throws IOException {
-        if (!Helper.isIndexExist(Helper.USERS_INDEX, elasticSearchClient)) {
+        if (!helperService.isIndexExist(Constants.USERS_INDEX, elasticSearchClient)) {
             
-            elasticSearchClient.admin().indices().create(new CreateIndexRequest(Helper.USERS_INDEX)
-                    .mapping(Helper.USERS_TYPE, buildUserTypeMappings())).actionGet();      
+            elasticSearchClient.admin().indices().create(new CreateIndexRequest(Constants.USERS_INDEX)
+                    .mapping(Constants.USERS_TYPE, buildUserTypeMappings())).actionGet();      
             
-            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE);
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_ALL_ALIAS, usersOnlyFilter).execute().actionGet();
+            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE);
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_ALL_ALIAS, usersOnlyFilter).execute().actionGet();
             
-            TermsFilterBuilder accessCodesOnlyFilter = FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.ADDITIONAL_ACCESSCODE);
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.ACCESS_CODES_ALL_ALIAS, accessCodesOnlyFilter).execute().actionGet();
+            TermsFilterBuilder accessCodesOnlyFilter = FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.ADDITIONAL_ACCESSCODE);
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.ACCESS_CODES_ALL_ALIAS, accessCodesOnlyFilter).execute().actionGet();
             
-            AndFilterBuilder capesModelUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("studentType", Helper.CAPES_MODEL));
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_CAPES_ALIAS, capesModelUsersFilter).execute().actionGet();
+            AndFilterBuilder capesModelUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("studentType", Constants.CAPES_MODEL));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_CAPES_ALIAS, capesModelUsersFilter).execute().actionGet();
             
-            AndFilterBuilder ICPNAInstUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("institution.id", Helper.ICPNA_INSTITUTION));
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_ICPNA_ALIAS, ICPNAInstUsersFilter).execute().actionGet();
+            AndFilterBuilder ICPNAInstUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("institution.id", Constants.ICPNA_INSTITUTION));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_ICPNA_ALIAS, ICPNAInstUsersFilter).execute().actionGet();
             
-            AndFilterBuilder SevenInstUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Helper.USER_WITH_ACCESSCODE, Helper.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("institution.id", Helper.SEVEN_INSTITUTION));
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.USERS_INDEX, Helper.USERS_SEVEN_ALIAS, SevenInstUsersFilter).execute().actionGet();
+            AndFilterBuilder SevenInstUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("institution.id", Constants.SEVEN_INSTITUTION));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_SEVEN_ALIAS, SevenInstUsersFilter).execute().actionGet();
         }      
     }
     
     public long getTotalUsersCount() throws JsonProcessingException {
-        String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS 
-            + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Helper.IGNORE_INSTITUTIONS + ")) as allusers";
+        String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + Constants.IGNORE_INSTITUTIONS 
+            + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Constants.IGNORE_INSTITUTIONS + ")) as allusers";
         
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
         LOGGER.info("Total users to sync= " + usersCount + " for syncJobId= " + UsersSyncService.jobInfo.getJobId());
@@ -241,34 +245,34 @@ public class UsersSyncService
     
     public void updateLastJobInfoInES(String jobId) throws JsonProcessingException {       
         Map<String, Object> jsonMap = new HashMap<String, Object>();
-        jsonMap.put(Helper.ID, jobId);
+        jsonMap.put(Constants.ID, jobId);
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonMap);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.MYELT_ANALYTICS_INDEX, Constants.USERS_JOB_STATUS, Constants.LAST_JOB_ID).setSource(json).execute().actionGet();
     }
     
     public void refreshJobStatusFromES() throws JsonProcessingException {
-        if (Helper.isIndexExist(Helper.MYELT_ANALYTICS_INDEX, elasticSearchClient) && Helper.isTypeExist(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, elasticSearchClient)) {
-            GetResponse lastJobInfoResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, Helper.LAST_JOB_ID).execute().actionGet();
+        if (helperService.isIndexExist(Constants.MYELT_ANALYTICS_INDEX, elasticSearchClient) && helperService.isTypeExist(Constants.MYELT_ANALYTICS_INDEX, Constants.USERS_JOB_STATUS, elasticSearchClient)) {
+            GetResponse lastJobInfoResponse = elasticSearchClient.prepareGet(Constants.MYELT_ANALYTICS_INDEX, Constants.USERS_JOB_STATUS, Constants.LAST_JOB_ID).execute().actionGet();
             Map<String,Object> lastJobInfoMap = lastJobInfoResponse.getSourceAsMap();
-            String lastJobId = (String) lastJobInfoMap.get(Helper.ID);
+            String lastJobId = (String) lastJobInfoMap.get(Constants.ID);
             if(lastJobId != null){
                 jobInfo.setJobId(lastJobId);
-                GetResponse lastJobResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.USERS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
+                GetResponse lastJobResponse = elasticSearchClient.prepareGet(Constants.MYELT_ANALYTICS_INDEX, Constants.USERS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
                 Map<String,Object> map  = lastJobResponse.getSourceAsMap();
                 if (map != null) {
-                    jobInfo.setLastIdentifier((String) map.get(Helper.LAST_IDENTIFIER));
-                    jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
-                    jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
-                    jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
-                    jobInfo.setStartDateTime((String) map.get(Helper.START_DATETIME));
-                    String jobStatus = (String) map.get(Helper.JOB_STATUS);
+                    jobInfo.setLastIdentifier((String) map.get(Constants.LAST_IDENTIFIER));
+                    jobInfo.setSuccessRecords((Integer) map.get(Constants.SUCCESSFULL_RECORDS));
+                    jobInfo.setErrorRecords((Integer) map.get(Constants.ERROR_RECORDS));
+                    jobInfo.setTotalRecords((Integer) map.get(Constants.TOTAL_RECORDS));
+                    jobInfo.setStartDateTime((String) map.get(Constants.START_DATETIME));
+                    String jobStatus = (String) map.get(Constants.JOB_STATUS);
                     //If server shut-down while job is running, status is still "InProgress" in Database, but the job is actually terminated/paused
-                    if (jobStatus.equals(Helper.STATUS_INPROGRESS)) {
-                        jobInfo.setJobStatus(Helper.STATUS_PAUSED);
+                    if (jobStatus.equals(Constants.STATUS_INPROGRESS)) {
+                        jobInfo.setJobStatus(Constants.STATUS_PAUSED);
                         updateUserStatus();
                     } else {
-                        jobInfo.setJobStatus((String) map.get(Helper.JOB_STATUS));
+                        jobInfo.setJobStatus((String) map.get(Constants.JOB_STATUS));
                     }
                 }
             }
@@ -390,8 +394,8 @@ public class UsersSyncService
 //  private void deletePreviousJobData()
 //  {
 //      //delete the user_type
-//      elasticSearchClient.prepareDeleteByQuery(Helper.USERS_INDEX)
-//          .setQuery(QueryBuilders.termQuery("_type", Helper.USERS_TYPE))
+//      elasticSearchClient.prepareDeleteByQuery(Constants.USERS_INDEX)
+//          .setQuery(QueryBuilders.termQuery("_type", Constants.USERS_TYPE))
 //          .execute()
 //          .actionGet();
 //      

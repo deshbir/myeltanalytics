@@ -8,9 +8,9 @@ import java.text.SimpleDateFormat;
 import myeltanalytics.model.ActivitySubmission;
 import myeltanalytics.model.ActivitySubmission.Activity;
 import myeltanalytics.model.ActivitySubmission.Book;
+import myeltanalytics.model.Constants;
 import myeltanalytics.model.Institution;
 import myeltanalytics.service.ApplicationContextProvider;
-import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.Client;
@@ -39,13 +39,13 @@ public class SubmissionsSyncThread implements Runnable
     
     @Override
     public void run() {
-        if(SubmissionsSyncService.jobInfo != null && !(SubmissionsSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){
+        if(SubmissionsSyncService.jobInfo != null && !(SubmissionsSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){
             try
             {
                 ActivitySubmission activitySubmission = populateSubmission(submissionId);
                 ObjectMapper mapper = new ObjectMapper(); // create once, reuse
                 String json = mapper.writeValueAsString(activitySubmission);
-                elasticSearchClient.prepareIndex(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_TYPE, submissionId).setSource(json).execute().actionGet();
+                elasticSearchClient.prepareIndex(Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_TYPE, submissionId).setSource(json).execute().actionGet();
                 SubmissionsSyncService.jobInfo.incrementSuccessRecords();
                 SubmissionsSyncService.jobInfo.setLastIdentifier(submissionId);
                 submissionsSyncService.updateLastSyncedSubmissionStatus();
@@ -79,7 +79,7 @@ public class SubmissionsSyncThread implements Runnable
                 public ActivitySubmission mapRow(ResultSet rs, int rowNum) throws SQLException {
                     ActivitySubmission activitySubmission = new ActivitySubmission(rs.getLong("id"));
                     
-                    DateFormat dateFormat = new SimpleDateFormat(Helper.DATE_FORMAT);
+                    DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                     
                     if (rs.getTimestamp("CompletedAt") != null) {
                         activitySubmission.setDateSubmitted(dateFormat.format(rs.getTimestamp("CompletedAt").getTime())); 
@@ -139,7 +139,7 @@ public class SubmissionsSyncThread implements Runnable
     
     protected Book populateBookDetails(String assignmentData)
     {
-        if(!assignmentData.equals(Helper.BLANK)){
+        if(!assignmentData.equals(Constants.BLANK)){
             int startIndex = assignmentData.indexOf("book=") + 5;
             int endIndex = assignmentData.indexOf("&",startIndex);
             String bookAbbr = assignmentData.substring(startIndex, endIndex);

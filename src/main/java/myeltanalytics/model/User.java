@@ -2,7 +2,9 @@ package myeltanalytics.model;
 
 import java.util.List;
 
-import myeltanalytics.service.Helper;
+import myeltanalytics.service.HelperService;
+
+import org.dom4j.Node;
 
 public class User extends AbstractUser {
 
@@ -117,7 +119,7 @@ public class User extends AbstractUser {
         if((institution.getName().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTHideAssignment=true") != -1)){
             return "self_paced";
         } else if(("OCC").equals(institution.getDistrict()) || (("CAPES").equals(institution.getDistrict()))){
-            return Helper.CAPES_MODEL;
+            return Constants.CAPES_MODEL;
         } else if(institution.getOther().indexOf("MyELTSelfLearner=false") != -1){
             return "classroom";
         }
@@ -146,7 +148,11 @@ public class User extends AbstractUser {
 
     public String getRegion()
     {
-        return Helper.getRegion(getCountry().getCode());
+        String xPath  = "//country/code[text()=\"" +  getCountry().getCode().toUpperCase() + "\"]";
+        Node node = HelperService.countryDocument.selectSingleNode( xPath );
+        if(node != null){
+            return node.getParent().getParent().getParent().valueOf("name");
+        }
+        return Constants.DEFAULT_REGION;
     }
-
 }

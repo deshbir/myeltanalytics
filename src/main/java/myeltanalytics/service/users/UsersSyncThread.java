@@ -7,12 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import myeltanalytics.model.AccessCode;
+import myeltanalytics.model.Constants;
 import myeltanalytics.model.Country;
 import myeltanalytics.model.ElasticSearchUser;
 import myeltanalytics.model.Institution;
 import myeltanalytics.model.User;
 import myeltanalytics.service.ApplicationContextProvider;
-import myeltanalytics.service.Helper;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.Client;
@@ -44,7 +44,7 @@ public class UsersSyncThread implements Runnable
     
     @Override
     public void run() {
-        if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Helper.STATUS_PAUSED))){            
+        if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){            
             try
             {
                 User user = populateUser(loginName, institutionId);
@@ -101,7 +101,7 @@ public class UsersSyncThread implements Runnable
         }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Helper.USERS_INDEX, Helper.USERS_TYPE, loginName).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, loginName).setSource(json).execute().actionGet();
     }
     
     private User populateUser(String loginName, String institutionId)
@@ -133,7 +133,7 @@ public class UsersSyncThread implements Runnable
                     user.setEmail(rs.getString("email"));
                     user.setUserType(rs.getInt("parent"));
                     
-                    DateFormat dateFormat = new SimpleDateFormat(Helper.DATE_FORMAT);
+                    DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                     
                     if (rs.getTimestamp("createdAt") != null) {
                         user.setDateCreated(dateFormat.format(rs.getTimestamp("createdAt").getTime())); 
@@ -145,9 +145,11 @@ public class UsersSyncThread implements Runnable
                     
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
+                    
+                    user.setInstitution(populateInstitution(rs.getString("InstitutionID"))); 
+                    
                     Country country = new Country(rs.getString("country"),rs.getString("countryCode"));
-                    user.setUserCountry(country);
-                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));                   
+                    user.setUserCountry(country);                                     
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));
                     return user;
@@ -175,7 +177,7 @@ public class UsersSyncThread implements Runnable
                     AccessCode accessCode = new AccessCode();
                     accessCode.setCode(rs.getString("ProductCode") + "-" + rs.getString("AccessCode"));
                     
-                    DateFormat dateFormat = new SimpleDateFormat(Helper.DATE_FORMAT);
+                    DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                     if (rs.getTimestamp("LastModified") != null) {
                         accessCode.setDateCreated(dateFormat.format(rs.getTimestamp("LastModified")));
                     } 

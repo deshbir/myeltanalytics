@@ -1,6 +1,8 @@
 package myeltanalytics.model;
 
-import myeltanalytics.service.Helper;
+import myeltanalytics.service.HelperService;
+
+import org.dom4j.Node;
 
 
 public class Institution extends AbstractInstitution
@@ -52,13 +54,19 @@ public class Institution extends AbstractInstitution
     public Country getCountry()
     {
         if(!country.equals("")){
-            String countrycode = Helper.lookupCountryCode(country);
-            if(countrycode != null)
-                return new Country(country, countrycode);
-            else
-                return Helper.getDefaultCountry();
+            String xPath  = "//country/name[text()=\"" +  country + "\"]";
+            Node node = HelperService.countryDocument.selectSingleNode( xPath );
+            if(node == null){
+                return getDefaultCountry();
+            }
+            return new Country(country, node.getParent().valueOf("code"));
         } 
-        return Helper.getDefaultCountry();
+        return getDefaultCountry();
+    }
+    
+    public Country getDefaultCountry()
+    {
+        return new Country("Madagascar","MG");
     }
     
     public void setCountry(String country)

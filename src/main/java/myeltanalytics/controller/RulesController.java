@@ -1,8 +1,9 @@
 package myeltanalytics.controller;
 
-import myeltanalytics.service.Helper;
+import myeltanalytics.service.HelperService;
 
 import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,10 +12,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/rules")
 public class RulesController {  
     
+    @Autowired
+    private HelperService helperService;
+    
     @RequestMapping("/regionmap")
     @ResponseBody
     public String getRegionCountryMapping() throws JSONException {
-        return Helper.getCountryDocumentAsJson().toString();
+        return helperService.getRegionCountryMap().toString();
     }
     
 }

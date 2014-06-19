@@ -13,8 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import myeltanalytics.model.Constants;
 import myeltanalytics.model.JobInfo;
-import myeltanalytics.service.Helper;
+import myeltanalytics.service.HelperService;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -39,6 +40,9 @@ public class SubmissionsSyncService
 {
     @Autowired
     private Client elasticSearchClient;
+    
+    @Autowired
+    private HelperService helperService;
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -71,7 +75,7 @@ public class SubmissionsSyncService
         Date date = new Date();
         jobInfo.setStartDateTime(dateFormat.format(date));
         
-        jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);        
+        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);        
         updateSubmissionStatus();
         
         startSyncJob();
@@ -80,7 +84,7 @@ public class SubmissionsSyncService
     public void stopSync() throws InterruptedException, JsonProcessingException {
         LOGGER.info("Aborting SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         
-        jobInfo.setJobStatus(Helper.STATUS_PAUSED);
+        jobInfo.setJobStatus(Constants.STATUS_PAUSED);
         updateSubmissionStatus();
         
         submissionsSyncExecutor.shutdown();
@@ -89,7 +93,7 @@ public class SubmissionsSyncService
     
     public void resumeSync() throws JsonProcessingException {
         LOGGER.info("Resuming old SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
-        jobInfo.setJobStatus(Helper.STATUS_INPROGRESS);
+        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
         updateSubmissionStatus();
        
         startSyncJob();
@@ -102,9 +106,9 @@ public class SubmissionsSyncService
         
         String query = "select id from assignmentresults";
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = query + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+            query = query + " order by id limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
-            query = query + " where id > " + jobInfo.getLastIdentifier() + " order by id limit " + Helper.SQL_RECORDS_LIMIT;
+            query = query + " where id > " + jobInfo.getLastIdentifier() + " order by id limit " + Constants.SQL_RECORDS_LIMIT;
         }
         
         jdbcTemplate.query(query,
@@ -138,7 +142,7 @@ public class SubmissionsSyncService
         boolean isCompleted = false;
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
             isCompleted = true;
-            jobInfo.setJobStatus(Helper.STATUS_COMPLETED);
+            jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
         }
        
         updateSubmissionStatus();        
@@ -146,9 +150,9 @@ public class SubmissionsSyncService
         
         if (isCompleted) {
             //delete the records that have not been update/synced; they are records that have been deleted in database
-            Helper.deleteUnsyncedRecords(elasticSearchClient, Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_TYPE, jobInfo.getJobId());
+            helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_TYPE, jobInfo.getJobId());
          } else {
-             if (recordsProcessed == Helper.SQL_RECORDS_LIMIT) {
+             if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
                  startSyncJob();
              }
          }
@@ -157,39 +161,39 @@ public class SubmissionsSyncService
     public synchronized void updateSubmissionStatus() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jobInfo);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.MYELT_ANALYTICS_INDEX, Constants.SUBMISSIONS_JOB_STATUS, String.valueOf(jobInfo.getJobId())).setSource(json).execute().actionGet();
     }
    
     public void updateLastJobInfoInES(String jobId) throws JsonProcessingException {       
         Map<String, Object> jsonMap = new HashMap<String, Object>();
-        jsonMap.put(Helper.ID, jobId);
+        jsonMap.put(Constants.ID, jobId);
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonMap);
-        elasticSearchClient.prepareIndex(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, Helper.LAST_JOB_ID).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.MYELT_ANALYTICS_INDEX, Constants.SUBMISSIONS_JOB_STATUS, Constants.LAST_JOB_ID).setSource(json).execute().actionGet();
     }
     
     public void refreshJobStatusFromES() throws JsonProcessingException {
-        if (Helper.isIndexExist(Helper.MYELT_ANALYTICS_INDEX, elasticSearchClient) && Helper.isTypeExist(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, elasticSearchClient)) {
-            GetResponse lastJobInfoResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, Helper.LAST_JOB_ID).execute().actionGet();
+        if (helperService.isIndexExist(Constants.MYELT_ANALYTICS_INDEX, elasticSearchClient) && helperService.isTypeExist(Constants.MYELT_ANALYTICS_INDEX, Constants.SUBMISSIONS_JOB_STATUS, elasticSearchClient)) {
+            GetResponse lastJobInfoResponse = elasticSearchClient.prepareGet(Constants.MYELT_ANALYTICS_INDEX, Constants.SUBMISSIONS_JOB_STATUS, Constants.LAST_JOB_ID).execute().actionGet();
             Map<String,Object> lastJobInfoMap = lastJobInfoResponse.getSourceAsMap();
-            String lastJobId = (String) lastJobInfoMap.get(Helper.ID);
+            String lastJobId = (String) lastJobInfoMap.get(Constants.ID);
             if(lastJobId != null){
                 jobInfo.setJobId(lastJobId);
-                GetResponse lastJobResponse = elasticSearchClient.prepareGet(Helper.MYELT_ANALYTICS_INDEX, Helper.SUBMISSIONS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
+                GetResponse lastJobResponse = elasticSearchClient.prepareGet(Constants.MYELT_ANALYTICS_INDEX, Constants.SUBMISSIONS_JOB_STATUS, String.valueOf(lastJobId)).execute().actionGet();
                 Map<String,Object> map  = lastJobResponse.getSourceAsMap();
                 if (map != null) {
-                    jobInfo.setLastIdentifier((String) map.get(Helper.LAST_IDENTIFIER));
-                    jobInfo.setSuccessRecords((Integer) map.get(Helper.SUCCESSFULL_RECORDS));
-                    jobInfo.setErrorRecords((Integer) map.get(Helper.ERROR_RECORDS));
-                    jobInfo.setTotalRecords((Integer) map.get(Helper.TOTAL_RECORDS));
-                    String jobStatus = (String) map.get(Helper.JOB_STATUS);
-                    jobInfo.setStartDateTime((String) map.get(Helper.START_DATETIME));
+                    jobInfo.setLastIdentifier((String) map.get(Constants.LAST_IDENTIFIER));
+                    jobInfo.setSuccessRecords((Integer) map.get(Constants.SUCCESSFULL_RECORDS));
+                    jobInfo.setErrorRecords((Integer) map.get(Constants.ERROR_RECORDS));
+                    jobInfo.setTotalRecords((Integer) map.get(Constants.TOTAL_RECORDS));
+                    String jobStatus = (String) map.get(Constants.JOB_STATUS);
+                    jobInfo.setStartDateTime((String) map.get(Constants.START_DATETIME));
                     //If server shut-down while job is running, status is still "InProgress" in Database, but the job is actually terminated/paused
-                    if (jobStatus.equals(Helper.STATUS_INPROGRESS)) {
-                        jobInfo.setJobStatus(Helper.STATUS_PAUSED);
+                    if (jobStatus.equals(Constants.STATUS_INPROGRESS)) {
+                        jobInfo.setJobStatus(Constants.STATUS_PAUSED);
                         updateSubmissionStatus();
                     } else {
-                        jobInfo.setJobStatus((String) map.get(Helper.JOB_STATUS));
+                        jobInfo.setJobStatus((String) map.get(Constants.JOB_STATUS));
                     }
                 }
             }
@@ -197,19 +201,19 @@ public class SubmissionsSyncService
     }
     
     public void createSubmissionsIndex() throws IOException {
-        if (!Helper.isIndexExist(Helper.SUBMISSIONS_INDEX, elasticSearchClient)) {
+        if (!helperService.isIndexExist(Constants.SUBMISSIONS_INDEX, elasticSearchClient)) {
             
-            elasticSearchClient.admin().indices().create(new CreateIndexRequest(Helper.SUBMISSIONS_INDEX)
-                    .mapping(Helper.SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();    
+            elasticSearchClient.admin().indices().create(new CreateIndexRequest(Constants.SUBMISSIONS_INDEX)
+                    .mapping(Constants.SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();    
             
             TermsFilterBuilder submissionsAllFilter = FilterBuilders.termsFilter("status", "submitted");
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_ALL_ALIAS, submissionsAllFilter).execute().actionGet();
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_ALL_ALIAS, submissionsAllFilter).execute().actionGet();
             
             AndFilterBuilder submissionsAssignmentsFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("activityType", "assignment"));
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_ASSIGNMENTS_ALIAS, submissionsAssignmentsFilter).execute().actionGet();
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_ASSIGNMENTS_ALIAS, submissionsAssignmentsFilter).execute().actionGet();
             
             AndFilterBuilder submissionsExamviewFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("activityType", "examview"));
-            elasticSearchClient.admin().indices().prepareAliases().addAlias(Helper.SUBMISSIONS_INDEX, Helper.SUBMISSIONS_EXAMVIEW_ALIAS, submissionsExamviewFilter).execute().actionGet();
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_EXAMVIEW_ALIAS, submissionsExamviewFilter).execute().actionGet();
         }      
     }
     
