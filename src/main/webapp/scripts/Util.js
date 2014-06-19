@@ -1,5 +1,4 @@
 var Util = new function() {
-
     this.showError = function (message) {
         var errorMessage = "<div class=\"alert alert-danger alert-dismissable\">";
         errorMessage += "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>"; 
@@ -8,5 +7,4 @@ var Util = new function() {
         errorMessage += "</div>";
         $("#errorMessage").html(errorMessage);
     };
-
 }

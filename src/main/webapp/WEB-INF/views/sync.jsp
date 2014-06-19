@@ -4,26 +4,31 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>MyELT Reporting App</title>
+        
+        <!--StyleSheets -->
         <link href="<c:url value="/styles/libs/bootstrap.min.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/libs/font-awesome.min.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/libs/odometer-theme-default.css"/>" rel="stylesheet">
         <link href="<c:url value="/styles/main.css"/>" rel="stylesheet">
+        
+        <!--JavaScript external libraries -->
         <script src="<c:url value="/scripts/libs/jquery-1.11.1.min.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/libs/bootstrap.min.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/libs/odometer.min.js"/>" type="text/javascript"></script>
+        
+        <!--JavaScript modules -->
         <script src="<c:url value="/scripts/Util.js"/>" type="text/javascript"></script>    
         <script src="<c:url value="/scripts/UsersSyncHelper.js"/>" type="text/javascript"></script>
         <script src="<c:url value="/scripts/SubmissionsSyncHelper.js"/>" type="text/javascript"></script>
+        
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
          <div class="container-fluid">
-           <!-- Brand and toggle get grouped for better mobile display -->
            <div class="navbar-header">
              <a class="navbar-brand" href="#"> MyELT Reporting App</a>
            </div>
        
-           <!-- Collect the nav links, forms, and other content for toggling -->
            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
              <ul class="nav navbar-nav">
                <li><a href="app/index.html#/reports"><i class="fa fa-bar-chart-o fa-lg"></i> Reports</a></li>   

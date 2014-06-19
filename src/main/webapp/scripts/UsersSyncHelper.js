@@ -4,7 +4,7 @@ var UsersSyncHelper = new function() {
     
     this.triggerFetchingSyncStatus = function () {
         fetchSyncPoller = setInterval(function(){
-            $.get("/myeltanalytics/users/getSyncStatus", function(data){
+            $.get("/myeltanalytics/sync/users/getSyncStatus", function(data){
               var responseJson = eval("(" + data + ")");
               $("#usersProgressContainer .progress-bar").css('width', responseJson.percent +'%');
               $("#usersProgressContainer .progress-bar").html(responseJson.percent + '%');
@@ -37,7 +37,7 @@ var UsersSyncHelper = new function() {
         $("#usersStopButton i.fa-stop").hide();
         $("#usersStopButton i.fa-spin").show();
         
-        $.get("/myeltanalytics/users/stopSync", function(data){
+        $.get("/myeltanalytics/sync/users/stopSync", function(data){
            
            var responseJson = eval("(" + data + ")");
            if (responseJson.status == "error") {
@@ -66,7 +66,7 @@ var UsersSyncHelper = new function() {
         $("#usersStartButton i.fa-play").hide();
         $("#usersStartButton i.fa-spin").show();
         
-        $.get("/myeltanalytics/users/startSync", function(data){
+        $.get("/myeltanalytics/sync/users/startSync", function(data){
             
             var responseJson = eval("(" + data + ")");
             if (responseJson.status == "error") {
@@ -105,7 +105,7 @@ var UsersSyncHelper = new function() {
         $("#usersResumeButton i.fa-play-circle-o").hide();
         $("#usersResumeButton i.fa-spin").show();
         
-        $.get("/myeltanalytics/users/resumeSync", function(data){
+        $.get("/myeltanalytics/sync/users/resumeSync", function(data){
             var responseJson = eval("(" + data + ")");
             
             if (responseJson.status == "error") {

@@ -4,7 +4,7 @@ var SubmissionsSyncHelper = new function() {
     
     this.triggerFetchingSyncStatus = function () {
         fetchSyncPoller = setInterval(function(){
-            $.get("/myeltanalytics/submissions/getSyncStatus", function(data){
+            $.get("/myeltanalytics/sync/submissions/getSyncStatus", function(data){
               var responseJson = eval("(" + data + ")");
               $("#submissionsProgressContainer .progress-bar").css('width', responseJson.percent +'%');
               $("#submissionsProgressContainer .progress-bar").html(responseJson.percent + '%');
@@ -37,7 +37,7 @@ var SubmissionsSyncHelper = new function() {
         $("#submissionsStopButton i.fa-stop").hide();
         $("#submissionsStopButton i.fa-spin").show();
         
-        $.get("/myeltanalytics/submissions/stopSync", function(data){
+        $.get("/myeltanalytics/sync/submissions/stopSync", function(data){
            
            var responseJson = eval("(" + data + ")");
            if (responseJson.status == "error") {
@@ -66,7 +66,7 @@ var SubmissionsSyncHelper = new function() {
         $("#submissionsStartButton i.fa-play").hide();
         $("#submissionsStartButton i.fa-spin").show();
         
-        $.get("/myeltanalytics/submissions/startSync", function(data){
+        $.get("/myeltanalytics/sync/submissions/startSync", function(data){
             
             var responseJson = eval("(" + data + ")");
             if (responseJson.status == "error") {
@@ -106,7 +106,7 @@ var SubmissionsSyncHelper = new function() {
         $("#submissionsResumeButton i.fa-play-circle-o").hide();
         $("#submissionsResumeButton i.fa-spin").show();
         
-        $.get("/myeltanalytics/submissions/resumeSync", function(data){
+        $.get("/myeltanalytics/sync/submissions/resumeSync", function(data){
             var responseJson = eval("(" + data + ")");
             if (responseJson.status == "error") {
                 Util.showError(responseJson.errorMessage);
