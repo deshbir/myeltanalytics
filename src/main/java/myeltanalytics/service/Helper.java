@@ -1,5 +1,8 @@
 package myeltanalytics.service;
 
+import java.util.Iterator;
+import java.util.List;
+
 import myeltanalytics.model.Country;
 
 import org.apache.log4j.Logger;
@@ -13,6 +16,9 @@ import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -73,25 +79,75 @@ public class Helper
     public static final String DEFAULT_ERROR_MESSAGE = "It looks like something went wrong and an error has occurred. Please try agin later.";
     public static final String MYSQL_ERROR_MESSAGE = "Unable to communicate with MySQL Server. Please check MySQL Server settings in Settings Tab.";
     
+    public static final String DEFAULT_REGION = "North America";
+    
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;
+    public static JSONObject regionCountryMap = new JSONObject(); 
     
     private static final Logger LOGGER = Logger.getLogger(Helper.class);
     
     static {
+        setupCountryDoc();
+        setupInstitutionDoc();
+        setupRegionCountryMap();
+    }
+    
+    private static void setupCountryDoc() {
         SAXReader reader = new SAXReader();
         try
         {
             Resource countryResource = new ClassPathResource(COUNTRY_XML_FILE_NAME);
-            Resource institutionResource = new ClassPathResource(INSTITUTION_XML_FILE_NAME);
             countryDocument = reader.read(countryResource.getInputStream());
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Error reading Country XML file", e);
+        }        
+    }
+    
+    private static void setupInstitutionDoc() {
+        SAXReader reader = new SAXReader();
+        try
+        {
+            Resource institutionResource = new ClassPathResource(INSTITUTION_XML_FILE_NAME);
             institutionDocument = reader.read(institutionResource.getInputStream());
         }
         catch (Exception e)
         {
-            LOGGER.error("Error reading Country/Institution XML file", e);
+            LOGGER.error("Error reading Institution XML file", e);
+        }       
+    }
+    
+    private static void setupRegionCountryMap() {
+        try {
+            JSONArray regionArray = new JSONArray();
+            if (countryDocument == null) {
+                setupCountryDoc();
+            }
+            List<?> regionList = countryDocument.selectNodes( "//region" );            
+            for (Iterator<?> regionIter = regionList.iterator(); regionIter.hasNext(); ) {
+                Node regionNode = (Node) regionIter.next();
+                JSONObject regionObj = new JSONObject();
+                regionObj.put("name", regionNode.valueOf("name"));
+                JSONArray countriesArray = new JSONArray();
+                List<?> countriesList = regionNode.selectNodes("./countries/country");
+                for (Iterator<?> countryIter = countriesList.iterator(); countryIter.hasNext(); ) {
+                    Node countryNode = (Node) countryIter.next();
+                    JSONObject countryObj = new JSONObject();
+                    countryObj.put("name", countryNode.valueOf("name"));
+                    countriesArray.put(countryObj);
+                }
+                regionObj.put("countries", countriesArray);  
+                regionArray.put(regionObj);
+            }  
+            regionCountryMap.put("regions", regionArray);
         }
-        
+        catch (Exception e)
+        {
+            LOGGER.error("Error creating region country map", e);
+        }   
+         
     }
     
     public static boolean isIndexExist(String index, Client elasticSearchClient) {
@@ -106,7 +162,13 @@ public class Helper
         return actionGet.isExists();
     }
    
-
+    public static JSONObject getCountryDocumentAsJson() throws JSONException {
+       if (regionCountryMap == null) {
+           setupRegionCountryMap();
+       }
+       return regionCountryMap;
+    }
+    
     public static String lookupCountryCode(String countryName)
     {
         String xPath  = "//country/name[text()=\"" +  countryName + "\"]";
@@ -119,12 +181,12 @@ public class Helper
 
     public static String getRegion(String countryCode)
     {
-        String xPath  = "//country/code[text()=\"" +  countryCode + "\"]";
+        String xPath  = "//country/code[text()=\"" +  countryCode.toUpperCase() + "\"]";
         Node node = countryDocument.selectSingleNode( xPath );
         if(node != null){
-            return node.getParent().valueOf("region");
+            return node.getParent().getParent().valueOf("name");
         }
-        return "North America";
+        return DEFAULT_REGION;
     }
 
     public static Country getInstitutionCountry(String institutionId)
@@ -147,7 +209,7 @@ public class Helper
 
     private static String lookupCountryName(String countryCode)
     {
-        String xPath  = "//country/code[text()=\"" +  countryCode + "\"]";
+        String xPath  = "//country/code[text()=\"" +  countryCode.toUpperCase() + "\"]";
         Node node = countryDocument.selectSingleNode( xPath );
         if(node != null){
             return node.getParent().valueOf("name");

@@ -205,9 +205,11 @@ myeltAnalyticsControllers.controller('SettingsController', ['$scope','$http',
    }
 ]);
 
-myeltAnalyticsControllers.controller('RulesController', ['$scope',
+myeltAnalyticsControllers.controller('RulesController', ['$scope','$http',
     function ($scope, $http) {
-       
+        $http.get('../rules/regionmap').success(function(data) {
+            $scope.regionmap = data;
+        });  
     }
  ]);
 

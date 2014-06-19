@@ -2,6 +2,7 @@ package myeltanalytics.controller;
 
 import java.io.IOException;
 
+import myeltanalytics.service.Helper;
 import myeltanalytics.service.submissions.SubmissionsSyncService;
 import myeltanalytics.service.users.UsersSyncService;
 
@@ -60,11 +61,16 @@ public class MainController {
     
     @RequestMapping("/settings/mysqlinfo")
     @ResponseBody
-    public String mysqlInfo(Model model) throws IOException, JSONException {
+    public String mysqlInfo() throws IOException, JSONException {
         JSONObject sqlInfoJSON = new JSONObject();
         sqlInfoJSON.put("dbURL", dbURL.substring(0, dbURL.indexOf("?")));
         return sqlInfoJSON.toString();
     }
     
+    @RequestMapping("/rules/regionmap")
+    @ResponseBody
+    public String getRegionCountryMapping() throws JSONException {
+        return Helper.getCountryDocumentAsJson().toString();
+    }
     
 }

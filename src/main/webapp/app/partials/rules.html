@@ -1,3 +1,19 @@
 <div class="container" ng-controller="RulesController">
- Rules (To-Do)
+ <div class="row">
+   <div class="col-md-6">
+         <div class="panel panel-primary">
+             <div class="panel-heading"><strong><i class="fa fa-tasks fa-lg"></i> Region Country Map</strong></div>
+             <div class="panel-body" id="accordion">             
+                    <div ng-repeat="region in regionmap.regions" class="panel panel-default rulesPanel">
+                        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" data-target="#region{{$index}}">{{region.name}}</div>
+                        <div class="panel-body collapse" id="region{{$index}}">
+                           <ul class="countriesList">
+                              <li ng-repeat="country in region.countries">{{country.name}}</li>
+                            </ul>
+                        </div>
+                    </div>                                        
+             </div>
+         </div>
+     </div>
+ </div>
 </div> 

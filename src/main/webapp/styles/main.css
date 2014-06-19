@@ -1,5 +1,4 @@
 body {
-    /**background: url("../img/skelatal_weave.png") repeat scroll 0 0 #EFEFEF;**/
     padding-top: 80px; 
 }
 
@@ -22,11 +21,7 @@ body {
   background-color: #000000 !important;
 }
 
-.fa-gear-animated, .fa-gear-animated:hover{
-    animation: 1.5s linear 0s normal none infinite spin;
-}
-
-.panel-primary .panel-heading, .btn-primary{
+.panel-primary > .panel-heading, .btn-primary{
     background-color: #2EACD5;
 }
 
@@ -77,6 +72,32 @@ body {
   top: -18px;
   width: 36px;
   z-index: 8040;
+}
+
+/* Rules Panel Styles */
+.rulesPanel .panel-heading {
+    font-weight: bold;
+    cursor:pointer;
+}
+
+.rulesPanel .panel-body {
+    padding: 0px;
+}
+
+.rulesPanel ul {
+  list-style: none outside none;
+  padding-left: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.rulesPanel ul li{
+    border-bottom: 1px solid #ddd;
+    padding: 5px 20px;
+}
+
+.rulesPanel ul li:last-child{
+    border-bottom: 0;    
 }
 
 
