@@ -4,7 +4,7 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
      function ($scope, $http) {
         $scope.reports = {
             "uniqueUsers": {
-                "title": "Unique Users",
+                "title": "All Users",
                 "list": [{
                     "name": "All users",
                     "file": "users_all.json"
@@ -20,27 +20,23 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                 }]
             },
             "registrations": {
-                "title": "Registrations",
+                "title": "New User Registrations",
                 "list": [{
-                    "name": "Registrations FY11",
-                    "disabled": "true",
-                    "file": ""
-                }, {
-                    "name": "Registrations FY12",
-                    "disabled": "true",
-                    "file": ""
+                    "name": "Registrations FY14 (Current)",
+                    "file": "users_fy14.json"
                 }, {
                     "name": "Registrations FY13",
-                    "disabled": "true",
-                    "file": ""
+                    "file": "users_fy13.json"
                 }, {
-                    "name": "Registrations FY14 (Current)",
-                    "disabled": "true",
-                    "file": ""
+                    "name": "Registrations FY12",
+                    "file": "users_fy12.json"
+                }, {
+                    "name": "Registrations FY11",
+                    "file": "users_fy11.json"
                 }]
             },
             "usersByInstitute": {
-                "title": "Users by Institutes / Customers",
+                "title": "Institutes / Customers",
                 "list": [{
                     "name": "CAPES",
                     "file": "users_capes.json"
@@ -63,7 +59,7 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
             "accessCodes": {
                 "title": "Activated Access Codes",
                 "list": [{
-                    "name": "All Access codes",
+                    "name": "All Activated Access codes",
                     "file": "accesscodes_all.json"
                 }, {
                     "name": "AACR FY11",
@@ -81,15 +77,12 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                     "name": "AACR FY14 (Current)",
                     "disabled": "true",
                     "file": ""
-                }, {
-                    "name": "Access codes activated by product",
-                    "file": "accesscodes_by_product.json"
                 }]
             },
             "capes": {
-                "title": "CAPES Reports",
+                "title": "CAPES",
                 "list": [{
-                    "name": "All CAPES Model(OCC etc.)",
+                    "name": "All CAPES (OCC etc.)",
                     "disabled": "true",
                     "file": ""
                 }, {
@@ -115,7 +108,7 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                 }]
             },
             "completedActivities": {
-                "title": "Completed Activities",
+                "title": "Activities",
                 "list": [{
                     "name": "All Activities and Assignments",
                     "file": "submissions_all.json"
