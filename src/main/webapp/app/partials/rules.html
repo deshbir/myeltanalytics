@@ -2,7 +2,10 @@
  <div class="row">
    <div class="col-md-6">
          <div class="panel panel-primary">
-             <div class="panel-heading"><strong><i class="fa fa-tasks fa-lg"></i> Region Country Map</strong></div>
+             <div class="panel-heading">
+                <span class="pull-right pointer"><i class="fa fa-edit fa-lg"></i></span>
+                <span><strong><i class="fa fa-tasks fa-lg"></i> Region Country Map</strong></span>
+              </div>
              <div class="panel-body" id="accordion">             
                     <div ng-repeat="region in regionmap.regions" class="panel panel-default rulesPanel">
                         <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" data-target="#region{{$index}}">{{region.name}}</div>

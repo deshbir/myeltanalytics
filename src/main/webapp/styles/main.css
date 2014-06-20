@@ -56,6 +56,10 @@ body {
   background-color: #3a87ad;
 }
 
+.pointer {
+ cursor:pointer;
+}
+
 .reports-list li {
   font-weight: bold;
   line-height: 30px;
