@@ -90,7 +90,7 @@
                                        <tr>
                                            <td>
                                                <span id="usersSuccessRecords" class="syncinfo pull-right odometer text-success">${usersJobInfo.successRecords}</span>
-                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with MyELT Analytics</span>
+                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with Reporting App</span>
                                            </td>
                                        </tr>
                                        <tr>
@@ -176,7 +176,7 @@
                                <tr>
                                <td>
                                    <span id="submissionsSuccessRecords" class="syncinfo pull-right odometer text-success">${submissionsJobInfo.successRecords}</span>
-                                   <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with MyELT Analytics</span>
+                                   <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with Reporting App</span>
                                </td>
                                </tr>
                                <tr>
@@ -225,7 +225,7 @@
                                    <tbody>
                                        <tr>
                                            <td>
-                                               <span id="usersJobStatus" class="syncinfo badge pull-right"></span>
+                                               <span id="usersJobStatus" class="syncinfo badge pull-right badge-info">Not Started</span>
                                                <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
                                            </td>
                                        </tr>
@@ -244,7 +244,7 @@
                                        <tr>
                                            <td>
                                                <span id="usersSuccessRecords" class="syncinfo pull-right odometer text-success"></span>
-                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with MyELT Analytics</span>
+                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with Reporting App</span>
                                            </td>
                                        </tr>
                                        <tr>
