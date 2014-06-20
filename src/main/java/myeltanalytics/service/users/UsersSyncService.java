@@ -230,6 +230,18 @@ public class UsersSyncService
             
             AndFilterBuilder SevenInstUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.termsFilter("institution.id", Constants.SEVEN_INSTITUTION));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_SEVEN_ALIAS, SevenInstUsersFilter).execute().actionGet();
+            
+            AndFilterBuilder registrationsFY14Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2014-01-01T00:00:00").to("2014-12-31T23:59:59"));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_FY14_ALIAS, registrationsFY14Filter).execute().actionGet();
+            
+            AndFilterBuilder registrationsFY13Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2013-01-01T00:00:00").to("2013-12-31T23:59:59"));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_FY13_ALIAS, registrationsFY13Filter).execute().actionGet();
+            
+            AndFilterBuilder registrationsFY12Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2012-01-01T00:00:00").to("2012-12-31T23:59:59"));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_FY12_ALIAS, registrationsFY12Filter).execute().actionGet();
+            
+            AndFilterBuilder registrationsFY11Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2011-01-01T00:00:00").to("2011-12-31T23:59:59"));
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_FY11_ALIAS, registrationsFY11Filter).execute().actionGet();
         }      
     }
     

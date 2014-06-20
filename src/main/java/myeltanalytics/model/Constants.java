@@ -40,6 +40,10 @@ public class Constants
     public static final String USERS_CAPES_ALIAS = "users_capes";
     public static final String USERS_ICPNA_ALIAS = "users_icpna";
     public static final String USERS_SEVEN_ALIAS = "users_seven";
+    public static final String USERS_FY14_ALIAS = "users_fy14";
+    public static final String USERS_FY13_ALIAS = "users_fy13";
+    public static final String USERS_FY12_ALIAS = "users_fy12";
+    public static final String USERS_FY11_ALIAS = "users_fy11";
    
     //Submissions Constants
     public static final String SUBMISSIONS_ALL_ALIAS = "submissions_all";
@@ -56,5 +60,5 @@ public class Constants
     public static final long SQL_RECORDS_LIMIT = 50000;    
     public static final String DEFAULT_ERROR_MESSAGE = "It looks like something went wrong and an error has occurred. Please try agin later.";
     public static final String MYSQL_ERROR_MESSAGE = "Unable to communicate with MySQL Server. Please check MySQL Server settings in Settings Tab.";    
-    public static final String DEFAULT_REGION = "North America";
+    public static final String DEFAULT_REGION = "NO REGION";
 }
