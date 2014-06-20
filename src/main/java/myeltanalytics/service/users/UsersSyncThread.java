@@ -8,7 +8,6 @@ import java.util.List;
 
 import myeltanalytics.model.AccessCode;
 import myeltanalytics.model.Constants;
-import myeltanalytics.model.Country;
 import myeltanalytics.model.ElasticSearchUser;
 import myeltanalytics.model.Institution;
 import myeltanalytics.model.User;
@@ -122,7 +121,7 @@ public class UsersSyncThread implements Runnable
         JdbcTemplate myJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
         
         User user = myJdbcTemplate.queryForObject(
-            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,country,countryCode,InstitutionID from users where name = ?", new Object[] { loginName },
+            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from users where name = ?", new Object[] { loginName },
             new RowMapper<User>() {
                 
                 @Override
@@ -148,8 +147,7 @@ public class UsersSyncThread implements Runnable
                     
                     user.setInstitution(populateInstitution(rs.getString("InstitutionID"))); 
                     
-                    Country country = new Country(rs.getString("country"),rs.getString("countryCode"));
-                    user.setUserCountry(country);                                     
+                    user.setUserCountry(rs.getString("countryCode"));                                     
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));
                     return user;

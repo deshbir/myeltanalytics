@@ -2,6 +2,10 @@ package myeltanalytics.model;
 
 import java.util.List;
 
+import myeltanalytics.service.HelperService;
+
+import org.dom4j.Node;
+
 public abstract class AbstractUser
 {
     private long id;
@@ -197,6 +201,17 @@ public abstract class AbstractUser
     public void setUserCountry(Country userCountry)
     {
         this.userCountry = userCountry;
+    }
+    
+    public void setUserCountry(String countryCode)
+    {
+        if (countryCode != null && !countryCode.equals("")) {
+            String xPath  = "//country/code[text()=\"" +  countryCode.toUpperCase() + "\"]";
+            Node node = HelperService.countryDocument.selectSingleNode( xPath );
+            if(node != null){
+                this.userCountry = new Country(node.getParent().valueOf("name"), countryCode);
+            }    
+        }
     }
 
 

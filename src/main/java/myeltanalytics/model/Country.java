@@ -1,10 +1,11 @@
 package myeltanalytics.model;
 
+
 public class Country
 {
     private String name;
     private String code;
-    
+     
     
     /**
      * @param name
@@ -13,7 +14,7 @@ public class Country
     public Country(String name, String code)
     {
         this.name = name;
-        this.code = code;
+        this.code = code; 
     }
     /**
      * @return the name

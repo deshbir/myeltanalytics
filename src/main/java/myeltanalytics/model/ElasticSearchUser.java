@@ -3,6 +3,10 @@ package myeltanalytics.model;
 import java.util.LinkedList;
 import java.util.List;
 
+import myeltanalytics.service.HelperService;
+
+import org.dom4j.Node;
+
 public class ElasticSearchUser extends AbstractUser {
         private String syncJobId;
         private String recordType; 
@@ -26,7 +30,6 @@ public class ElasticSearchUser extends AbstractUser {
             esUser.setLastName(user.getLastName());
             esUser.setEmail(user.getEmail());
             esUser.setUserName(user.getUserName());
-            esUser.setUserCountry(user.getUserCountry());
             esUser.setCourses(user.getCourses());
             esUser.setDateCreated(user.getDateCreated());
             esUser.setDateLastLogin(user.getDateLastLogin());
@@ -37,7 +40,7 @@ public class ElasticSearchUser extends AbstractUser {
             esUser.setRecordType(recordType);
             esUser.setStudentType(user.getStudentType());
             esUser.setCountry(user.getCountry());
-            esUser.setRegion(user.getRegion());
+            esUser.setRegion();
             List<String> productCodes = new LinkedList<String>();
             List<String> productNames = new LinkedList<String>();
             List<String> disciplines = new LinkedList<String>();
@@ -184,12 +187,22 @@ public class ElasticSearchUser extends AbstractUser {
 
 
 
-        public void setRegion(String region)
+        public void setRegion()
         {
-            this.region = region;
+            try {
+                String xPath  = "//country/code[text()=\"" +  getCountry().getCode().toUpperCase() + "\"]";
+                Node node = HelperService.countryDocument.selectSingleNode( xPath );
+                if(node != null){
+                    this.region = node.getParent().getParent().getParent().valueOf("name");
+                } else {
+                    this.region = Constants.DEFAULT_REGION;
+                }
+            } catch (Exception e) {
+                System.out.println("HELLO");
+            }
+           
+            
         }
-
-
 
 
         public ElasticSearchInstitution getInstitution()

@@ -7,7 +7,7 @@ import org.dom4j.Node;
 
 public class Institution extends AbstractInstitution
 {
-    private String country;
+    private Country country;
     private String other;
     private String district;
       
@@ -53,25 +53,22 @@ public class Institution extends AbstractInstitution
     
     public Country getCountry()
     {
-        if(!country.equals("")){
-            String xPath  = "//country/name[text()=\"" +  country + "\"]";
-            Node node = HelperService.countryDocument.selectSingleNode( xPath );
-            if(node == null){
-                return getDefaultCountry();
-            }
-            return new Country(country, node.getParent().valueOf("code"));
-        } 
-        return getDefaultCountry();
-    }
+       return country;
+    }   
     
-    public Country getDefaultCountry()
-    {
-        return new Country("Madagascar","MG");
-    }
-    
-    public void setCountry(String country)
+    public void setCountry(Country country)
     {
         this.country = country;
     }
     
+    public void setCountry(String countryName)
+    {
+        if(countryName != null && !countryName.equals("")){
+            String xPath  = "//country/name[text()=\"" +  country + "\"]";
+            Node node = HelperService.countryDocument.selectSingleNode( xPath );
+            if(node != null){
+                this.country = new Country(countryName, node.getParent().valueOf("code"));
+            } 
+        } 
+    }    
 }

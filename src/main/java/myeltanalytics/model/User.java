@@ -2,10 +2,6 @@ package myeltanalytics.model;
 
 import java.util.List;
 
-import myeltanalytics.service.HelperService;
-
-import org.dom4j.Node;
-
 public class User extends AbstractUser {
 
     private List<AccessCode> accesscodes;
@@ -129,30 +125,18 @@ public class User extends AbstractUser {
     
     public Country getUserCountry()
     {
-        if(super.getUserCountry().getCode().equals("")){
-            return null;
-        }
-        else
-            return super.getUserCountry();
+        return super.getUserCountry();
     }
     
     public Country getCountry()
     {
-        if(getUserCountry() != null){
+        if(getUserCountry() != null && getUserCountry().getCode() !=null){
             return getUserCountry();
-        } else {
+        } else if (institution.getCountry() != null && institution.getCountry().getCode() != null) {
             return institution.getCountry();
+        } else {           
+           return new Country("Madagascar","MG");
         }
         
-    }
-
-    public String getRegion()
-    {
-        String xPath  = "//country/code[text()=\"" +  getCountry().getCode().toUpperCase() + "\"]";
-        Node node = HelperService.countryDocument.selectSingleNode( xPath );
-        if(node != null){
-            return node.getParent().getParent().getParent().valueOf("name");
-        }
-        return Constants.DEFAULT_REGION;
     }
 }
