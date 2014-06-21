@@ -42,6 +42,7 @@ public class SubmissionsSyncThread implements Runnable
         if(SubmissionsSyncService.jobInfo != null && !(SubmissionsSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){
             try
             {
+                LOGGER.debug("Starting sync for submission with SubmissionId= " + submissionId);
                 ActivitySubmission activitySubmission = populateSubmission(submissionId);
                 ObjectMapper mapper = new ObjectMapper(); // create once, reuse
                 String json = mapper.writeValueAsString(activitySubmission);

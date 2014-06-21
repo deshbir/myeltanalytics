@@ -46,6 +46,7 @@ public class UsersSyncThread implements Runnable
         if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){            
             try
             {
+                LOGGER.debug("Starting sync for user with LoginName= " + loginName);
                 User user = populateUser(loginName, institutionId);
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){

@@ -63,6 +63,7 @@ public class SubmissionsSyncService
         
         LOGGER.info("Starting a fresh SubmissionsSyncJob with syncJobId=" + newJobId);
         
+        LOGGER.info("Updating lastJobInfo for SubmissionsSyncJob with syncJobId=" + newJobId);
         updateLastJobInfoInES(newJobId);
         
         jobInfo.setJobId(newJobId);
@@ -75,25 +76,30 @@ public class SubmissionsSyncService
         Date date = new Date();
         jobInfo.setStartDateTime(dateFormat.format(date));
         
-        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);        
+        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);      
+        
+        LOGGER.info("Updating submissionStatus for SubmissionsSyncJob with syncJobId=" + newJobId);
         updateSubmissionStatus();
         
         startSyncJob();
     }
     
     public void stopSync() throws InterruptedException, JsonProcessingException {
-        LOGGER.info("Aborting SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
+        LOGGER.info("Starting to abort SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         
         jobInfo.setJobStatus(Constants.STATUS_PAUSED);
+        LOGGER.info("Updating submissionStatus for SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         updateSubmissionStatus();
         
         submissionsSyncExecutor.shutdown();
-        submissionsSyncExecutor.awaitTermination(2, TimeUnit.MINUTES);    
+        submissionsSyncExecutor.awaitTermination(2, TimeUnit.MINUTES); 
+        LOGGER.info("Aborted SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
     }
     
     public void resumeSync() throws JsonProcessingException {
-        LOGGER.info("Resuming old SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
+        LOGGER.info("Resuming SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
+        LOGGER.info("Updating submissionStatus for SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId());
         updateSubmissionStatus();
        
         startSyncJob();
@@ -110,6 +116,8 @@ public class SubmissionsSyncService
         } else {
             query = query + " where id > " + jobInfo.getLastIdentifier() + " order by id limit " + Constants.SQL_RECORDS_LIMIT;
         }
+        
+        LOGGER.info("Starting sync process for SubmissionsSyncJob with syncJobId=" + jobInfo.getJobId() + ", query=" + query);
         
         jdbcTemplate.query(query,
             new RowCallbackHandler()

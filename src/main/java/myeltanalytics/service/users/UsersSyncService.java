@@ -103,6 +103,7 @@ public class UsersSyncService
         String newJobId = UUID.randomUUID().toString();  
         LOGGER.info("Starting a fresh UsersSyncJob with syncJobId=" + newJobId);
         
+        LOGGER.info("Updating lastJobInfo for UsersSyncJob with syncJobId=" + newJobId);
         updateLastJobInfoInES(newJobId);
         
         jobInfo.setJobId(newJobId);
@@ -115,26 +116,29 @@ public class UsersSyncService
         Date date = new Date();
         jobInfo.setStartDateTime(dateFormat.format(date));
         
-        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);        
+        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);    
+        
+        LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
         
         startSyncJob();
     }
     
     public void stopSync() throws InterruptedException, JsonProcessingException {
-        LOGGER.info("Aborting UsersSyncJob with syncJobId=" + jobInfo.getJobId());
+        LOGGER.info("Starting to abort UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Constants.STATUS_PAUSED);
-        updateUserStatus();
-        
+        LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
+        updateUserStatus();        
         userSyncExecutor.shutdown();
-        userSyncExecutor.awaitTermination(2, TimeUnit.MINUTES);    
+        userSyncExecutor.awaitTermination(2, TimeUnit.MINUTES);   
+        LOGGER.info("Aborted UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     }
     
     public void resumeSync() throws JsonProcessingException {
-        LOGGER.info("Resuming old UsersSyncJob with syncJobId=" + jobInfo.getJobId());
+        LOGGER.info("Resuming UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
+        LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         updateUserStatus();
-       
         startSyncJob();
     }
     
@@ -153,6 +157,8 @@ public class UsersSyncService
                 + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + Constants.IGNORE_INSTITUTIONS + "))"
                 + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         }
+        
+        LOGGER.info("Starting sync process for UsersSyncJob with syncJobId=" + jobInfo.getJobId() + ", query=" + query);
         
         /**
          * UserInstitutionMap handling
