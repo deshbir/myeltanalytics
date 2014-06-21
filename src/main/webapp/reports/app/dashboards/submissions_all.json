@@ -42,6 +42,30 @@
         {
           "span": 12,
           "editable": true,
+          "type": "hits",
+          "loadingEditor": false,
+          "style": {
+            "font-size": "32pt"
+          },
+          "arrangement": "horizontal",
+          "chart": "total",
+          "counter_pos": "above",
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              2
+            ]
+          },
+          "title": "Total"
+        },
+        {
+          "span": 12,
+          "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "count",
@@ -111,7 +135,7 @@
             "value_type": "cumulative",
             "query_as_alias": true
           },
-          "title": "Submissions VS Time"
+          "title": "Vs Time"
         }
       ],
       "notice": false
@@ -154,7 +178,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Submissions By Product"
+          "title": "By Product"
         },
         {
           "error": false,
@@ -188,7 +212,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Submissions By Discipline"
+          "title": "By Discipline"
         },
         {
           "error": false,
@@ -222,7 +246,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Submissions By Institution"
+          "title": "By Institution"
         }
       ],
       "notice": false
@@ -276,7 +300,7 @@
           "status": "Stable",
           "trimFactor": 300,
           "normTimes": true,
-          "title": "Documents",
+          "title": "Records",
           "all_fields": false,
           "localTime": false,
           "timeField": "@timestamp"
@@ -312,7 +336,7 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": false,
+      "collapse": true,
       "notice": false,
       "query": "*",
       "pinned": true,
