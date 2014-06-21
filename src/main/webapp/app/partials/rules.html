@@ -18,5 +18,18 @@
              </div>
          </div>
      </div>
+     <div class="col-md-6">
+         <div class="panel panel-primary rulesPanel">
+             <div class="panel-heading">
+                <span class="pull-right pointer"><i class="fa fa-edit fa-lg"></i></span>
+                <span><strong><i class="fa fa-tasks fa-lg"></i> Ignored Institutions </strong></span>
+              </div>
+             <div class="panel-body">   
+                <ul>
+                  <li ng-repeat="institution in ignoreinstitutions">{{institution}}</li>
+                </ul>         
+             </div>
+         </div>
+     </div>
  </div>
 </div> 

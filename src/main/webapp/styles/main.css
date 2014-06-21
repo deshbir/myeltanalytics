@@ -91,8 +91,11 @@ body {
 .rulesPanel ul {
   list-style: none outside none;
   padding-left: 0;
-  max-height: 200px;
   overflow-y: auto;
+}
+
+.rulesPanel ul.countriesList {
+  max-height: 200px;
 }
 
 .rulesPanel ul li{

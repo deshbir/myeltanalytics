@@ -21,4 +21,10 @@ public class RulesController {
         return helperService.getRegionCountryMap().toString();
     }
     
+    @RequestMapping("/ignoreinstitutions")
+    @ResponseBody
+    public String getIgnoreInstitutions() throws JSONException {
+        return HelperService.ignoreInstitutionsJson.toString();
+    }
+    
 }

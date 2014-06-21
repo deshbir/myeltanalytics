@@ -203,6 +203,9 @@ myeltAnalyticsControllers.controller('RulesController', ['$scope','$http',
         $http.get('../rules/regionmap').success(function(data) {
             $scope.regionmap = data;
         });  
+        $http.get('../rules/ignoreinstitutions').success(function(data) {
+            $scope.ignoreinstitutions = data;
+        });  
     }
  ]);
 

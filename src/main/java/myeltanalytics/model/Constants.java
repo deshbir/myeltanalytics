@@ -55,8 +55,8 @@ public class Constants
     //Other Constants
     public static final String ID = "id";    
     public static final String BLANK = "";
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";    
-    public static final String IGNORE_INSTITUTIONS = "('COMPROTEST','MYELT','TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,'TLASI')";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    
     public static final long SQL_RECORDS_LIMIT = 50000;    
     public static final String DEFAULT_ERROR_MESSAGE = "It looks like something went wrong and an error has occurred. Please try agin later.";
     public static final String MYSQL_ERROR_MESSAGE = "Unable to communicate with MySQL Server. Please check MySQL Server settings in Settings Tab.";    

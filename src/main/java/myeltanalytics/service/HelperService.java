@@ -28,9 +28,12 @@ import org.springframework.stereotype.Service;
 @Service(value="helperService")
 public class HelperService
 {
+    public static final String[] IGNORE_INSTITUTIONS = new String[]{"COMPROTEST","MYELT","TLTELT" ,"TLIBERO" ,"TLUS" ,"TEST" ,"TLEMEA" ,"TLASI"};
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;
     public static JSONObject regionCountryMap = new JSONObject(); 
+    public static JSONArray ignoreInstitutionsJson = new JSONArray();
+    public static String ignoreInstitutionsQuery = null;
     
     private static final Logger LOGGER = Logger.getLogger(HelperService.class);
     
@@ -40,8 +43,20 @@ public class HelperService
         setupCountryDoc();
         setupInstitutionDoc();
         setupRegionCountryMap();
+        setupIgnoreInstitutions();
     }
-    
+    private void setupIgnoreInstitutions() throws JSONException {
+        StringBuffer ignoreInstitutionsQueryBuffer = new StringBuffer("(");
+        for (int i=0; i<IGNORE_INSTITUTIONS.length; i++) {
+            ignoreInstitutionsJson.put(IGNORE_INSTITUTIONS[i]);
+            ignoreInstitutionsQueryBuffer.append("'").append(IGNORE_INSTITUTIONS[i]).append("'");
+            if (i < IGNORE_INSTITUTIONS.length - 1) {
+                ignoreInstitutionsQueryBuffer.append(",");
+            }
+        }
+        ignoreInstitutionsQueryBuffer.append(")");
+        ignoreInstitutionsQuery = ignoreInstitutionsQueryBuffer.toString();
+    }
     private void setupCountryDoc() {
         SAXReader reader = new SAXReader();
         try
