@@ -1030,6 +1030,10 @@
                 <code>TV</code>
                 <name>Tuvalu</name>
             </country>
+            <country>
+                <code>##</code>
+                <name>No Country</name>
+            </country>
         </countries>
     </region>
 </regions>

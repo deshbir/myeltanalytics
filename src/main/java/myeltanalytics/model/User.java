@@ -135,7 +135,7 @@ public class User extends AbstractUser {
         } else if (institution.getCountry() != null && institution.getCountry().getCode() != null) {
             return institution.getCountry();
         } else {           
-           return new Country("Madagascar","MG");
+           return new Country("No Country","##");
         }
         
     }
