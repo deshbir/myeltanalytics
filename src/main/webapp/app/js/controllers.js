@@ -63,20 +63,16 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                     "file": "accesscodes_all.json"
                 }, {
                     "name": "AACR FY14 (Current)",
-                    "disabled": "true",
-                    "file": ""
+                    "file": "accesscodes_fy14.json"
                 }, {
                     "name": "AACR FY13",
-                    "disabled": "true",
-                    "file": ""
+                    "file": "accesscodes_fy13.json"
                 }, {
                     "name": "AACR FY12",
-                    "disabled": "true",
-                    "file": ""
+                    "file": "accesscodes_fy12.json"
                 }, {
                     "name": "AACR FY11",
-                    "disabled": "true",
-                    "file": ""
+                    "file": "accesscodes_fy11.json"
                 }]
             },
             "capes": {
