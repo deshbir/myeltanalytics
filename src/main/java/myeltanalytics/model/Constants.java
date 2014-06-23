@@ -37,6 +37,10 @@ public class Constants
     public static final String USERS_TYPE = "users_info";
     public static final String USERS_ALL_ALIAS = "users_all";
     public static final String ACCESS_CODES_ALL_ALIAS = "accesscodes_all";
+    public static final String ACCESS_CODES_FY14_ALIAS = "accesscodes_fy14";
+    public static final String ACCESS_CODES_FY13_ALIAS = "accesscodes_fy13";
+    public static final String ACCESS_CODES_FY12_ALIAS = "accesscodes_fy12";
+    public static final String ACCESS_CODES_FY11_ALIAS = "accesscodes_fy11";
     public static final String USERS_CAPES_ALIAS = "users_capes";
     public static final String USERS_ICPNA_ALIAS = "users_icpna";
     public static final String USERS_SEVEN_ALIAS = "users_seven";

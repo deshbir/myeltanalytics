@@ -209,20 +209,27 @@ public class SubmissionsSyncService
     }
     
     public void createSubmissionsIndex() throws IOException {
+        //Create Submissions Index
         if (!helperService.isIndexExist(Constants.SUBMISSIONS_INDEX, elasticSearchClient)) {
-            
             elasticSearchClient.admin().indices().create(new CreateIndexRequest(Constants.SUBMISSIONS_INDEX)
                     .mapping(Constants.SUBMISSIONS_TYPE, buildSumissionTypeMappings())).actionGet();    
-            
+        } 
+        
+        //Create required aliases for Submissions reports
+        if (!helperService.isIndexExist(Constants.SUBMISSIONS_ALL_ALIAS, elasticSearchClient)) {
             TermsFilterBuilder submissionsAllFilter = FilterBuilders.termsFilter("status", "submitted");
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_ALL_ALIAS, submissionsAllFilter).execute().actionGet();
-            
+        }
+        
+        if (!helperService.isIndexExist(Constants.SUBMISSIONS_ASSIGNMENTS_ALIAS, elasticSearchClient)) {
             AndFilterBuilder submissionsAssignmentsFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("activityType", "assignment"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_ASSIGNMENTS_ALIAS, submissionsAssignmentsFilter).execute().actionGet();
-            
+        }
+  
+        if (!helperService.isIndexExist(Constants.SUBMISSIONS_EXAMVIEW_ALIAS, elasticSearchClient)) {
             AndFilterBuilder submissionsExamviewFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("status", "submitted"), FilterBuilders.termsFilter("activityType", "examview"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.SUBMISSIONS_INDEX, Constants.SUBMISSIONS_EXAMVIEW_ALIAS, submissionsExamviewFilter).execute().actionGet();
-        }      
+        }
     }
     
     private XContentBuilder buildSumissionTypeMappings()
