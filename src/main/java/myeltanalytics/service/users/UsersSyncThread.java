@@ -46,7 +46,7 @@ public class UsersSyncThread implements Runnable
         if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){            
             try
             {
-                LOGGER.debug("Starting sync for user with LoginName= " + loginName);
+                LOGGER.debug("Starting sync for user with LoginName= " + loginName + ", InstitutionId= " + institutionId);
                 User user = populateUser(loginName, institutionId);
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){
@@ -122,7 +122,7 @@ public class UsersSyncThread implements Runnable
         JdbcTemplate myJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
         
         User user = myJdbcTemplate.queryForObject(
-            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from users where name = ?", new Object[] { loginName },
+            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from users where name = ? limit 1", new Object[] { loginName },
             new RowMapper<User>() {
                 
                 @Override
