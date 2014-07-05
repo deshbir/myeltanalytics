@@ -1,5 +1,5 @@
 {
-  "title": "ICPNA Users",
+  "title": "All Users",
   "services": {
     "query": {
       "list": {
@@ -35,14 +35,13 @@
     {
       "title": "Row1",
       "height": "250px",
-      "editable": false,
+      "editable": true,
       "collapse": false,
-      "collapsable": false,
+      "collapsable": true,
       "panels": [
         {
           "span": 12,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "type": "hits",
           "loadingEditor": false,
           "style": {
@@ -54,7 +53,7 @@
           "donut": false,
           "tilt": false,
           "labels": true,
-          "spyable": false,
+          "spyable": true,
           "queries": {
             "mode": "all",
             "ids": [
@@ -66,8 +65,7 @@
         },
         {
           "span": 12,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "count",
@@ -122,7 +120,7 @@
           "pointradius": 5,
           "bars": true,
           "stack": true,
-          "spyable": false,
+          "spyable": true,
           "zoomlinks": true,
           "options": true,
           "legend": true,
@@ -145,15 +143,14 @@
     {
       "title": "Options",
       "height": "280px",
-      "editable": false,
+      "editable": true,
       "collapse": false,
-      "collapsable": false,
+      "collapsable": true,
       "panels": [
         {
           "error": false,
           "span": 6,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "type": "terms",
           "loadingEditor": false,
           "field": "studentType",
@@ -171,7 +168,7 @@
           "arrangement": "horizontal",
           "chart": "pie",
           "counter_pos": "above",
-          "spyable": false,
+          "spyable": true,
           "queries": {
             "mode": "unpinned",
             "ids": [
@@ -186,8 +183,7 @@
         {
           "error": false,
           "span": 6,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "type": "terms",
           "loadingEditor": false,
           "field": "institution.name",
@@ -205,7 +201,7 @@
           "arrangement": "horizontal",
           "chart": "bar",
           "counter_pos": "above",
-          "spyable": false,
+          "spyable": true,
           "queries": {
             "mode": "all",
             "ids": [
@@ -224,15 +220,14 @@
     {
       "title": "Row2",
       "height": "250px",
-      "editable": false,
+      "editable": true,
       "collapse": false,
-      "collapsable": false,
+      "collapsable": true,
       "panels": [
         {
           "error": false,
           "span": 6,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "type": "terms",
           "loadingEditor": false,
           "field": "accessCode.productName",
@@ -250,7 +245,7 @@
           "arrangement": "horizontal",
           "chart": "bar",
           "counter_pos": "above",
-          "spyable": false,
+          "spyable": true,
           "queries": {
             "mode": "unpinned",
             "ids": [
@@ -265,8 +260,7 @@
         {
           "error": false,
           "span": 6,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "type": "terms",
           "loadingEditor": false,
           "field": "disciplines",
@@ -284,7 +278,7 @@
           "arrangement": "horizontal",
           "chart": "pie",
           "counter_pos": "above",
-          "spyable": false,
+          "spyable": true,
           "queries": {
             "mode": "all",
             "ids": [
@@ -303,15 +297,14 @@
     {
       "title": "Row3",
       "height": "250px",
-      "editable": false,
+      "editable": true,
       "collapse": false,
-      "collapsable": false,
+      "collapsable": true,
       "panels": [
         {
           "error": false,
           "span": 12,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "type": "map",
           "loadingEditor": false,
           "map": "world",
@@ -321,7 +314,7 @@
           ],
           "size": 100,
           "exclude": [],
-          "spyable": false,
+          "spyable": true,
           "queries": {
             "mode": "unpinned",
             "ids": [
@@ -337,15 +330,14 @@
     {
       "title": "Events",
       "height": "650px",
-      "editable": false,
+      "editable": true,
       "collapse": false,
-      "collapsable": false,
+      "collapsable": true,
       "panels": [
         {
           "error": false,
           "span": 12,
-          "editable": false,
-          "draggable":false,
+          "editable": true,
           "group": [
             "default"
           ],
@@ -372,7 +364,7 @@
           "sortable": true,
           "header": true,
           "paging": true,
-          "spyable": false,
+          "spyable": true,
           "queries": {
             "mode": "all",
             "ids": [
@@ -380,7 +372,7 @@
               2
             ]
           },
-          "field_list": false,
+          "field_list": true,
           "status": "Stable",
           "trimFactor": 300,
           "normTimes": true,
@@ -393,11 +385,11 @@
       "notice": false
     }
   ],
-  "editable": false,
+  "editable": true,
   "index": {
     "interval": "none",
     "pattern": "[logstash-]YYYY.MM.DD",
-    "default": "users_icpna",
+    "default": "users_all",
     "warm_fields": true
   },
   "style": "light",
@@ -405,17 +397,16 @@
   "panel_hints": true,
   "loader": {
     "save_gist": false,
-    "save_elasticsearch": false,
-    "save_local": false,
-    "save_default": false,
-    "save_temp": false,
+    "save_elasticsearch": true,
+    "save_local": true,
+    "save_default": true,
+    "save_temp": true,
     "save_temp_ttl_enable": true,
     "save_temp_ttl": "30d",
-    "load_gist": false,
-    "load_elasticsearch": false,
+    "load_gist": true,
+    "load_elasticsearch": true,
     "load_elasticsearch_size": 20,
-    "load_local": false,
-    "show_home": false,
+    "load_local": true,
     "hide": false
   },
   "pulldowns": [
@@ -477,7 +468,7 @@
         "1d"
       ],
       "timefield": "@timestamp",
-      "enable": false,
+      "enable": true,
       "now": false
     }
   ],

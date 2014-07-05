@@ -35,13 +35,14 @@
     {
       "title": "Row1",
       "height": "250px",
-      "editable": true,
+      "editable": false,
       "collapse": false,
-      "collapsable": true,
+      "collapsable": false,
       "panels": [
         {
           "span": 12,
-          "editable": true,
+          "editable": false,
+          "draggable":false,
           "type": "hits",
           "loadingEditor": false,
           "style": {
@@ -53,7 +54,7 @@
           "donut": false,
           "tilt": false,
           "labels": true,
-          "spyable": true,
+          "spyable": false,
           "queries": {
             "mode": "all",
             "ids": [
@@ -66,7 +67,8 @@
         {
           "error": false,
           "span": 12,
-          "editable": true,
+          "editable": false,
+          "draggable":false,
           "type": "terms",
           "loadingEditor": false,
           "field": "studentType",
@@ -84,7 +86,7 @@
           "arrangement": "horizontal",
           "chart": "pie",
           "counter_pos": "above",
-          "spyable": true,
+          "spyable": false,
           "queries": {
             "mode": "unpinned",
             "ids": [
@@ -102,13 +104,14 @@
     {
       "title": "Options",
       "height": "280px",
-      "editable": true,
+      "editable": false,
       "collapse": false,
-      "collapsable": true,
+      "collapsable": false,
       "panels": [
         {
           "span": 12,
-          "editable": true,
+          "editable": false,
+          "draggable":false,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "count",
@@ -163,7 +166,7 @@
           "pointradius": 5,
           "bars": true,
           "stack": true,
-          "spyable": true,
+          "spyable": false,
           "zoomlinks": true,
           "options": true,
           "legend": true,
@@ -184,7 +187,7 @@
       "notice": false
     }
   ],
-  "editable": true,
+  "editable": false,
   "index": {
     "interval": "none",
     "pattern": "[logstash-]YYYY.MM.DD",
@@ -196,16 +199,17 @@
   "panel_hints": true,
   "loader": {
     "save_gist": false,
-    "save_elasticsearch": true,
-    "save_local": true,
-    "save_default": true,
-    "save_temp": true,
+    "save_elasticsearch": false,
+    "save_local": false,
+    "save_default": false,
+    "save_temp": false,
     "save_temp_ttl_enable": true,
     "save_temp_ttl": "30d",
-    "load_gist": true,
-    "load_elasticsearch": true,
+    "load_gist": false,
+    "load_elasticsearch": false,
     "load_elasticsearch_size": 20,
-    "load_local": true,
+    "load_local": false,
+    "show_home": false,
     "hide": false
   },
   "pulldowns": [
@@ -267,7 +271,7 @@
         "1d"
       ],
       "timefield": "@timestamp",
-      "enable": true,
+      "enable": false,
       "now": false
     }
   ],
