@@ -328,6 +328,7 @@
             "default"
           ],
           "type": "table",
+          "fixedColumns":true,
           "size": 100,
           "pages": 5,
           "offset": 0,
