@@ -42,8 +42,9 @@
         {
           "span": 12,
           "editable": false,
-          "draggable":false,
+          "draggable":false,          
           "type": "hits",
+          "numberFormat": true,
           "loadingEditor": false,
           "style": {
             "font-size": "32pt"

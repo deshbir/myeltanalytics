@@ -43,6 +43,7 @@
           "span": 12,
           "editable": true,
           "type": "hits",
+          "numberFormat": true,
           "loadingEditor": false,
           "style": {
             "font-size": "32pt"
