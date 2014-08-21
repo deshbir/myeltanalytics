@@ -118,11 +118,11 @@ public class UsersSyncThread implements Runnable
          * 1. Add databaseURL as a field in USER ES record.
          */
        
-        String dbURL = jdbcTemplate.queryForObject("Select DatabaseURL from institutions where ID = ?", new Object[]{institutionId}, String.class);
+        String dbURL = jdbcTemplate.queryForObject("Select DatabaseURL from Institutions where ID = ?", new Object[]{institutionId}, String.class);
         JdbcTemplate myJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
         
         User user = myJdbcTemplate.queryForObject(
-            "select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from users where name = ? limit 1", new Object[] { loginName },
+            "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from Users where name = ? limit 1", new Object[] { loginName },
             new RowMapper<User>() {
                 
                 @Override
@@ -169,7 +169,7 @@ public class UsersSyncThread implements Runnable
     private List<AccessCode> populateAccessCodes(long userId)
     {
         List<AccessCode> accessCode = jdbcTemplate.query(
-            "select d.name as Discipline,bl.name as ProductName,SUBSTRING(ar.feature,11) as ProductCode,ba.AccessCode,ba.LastModified from accessrights as ar, bookaccesscodes as ba,booklist as bl, discipline as d where d.Abbr = bl.discipline and bl.Abbr=SUBSTRING(ar.feature,11) and ar.userId=ba.userId and ba.userId=? and ba.BookAbbr like CONCAT(SUBSTRING(ar.feature,11),'%') order by ba.LastModified", new Object[] {userId},
+            "Select d.name as Discipline,bl.name as ProductName,SUBSTRING(ar.feature,11) as ProductCode,ba.AccessCode,ba.LastModified from AccessRights as ar, BookAccessCodes as ba,BookList as bl, Discipline as d where d.Abbr = bl.discipline and bl.Abbr=SUBSTRING(ar.feature,11) and ar.userId=ba.userId and ba.userId=? and ba.BookAbbr like CONCAT(SUBSTRING(ar.feature,11),'%') order by ba.LastModified", new Object[] {userId},
             new RowMapper<AccessCode>() {
                 @Override
                 public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -193,7 +193,7 @@ public class UsersSyncThread implements Runnable
     private List<String> populateCourses(long userId)
     {
         List<String> courses = jdbcTemplate.query(
-            "select name from sections, sectionmembers where sections.id=sectionmembers.sectionId and sectionmembers.userId = ?", new Object[] { userId },
+            "Select name from Sections, SectionMembers where Sections.id=SectionMembers.sectionId and SectionMembers.userId = ?", new Object[] { userId },
             new RowMapper<String>() {
                 @Override
                 public String mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -206,7 +206,7 @@ public class UsersSyncThread implements Runnable
 
     private Institution populateInstitution(String institutionId){
         Institution  institution = jdbcTemplate.queryForObject(
-            "select institutions.id,institutions.name,institutions.country,institutions.other,districts.name as district from institutions left join districts on districts.id=institutions.DistrictID where institutions.id=?", new Object[] { institutionId },
+            "Select Institutions.id,Institutions.name,Institutions.country,Institutions.other,Districts.name as district from Institutions left join Districts on Districts.id=Institutions.DistrictID where Institutions.id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
                 @Override
                 public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {                                      

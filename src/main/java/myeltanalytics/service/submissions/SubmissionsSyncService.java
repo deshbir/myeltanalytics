@@ -110,7 +110,7 @@ public class SubmissionsSyncService
         recordsProcessed = 0;
         submissionsSyncExecutor = Executors.newFixedThreadPool(submissionsSyncThreadPoolSize);
         
-        String query = "select id from assignmentresults";
+        String query = "Select id from AssignmentResults";
         if (jobInfo.getLastIdentifier().equals("")) {
             query = query + " order by id limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
@@ -140,7 +140,7 @@ public class SubmissionsSyncService
     }
     
     private long getTotalSubmissionsCount() throws JsonProcessingException {
-        String sql = "select count(*) from assignmentresults";
+        String sql = "Select count(*) from AssignmentResults";
         long submissionsCount = jdbcTemplate.queryForObject(sql, Long.class);
         LOGGER.info("Total submissions to sync= " + submissionsCount + " for syncJobId= " + SubmissionsSyncService.jobInfo.getJobId());
         return submissionsCount;

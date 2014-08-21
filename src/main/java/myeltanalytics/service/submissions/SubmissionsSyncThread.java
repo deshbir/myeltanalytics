@@ -74,7 +74,7 @@ public class SubmissionsSyncThread implements Runnable
     private ActivitySubmission populateSubmission(String activitySubmissionId)
     {
         ActivitySubmission activitySubmission = jdbcTemplate.queryForObject(
-            "select id,CompletedAt,Score,PossibleScore,assignmentId,userId,ProgressSaved,TimeSpent from assignmentResults where id = ?", new Object[] { activitySubmissionId },
+            "Select id,CompletedAt,Score,PossibleScore,assignmentId,userId,ProgressSaved,TimeSpent from AssignmentResults where id = ?", new Object[] { activitySubmissionId },
             new RowMapper<ActivitySubmission>() {
                 @Override
                 public ActivitySubmission mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -101,7 +101,7 @@ public class SubmissionsSyncThread implements Runnable
     protected ActivitySubmission.User populateUserForSubmission(long userId)
     {
         ActivitySubmission.User user = jdbcTemplate.queryForObject(
-            "select id,firstName,lastName,country,InstitutionID from users where id = ?", new Object[] { userId },
+            "Select id,firstName,lastName,country,InstitutionID from Users where id = ?", new Object[] { userId },
             new RowMapper<ActivitySubmission.User>() {
                 @Override
                 public ActivitySubmission.User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -119,7 +119,7 @@ public class SubmissionsSyncThread implements Runnable
     protected Activity populateActivity(long assignmentId)
     {
         Activity activity = jdbcTemplate.queryForObject(
-            "select id,name,NumRetakes,AssignmentType,AssignmentData from assignments where id = ?", new Object[] { assignmentId },
+            "Select id,name,NumRetakes,AssignmentType,AssignmentData from Assignments where id = ?", new Object[] { assignmentId },
             new RowMapper<Activity>() {
 
                 @Override
@@ -145,7 +145,7 @@ public class SubmissionsSyncThread implements Runnable
             int endIndex = assignmentData.indexOf("&",startIndex);
             String bookAbbr = assignmentData.substring(startIndex, endIndex);
             Book book = jdbcTemplate.queryForObject(
-                "select b.abbr,b.name,d.name from booklist as b inner join discipline as d on b.discipline= d.abbr where b.abbr = ?", new Object[] { bookAbbr },
+                "Select b.abbr,b.name,d.name from BookList as b inner join Discipline as d on b.discipline= d.abbr where b.abbr = ?", new Object[] { bookAbbr },
                 new RowMapper<Book>() {
     
                     @Override
@@ -167,7 +167,7 @@ public class SubmissionsSyncThread implements Runnable
 
     protected Institution populateInstitution(String institutionId){
         Institution  institution = jdbcTemplate.queryForObject(
-            "select institutions.id,institutions.name,institutions.country,institutions.other,districts.name as district from institutions left join districts on districts.id=institutions.DistrictID where institutions.id=?", new Object[] { institutionId },
+            "Select Institutions.id,Institutions.name,Institutions.country,Institutions.other,Districts.name as district from Institutions left join Districts on Districts.id=Institutions.DistrictID where Institutions.id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
                 @Override
                 public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {                                      

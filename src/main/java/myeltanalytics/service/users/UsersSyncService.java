@@ -149,12 +149,12 @@ public class UsersSyncService
         
         String query = null;
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = "(SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  + ")"
+            query = "(SELECT Name as LoginName,InstitutionID FROM Users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  + ")"
                 + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
-            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  + "))"
+            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  + "))"
                 + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         }
         
@@ -293,8 +293,8 @@ public class UsersSyncService
     }
     
     public long getTotalUsersCount() throws JsonProcessingException {
-        String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
-            + ") UNION (SELECT LoginName,InstitutionID FROM userinstitutionmap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery + ")) as allusers";
+        String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+            + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery + ")) as allusers";
         
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
         LOGGER.info("Total users to sync= " + usersCount + " for syncJobId= " + UsersSyncService.jobInfo.getJobId());
