@@ -46,7 +46,7 @@ public class UsersSyncThread implements Runnable
         if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){            
             try
             {
-                LOGGER.debug("Starting sync for user with LoginName= " + loginName + ", InstitutionId= " + institutionId);
+                //LOGGER.debug("Starting sync for user with LoginName= " + loginName + ", InstitutionId= " + institutionId);
                 User user = populateUser(loginName, institutionId);
                 List<AccessCode> accessCodes = user.getAccesscodes();
                 if(accessCodes.size() ==0){
@@ -73,7 +73,7 @@ public class UsersSyncThread implements Runnable
                 UsersSyncService.jobInfo.incrementSuccessRecords();
                 UsersSyncService.jobInfo.setLastIdentifier(loginName);
                 usersSyncService.updateLastSyncedUserStatus();
-                LOGGER.debug("User with LoginName= " + loginName + " synced successfully");
+                //LOGGER.debug("User with LoginName= " + loginName + " synced successfully");
             }
             catch(Exception e){
                 //e.printStackTrace();

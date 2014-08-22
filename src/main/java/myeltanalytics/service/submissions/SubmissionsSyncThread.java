@@ -42,7 +42,7 @@ public class SubmissionsSyncThread implements Runnable
         if(SubmissionsSyncService.jobInfo != null && !(SubmissionsSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){
             try
             {
-                LOGGER.debug("Starting sync for submission with SubmissionId= " + submissionId);
+                //LOGGER.debug("Starting sync for submission with SubmissionId= " + submissionId);
                 ActivitySubmission activitySubmission = populateSubmission(submissionId);
                 ObjectMapper mapper = new ObjectMapper(); // create once, reuse
                 String json = mapper.writeValueAsString(activitySubmission);
@@ -50,7 +50,7 @@ public class SubmissionsSyncThread implements Runnable
                 SubmissionsSyncService.jobInfo.incrementSuccessRecords();
                 SubmissionsSyncService.jobInfo.setLastIdentifier(submissionId);
                 submissionsSyncService.updateLastSyncedSubmissionStatus();
-                LOGGER.debug("Submssion with SubmissionId= " + submissionId + " synced successfully");
+                //LOGGER.debug("Submssion with SubmissionId= " + submissionId + " synced successfully");
             }
             catch(Exception e){
                 //e.printStackTrace();
