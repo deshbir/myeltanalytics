@@ -4,15 +4,15 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
      function ($scope, $http) {
         $scope.reports = {
             "uniqueUsers": {
-                "title": "All Users",
+                "title": "Accounts",
                 "list": [{
-                    "name": "All users",
+                    "name": "All Accounts",
                     "file": "users_all.json"
                 }, {
-                    "name": "Users by product",
+                    "name": "Accounts by product",
                     "file": "users_by_product.json"
                 }, {
-                    "name": "Users by country / region",
+                    "name": "Accounts by country / region",
                     "file": "users_by_country.json"
                 }, {
                     "name": "Self-paced vs instructor-led",
@@ -20,18 +20,18 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                 }]
             },
             "registrations": {
-                "title": "New User Registrations",
+                "title": "New Accounts Created",
                 "list": [{
-                    "name": "Registrations FY14 (Current)",
+                    "name": "FY14 (Current)",
                     "file": "users_fy14.json"
                 }, {
-                    "name": "Registrations FY13",
+                    "name": "FY13",
                     "file": "users_fy13.json"
                 }, {
-                    "name": "Registrations FY12",
+                    "name": "FY12",
                     "file": "users_fy12.json"
                 }, {
-                    "name": "Registrations FY11",
+                    "name": "FY11",
                     "file": "users_fy11.json"
                 }]
             },
@@ -104,15 +104,15 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                 }]
             },
             "completedActivities": {
-                "title": "Activities",
+                "title": "Submissions",
                 "list": [{
-                    "name": "All Activities and Assignments",
+                    "name": "All Submissions",
                     "file": "submissions_all.json"
                 }, {
                     "name": "Assignments only",
                     "file": "submissions_assignments.json"
                 }, {
-                    "name": "Examview",
+                    "name": "Examview only",
                     "file": "submissions_examview.json"
                 }]
             },
