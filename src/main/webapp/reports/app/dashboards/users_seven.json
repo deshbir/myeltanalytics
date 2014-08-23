@@ -150,14 +150,14 @@
       "collapse": false,
       "collapsable": false,
       "panels": [
-        {
+         {
           "error": false,
           "span": 6,
           "editable": false,
           "draggable":false,
           "type": "terms",
           "loadingEditor": false,
-          "field": "accessCode.productName",
+          "field": "region",
           "exclude": [],
           "missing": false,
           "other": false,
@@ -170,19 +170,20 @@
           "tilt": false,
           "labels": true,
           "arrangement": "horizontal",
-          "chart": "bar",
+          "chart": "pie",
           "counter_pos": "above",
           "spyable": false,
           "queries": {
-            "mode": "unpinned",
+            "mode": "all",
             "ids": [
-              0
+              0,
+              2
             ]
           },
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "By Product"
+          "title": "By Region"
         },
         {
           "error": false,
@@ -252,41 +253,6 @@
           },
           "title": "by country",
           "field": "country.code"
-        },
-        {
-          "error": false,
-          "span": 12,
-          "editable": false,
-          "draggable":false,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "region",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "bar",
-          "counter_pos": "above",
-          "spyable": false,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              2
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "By Region"
         }
       ],
       "notice": false
