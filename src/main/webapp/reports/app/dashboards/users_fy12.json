@@ -1,5 +1,5 @@
 {
-  "title": "Registrations FY12",
+  "title": "Accounts FY12",
   "services": {
     "query": {
       "list": {
@@ -63,7 +63,7 @@
               2
             ]
           },
-          "title": "Total New Registrations"
+          "title": "Total"
         }
       ],
       "notice": false
@@ -308,7 +308,7 @@
             "value_type": "cumulative",
             "query_as_alias": true
           },
-          "title": "Registrations VS Time"
+          "title": "Accounts Created VS Time"
         }
       ],
       "notice": false

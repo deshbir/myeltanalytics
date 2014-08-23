@@ -1,5 +1,5 @@
 {
-  "title": "Users by Product",
+  "title": "Accounts by Product",
   "services": {
     "query": {
       "list": {
@@ -217,7 +217,7 @@
             "value_type": "cumulative",
             "query_as_alias": true
           },
-          "title": "New Users added VS Time"
+          "title": "Accounts Created VS Time"
         }
       ],
       "notice": false

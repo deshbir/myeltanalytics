@@ -1,5 +1,5 @@
 {
-  "title": "Examview",
+  "title": "Examview only",
   "services": {
     "query": {
       "list": {
@@ -138,7 +138,7 @@
             "value_type": "cumulative",
             "query_as_alias": true
           },
-          "title": "Vs Time"
+          "title": "Submissions Vs Time"
         }
       ],
       "notice": false

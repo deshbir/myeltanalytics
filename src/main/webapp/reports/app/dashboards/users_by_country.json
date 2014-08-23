@@ -1,5 +1,5 @@
 {
-  "title": "Users by Country/Region",
+  "title": "Accounts by Country/Region",
   "services": {
     "query": {
       "list": {
@@ -64,7 +64,7 @@
             ]
           },
           "title": "Total"
-        },
+        },       
         {
           "error": false,
           "span": 12,
@@ -88,6 +88,41 @@
           },
           "title": "by country",
           "field": "country.code"
+        },
+        {
+          "error": false,
+          "span": 12,
+          "editable": false,
+          "draggable":false,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "region",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "bar",
+          "counter_pos": "above",
+          "spyable": false,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              2
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "By Region"
         }
       ],
       "notice": false
@@ -172,7 +207,7 @@
             "value_type": "cumulative",
             "query_as_alias": true
           },
-          "title": "New Users added VS Time"
+          "title": "Accounts Created VS Time"
         }
       ],
       "notice": false
