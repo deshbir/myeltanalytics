@@ -110,8 +110,14 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
                     "file": "submissions_all.json"
                 }, {
                     "name": "Assignments only",
-                    "file": "submissions_assignments.json"
-                }, {
+                    "file": "submissions_assignments.json",
+                    "disabled": "true",
+                },
+                {
+                    "name": "Activities only",
+                    "file": "",
+                    "disabled": "true",
+                },{
                     "name": "Examview only",
                     "file": "submissions_examview.json"
                 }]
