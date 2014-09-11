@@ -18,7 +18,11 @@ public abstract class AbstractUser
     private String firstName,lastName;
     private Country userCountry;
     private List<String> courses;
-    
+    private List<Milestone> milestones;
+    private String lastMilestoneId;
+    private String lastMilestoneStatus;
+    private String lastMilestoneLevel;
+    private String lastMilestoneStartedDate;
     
     
    /**
@@ -226,5 +230,63 @@ public abstract class AbstractUser
     public void setDatabaseURL(String databaseURL)
     {
         this.databaseURL = databaseURL;
+    }
+
+
+
+    public List<Milestone> getMilestones()
+    {
+        return milestones;
+    }
+
+
+
+    public void setMilestones(List<Milestone> milestones)
+    {
+        this.milestones = milestones;
+    }
+    
+    public String getLastMilestoneId()
+    {
+        return lastMilestoneId;
+    }
+
+    public void setLastMilestoneId(String lastMilestoneId)
+    {
+        this.lastMilestoneId = lastMilestoneId;
+    }
+
+    public String getLastMilestoneStatus()
+    {
+        return lastMilestoneStatus;
+    }
+
+    public void setLastMilestoneStatus(String lastMilestoneStatus)
+    {
+        this.lastMilestoneStatus = lastMilestoneStatus;
+    }
+
+    public String getLastMilestoneLevel()
+    {
+        return lastMilestoneLevel;
+    }
+
+    public void setLastMilestoneLevel(String lastMilestoneLevel)
+    {
+        this.lastMilestoneLevel = lastMilestoneLevel;
+    }
+
+
+
+    public String getLastMilestoneStartedDate()
+    {
+        return lastMilestoneStartedDate;
+    }
+
+
+
+    public void setLastMilestoneStartedDate(String lastMilestoneStartedDate)
+    {
+        this.lastMilestoneStartedDate = lastMilestoneStartedDate;
     }
 }

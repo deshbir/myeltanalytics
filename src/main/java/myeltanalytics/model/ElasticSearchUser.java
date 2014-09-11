@@ -52,6 +52,11 @@ public class ElasticSearchUser extends AbstractUser {
             esUser.setProductCodes(productCodes);
             esUser.setProductNames(productNames);
             esUser.setDisciplines(disciplines);
+            esUser.setMilestones(user.getMilestones());
+            esUser.setLastMilestoneLevel(user.getLastMilestoneLevel());
+            esUser.setLastMilestoneId(user.getLastMilestoneId());
+            esUser.setLastMilestoneStatus(user.getLastMilestoneStatus());
+            esUser.setLastMilestoneStartedDate(user.getLastMilestoneStartedDate());
             return esUser;
         }
       
@@ -184,9 +189,6 @@ public class ElasticSearchUser extends AbstractUser {
             return region;
         }
 
-
-
-
         public void setRegion()
         {
             try {
@@ -200,40 +202,28 @@ public class ElasticSearchUser extends AbstractUser {
             } catch (Exception e) {
                 System.out.println("HELLO");
             }
-           
             
         }
-
 
         public ElasticSearchInstitution getInstitution()
         {
             return institution;
         }
 
-
-
-
         public void setInstitution(ElasticSearchInstitution institution)
         {
             this.institution = institution;
         }
-
-
-
 
         public String getSyncJobId()
         {
             return syncJobId;
         }
 
-
-
-
         public void setSyncJobId(String syncJobId)
         {
             this.syncJobId = syncJobId;
-        }
+        } 
 
-        
-        
+       
  }

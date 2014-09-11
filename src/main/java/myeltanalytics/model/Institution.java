@@ -39,7 +39,7 @@ public class Institution extends AbstractInstitution
     /**
      * @return the district
      */
-    protected String getDistrict()
+    public String getDistrict()
     {
         return district;
     }
