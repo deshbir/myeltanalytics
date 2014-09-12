@@ -37,6 +37,8 @@ public class UsersSyncThread implements Runnable
     
     private String institutionId;
     
+    private JdbcTemplate auxJdbcTemplate;
+    
     public UsersSyncThread(String loginName, String institutionId) {
         this.loginName = loginName;
         this.institutionId = institutionId;
@@ -120,9 +122,9 @@ public class UsersSyncThread implements Runnable
          */
        
         String dbURL = jdbcTemplate.queryForObject("Select DatabaseURL from Institutions where ID = ?", new Object[]{institutionId}, String.class);
-        JdbcTemplate myJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
+        auxJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
         
-        User user = myJdbcTemplate.queryForObject(
+        User user = auxJdbcTemplate.queryForObject(
             "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from Users where name = ? limit 1", new Object[] { loginName },
             new RowMapper<User>() {
                 
@@ -182,7 +184,7 @@ public class UsersSyncThread implements Runnable
     
     private List<Milestone> populateMilestones(long userId)
     {
-        List<Milestone> milestones = jdbcTemplate.query(
+        List<Milestone> milestones = auxJdbcTemplate.query(
             "Select MilestoneID,Status,LevelNo,StartedDate from MyeltWorkflowMilestones where UserID=? order by StartedDate DESC;", new Object[] { userId },
             new RowMapper<Milestone>() {
                 @Override
