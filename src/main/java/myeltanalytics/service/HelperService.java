@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 @Service(value="helperService")
 public class HelperService
 {
-    public static final String[] IGNORE_INSTITUTIONS = new String[]{"COMPROTEST","MYELT","TLTELT" ,"TLIBERO" ,"TLUS" ,"TEST" ,"TLEMEA" ,"TLASI"};
+    public static final String[] IGNORE_INSTITUTIONS = new String[]{"COMPROTEST","MYELT","TLTELT" ,"TLIBERO" ,"TLUS" ,"TEST" ,"TLEMEA" ,"TLASI","API Test Bar Aux", "MyELT AUX 4", "QA AUX 4 Test","APRIL 5", "capesmyelt206_qainfotech", "capesprod", "July 16", "July 17", "QA AUX 1 Test", "QA AUX 2 Test", "CAPES AUX DB 3 Test", "QA AUX 3 Test"};
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;
     public static JSONObject regionCountryMap = new JSONObject(); 
