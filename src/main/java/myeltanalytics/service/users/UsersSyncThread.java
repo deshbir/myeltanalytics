@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
 import java.util.List;
 
 import myeltanalytics.model.AccessCode;
@@ -184,8 +185,9 @@ public class UsersSyncThread implements Runnable
     
     private List<Milestone> populateMilestones(long userId)
     {
-        List<Milestone> milestones = auxJdbcTemplate.query(
-            "Select MilestoneID,Status,LevelNo,StartedDate from MyeltWorkflowMilestones where UserID=? order by StartedDate DESC;", new Object[] { userId },
+        List<Milestone> milestones = new LinkedList<Milestone>();
+        milestones = auxJdbcTemplate.query(
+            "Select MilestoneID,Status,LevelNo,StartedDate from MyeltWorkflowMilestones where UserID=? order by AccessedDate DESC;", new Object[] { userId },
             new RowMapper<Milestone>() {
                 @Override
                 public Milestone mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -240,8 +242,8 @@ public class UsersSyncThread implements Runnable
         return courses;
     }
 
-
-    private Institution populateInstitution(String institutionId){
+    /** Populate Institutions from Main DB (Institutions and Districts table are in Main DB) */
+    private Institution populateInstitution(String institutionId){        
         Institution  institution = jdbcTemplate.queryForObject(
             "Select Institutions.id,Institutions.name,Institutions.country,Institutions.other,Districts.name as district from Institutions left join Districts on Districts.id=Institutions.DistrictID where Institutions.id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
