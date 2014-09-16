@@ -149,19 +149,15 @@ public class UsersSyncService
         
         String query = null;
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = "(SELECT Users.Name as LoginName,Users.InstitutionID as InstitutionID FROM Users,Institutions where Users.type=0 and Users.InstitutionID = Institutions.ID and Institutions.ID NOT IN "
-                + HelperService.ignoreInstitutionsQuery + " and Institutions.DistrictID=41)" 
-                + "UNION (SELECT UserInstitutionMap.LoginName as LoginName,UserInstitutionMap.InstitutionID as InstitutionID FROM UserInstitutionMap,Institutions"
-                + " where UserInstitutionMap.InstitutionID = Institutions.ID and Institutions.ID NOT IN " 
-                + HelperService.ignoreInstitutionsQuery + " and Institutions.DistrictID=41) order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
+            query = "(SELECT Name as LoginName,InstitutionID FROM Users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  + ")"
+                + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
-            query = "SELECT LoginName,InstitutionID from ((SELECT Users.Name as LoginName,Users.InstitutionID as InstitutionID FROM Users,Institutions where Users.type=0 and Users.InstitutionID = Institutions.ID and Institutions.ID NOT IN "
-                + HelperService.ignoreInstitutionsQuery + " and Institutions.DistrictID=41)" 
-                + "UNION (SELECT UserInstitutionMap.LoginName as LoginName,UserInstitutionMap.InstitutionID as InstitutionID FROM UserInstitutionMap,Institutions"
-                + " where UserInstitutionMap.InstitutionID = Institutions.ID and Institutions.ID NOT IN " 
-                + HelperService.ignoreInstitutionsQuery + " and Institutions.DistrictID=41))"
+            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  + "))"
                 + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         }
+        
         
         System.out.println(query);
         
@@ -301,11 +297,8 @@ public class UsersSyncService
     
     public long getTotalUsersCount() throws JsonProcessingException {
         
-        String sql = "SELECT Count(*) from ((SELECT Users.Name as LoginName,Users.InstitutionID as InstitutionID FROM Users,Institutions where Users.type=0 and Users.InstitutionID = Institutions.ID"
-            + " and Institutions.ID NOT IN " + HelperService.ignoreInstitutionsQuery + " and Institutions.DistrictID=41"
-            + ") UNION (SELECT UserInstitutionMap.LoginName as LoginName,UserInstitutionMap.InstitutionID as InstitutionID FROM UserInstitutionMap,Institutions"
-            + " where UserInstitutionMap.InstitutionID = Institutions.ID and Institutions.ID NOT IN "
-            + HelperService.ignoreInstitutionsQuery + " and Institutions.DistrictID=41)) as allusers";
+        String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where type=0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+            + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery + ")) as allusers";
         
         System.out.println(sql);
         
