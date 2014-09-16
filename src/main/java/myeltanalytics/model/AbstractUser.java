@@ -22,10 +22,10 @@ public abstract class AbstractUser
     private String lastMilestoneId;
     private String lastMilestoneStatus;
     private String lastMilestoneLevel;
-    private String lastMilestoneStartedDate;
+    private String lastMilestoneAccessedDate;
     
-    
-   /**
+
+    /**
      * @return the id
      */
     public long getId()
@@ -275,18 +275,17 @@ public abstract class AbstractUser
     {
         this.lastMilestoneLevel = lastMilestoneLevel;
     }
-
-
-
-    public String getLastMilestoneStartedDate()
+    
+    public String getLastMilestoneAccessedDate()
     {
-        return lastMilestoneStartedDate;
+        return lastMilestoneAccessedDate;
+    }
+
+    public void setLastMilestoneAccessedDate(String lastMilestoneAccessedDate)
+    {
+        this.lastMilestoneAccessedDate = lastMilestoneAccessedDate;
     }
 
 
 
-    public void setLastMilestoneStartedDate(String lastMilestoneStartedDate)
-    {
-        this.lastMilestoneStartedDate = lastMilestoneStartedDate;
-    }
 }

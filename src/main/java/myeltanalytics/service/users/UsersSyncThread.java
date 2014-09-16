@@ -155,14 +155,14 @@ public class UsersSyncThread implements Runnable
                     user.setUserCountry(rs.getString("countryCode"));                                     
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));
-                    if (user.getInstitution().getDistrict().equals("CAPES")) {
+                    if (user.getInstitution().getDistrict() != null && user.getInstitution().getDistrict().equals("CAPES")) {
                         user.setMilestones(populateMilestones(user.getId()));
                         if (user.getMilestones() != null && user.getMilestones().size() > 0) {
                             Milestone lastMilestone = user.getMilestones().get(0);
                             user.setLastMilestoneLevel(lastMilestone.getLevel());
                             user.setLastMilestoneId(lastMilestone.getId());
                             user.setLastMilestoneStatus(lastMilestone.getStatus());
-                            user.setLastMilestoneStartedDate(lastMilestone.getStartedDate());                            
+                            user.setLastMilestoneAccessedDate(lastMilestone.getAccessedDate());                            
                         }
                         
                     }
@@ -195,7 +195,7 @@ public class UsersSyncThread implements Runnable
                     milestone.setId(rs.getString("MilestoneID"));
                     if (rs.getLong("StartedDate") != 0) {
                         DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-                        milestone.setStartedDate(dateFormat.format(rs.getLong("StartedDate")));
+                        milestone.setAccessedDate(dateFormat.format(rs.getLong("StartedDate")));
                     }                    
                     milestone.setLevel(rs.getString("LevelNo"));
                     milestone.setStatus(rs.getString("Status"));

@@ -5,7 +5,7 @@ public class Milestone
     private String id;
     private String status;
     private String level;
-    private String startedDate;
+    private String accessedDate;
     
     
     public String getId()
@@ -15,6 +15,14 @@ public class Milestone
     public void setId(String id)
     {
         this.id = id;
+    }
+    public String getAccessedDate()
+    {
+        return accessedDate;
+    }
+    public void setAccessedDate(String accessedDate)
+    {
+        this.accessedDate = accessedDate;
     }
     public String getStatus()
     {
@@ -32,12 +40,5 @@ public class Milestone
     {
         this.level = level;
     }
-    public String getStartedDate()
-    {
-        return startedDate;
-    }
-    public void setStartedDate(String startedDate)
-    {
-        this.startedDate = startedDate;
-    }
+   
 }
