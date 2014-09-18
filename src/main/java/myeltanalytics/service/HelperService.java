@@ -1,11 +1,13 @@
 package myeltanalytics.service;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import myeltanalytics.model.Constants;
+import myeltanalytics.model.MilestoneInfo;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -31,10 +33,11 @@ public class HelperService
     public static final String[] IGNORE_INSTITUTIONS = new String[]{"COMPROTEST","MYELT","TLTELT" ,"TLIBERO" ,"TLUS" ,"TEST" ,"TLEMEA" ,"TLASI","API Test Bar Aux", "MyELT AUX 4", "QA AUX 4 Test","APRIL 5", "capesmyelt206_qainfotech", "capesprod", "July 16", "July 17", "QA AUX 1 Test", "QA AUX 2 Test", "CAPES AUX DB 3 Test", "QA AUX 3 Test"};
     public static Document countryDocument = null;    
     public static Document institutionDocument = null;
+    public static Document milestoneInfoDocument = null; 
     public static JSONObject regionCountryMap = new JSONObject(); 
     public static JSONArray ignoreInstitutionsJson = new JSONArray();
     public static String ignoreInstitutionsQuery = null;
-    
+    public static HashMap<String ,MilestoneInfo> milestoneInfo = new HashMap<String,MilestoneInfo>() ;
     private static final Logger LOGGER = Logger.getLogger(HelperService.class);
     
     
@@ -42,8 +45,10 @@ public class HelperService
     private void setup() throws Exception {
         setupCountryDoc();
         setupInstitutionDoc();
+        setupMilestoneInfoDoc();
         setupRegionCountryMap();
         setupIgnoreInstitutions();
+        setMileStoneInfoMap();
     }
     private void setupIgnoreInstitutions() throws JSONException {
         StringBuffer ignoreInstitutionsQueryBuffer = new StringBuffer("(");
@@ -83,6 +88,19 @@ public class HelperService
         }       
     }
     
+    private void setupMilestoneInfoDoc(){
+    	SAXReader reader = new SAXReader();
+        try
+        {
+            Resource milestoneInfoResource = new ClassPathResource(Constants.CAPES_FILE_NAME);
+            milestoneInfoDocument = reader.read(milestoneInfoResource.getInputStream());
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Error reading CAPES XML file", e);
+        }
+    }
+    
     private void setupRegionCountryMap() {
         try {
             JSONArray regionArray = new JSONArray();
@@ -108,7 +126,26 @@ public class HelperService
         {
             LOGGER.error("Error creating region country map", e);
         }   
-         
+    }
+    
+    public void setMileStoneInfoMap(){
+    	try {
+            List<?> testList = milestoneInfoDocument.selectNodes( "//level/progresstests/test" );            
+            for (Iterator<?> testIter = testList.iterator(); testIter.hasNext(); ) {
+                Node testNode = (Node) testIter.next();
+                MilestoneInfo test = new MilestoneInfo(); 
+                test.setName(testNode.valueOf("name"));
+                test.setExpiry(testNode.valueOf("expiry"));
+                test.setPassAction(testNode.valueOf("passaction"));
+                test.setPassPercent(testNode.valueOf("passpercent"));
+                test.setProgresstestcode(testNode.valueOf("progresstestcode"));
+                milestoneInfo.put(testNode.valueOf("progresstestcode"), test);
+            }  
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Error creating milestone level map", e);
+        }
     }
     
     public boolean isIndexExist(String index, Client elasticSearchClient) {

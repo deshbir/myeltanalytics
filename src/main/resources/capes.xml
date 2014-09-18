@@ -1,0 +1,387 @@
+<root>
+	<level>
+		<no>0</no>
+		<name>Placement Test</name>
+		<linkedbooks>
+			<book>PT_A</book>
+		</linkedbooks>
+		<progresstests>
+			<test>
+				<name>Placement Test</name>
+				<expiry>1000</expiry>
+				<emailReminderThreshold>992</emailReminderThreshold>
+				<certificate>no</certificate>
+				<progresstestcode>PT</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>SELECT_LEVEL</passaction>
+				<linkedbooks>
+					<book>PT_A</book>
+				</linkedbooks>
+			</test>
+		</progresstests>
+	</level>
+	<level>
+		<no>1</no>
+		<name>Level 1</name>
+		<linkedbooks>
+			<book>L1_A</book>
+			<book>L1_B</book>
+			<book>L1_C</book>
+		</linkedbooks>
+		<progresstests>
+			<test>
+				<name>Progress Test 1</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L1_P1</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L1_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 2</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L1_P2</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L1_B</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 3</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>Level 1</certificateName>
+				<progresstestcode>L1_P3</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NEXT_LEVEL</passaction>
+				<linkedbooks>
+					<book>L1_C</book>
+				</linkedbooks>
+			</test>
+		</progresstests>
+	</level>
+	<level>
+		<no>2</no>
+		<name>Level 2</name>
+		<linkedbooks>
+			<book>L2_A</book>
+			<book>L2_B</book>
+			<book>L2_C</book>
+		</linkedbooks>
+		<progresstests>
+			<test>
+				<name>Progress Test 1</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L2_P1</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L2_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 2</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L2_P2</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L2_B</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 3</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>Level 2</certificateName>
+				<progresstestcode>L2_P3</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NEXT_LEVEL</passaction>
+				<linkedbooks>
+					<book>L2_C</book>
+				</linkedbooks>
+			</test>
+		</progresstests>
+	</level>
+	<level>
+		<no>3</no>
+		<name>Level 3</name>
+		<linkedbooks>
+			<book>L3_A</book>
+			<book>L3_B</book>
+			<book>L3_C</book>
+		</linkedbooks>
+		<progresstests>
+			<test>
+				<name>Progress Test 1</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L3_P1</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L3_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 2</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L3_P2</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L3_B</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 3</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>Level 3</certificateName>
+				<progresstestcode>L3_P3</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NEXT_LEVEL</passaction>
+				<linkedbooks>
+					<book>L3_C</book>
+				</linkedbooks>
+			</test>
+		</progresstests>
+	</level>
+	<level>
+		<no>4</no>
+		<name>Level 4</name>
+		<linkedbooks>
+			<book>L4_A</book>
+			<book>L4_B</book>
+			<book>L4_C</book>
+		</linkedbooks>
+		<progresstests>
+			<test>
+				<name>Progress Test 1</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L4_P1</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L4_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 2</name>
+				<expiry>999</expiry>
+				<certificate>no</certificate>
+				<progresstestcode>L4_P2</progresstestcode>
+				<passpercent>0</passpercent>
+				<passaction>NEXT_PART</passaction>
+				<linkedbooks>
+					<book>L4_B</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>Progress Test 3</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>Level 4</certificateName>
+				<progresstestcode>L4_P3</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NEXT_LEVEL</passaction>
+				<linkedbooks>
+					<book>L4_C</book>
+				</linkedbooks>
+			</test>
+		</progresstests>
+	</level>
+	<level>
+		<no>5</no>
+		<name>Level 5</name>
+		<type>Manual</type>
+		<linkedbooks>
+			<book>L5_TFL_A</book>
+			<book>L5_FCE_A</book>
+			<book>L5_CAE_A</book>
+			<book>L5_READ_A</book>
+		</linkedbooks>
+		<progresstests>
+			<test>
+				<name>TOEFL Reading Post Test</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>TOEFL Reading</certificateName>
+				<progresstestcode>L5_TFL_READ</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_TFL_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>TOEFL Listening Post Test</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>TOEFL Listening</certificateName>
+				<progresstestcode>L5_TFL_LSTN</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_TFL_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>TOEFL Speaking Post Test</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>TOEFL Speaking</certificateName>
+				<progresstestcode>L5_TFL_SPKG</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_TFL_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>TOEFL Writing Post Test</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>TOEFL Writing</certificateName>
+				<progresstestcode>L5_TFL_WRTG</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_TFL_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My FCE Reading Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My FCE Reading</certificateName>
+				<progresstestcode>L5_FCE_READ</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_FCE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My FCE Listening Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My FCE Listening</certificateName>
+				<progresstestcode>L5_FCE_LSTN</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_FCE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My FCE Speaking Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My FCE Speaking</certificateName>
+				<progresstestcode>L5_FCE_SPKG</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_FCE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My FCE Use of English Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My FCE Use of English</certificateName>
+				<progresstestcode>L5_FCE_UOE</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_FCE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My FCE Writing Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My FCE Writing</certificateName>
+				<progresstestcode>L5_FCE_WRTG</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_FCE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My CAE Reading Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My CAE Reading</certificateName>
+				<progresstestcode>L5_CAE_READ</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_CAE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My CAE Listening Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My CAE Listening</certificateName>
+				<progresstestcode>L5_CAE_LSTN</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_CAE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My CAE Speaking Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My CAE Speaking</certificateName>
+				<progresstestcode>L5_CAE_SPKG</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_CAE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My CAE Writing Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My CAE Writing</certificateName>
+				<progresstestcode>L5_CAE_WRTG</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_CAE_A</book>
+				</linkedbooks>
+			</test>
+			<test>
+				<name>My CAE Use of English Test Your Self</name>
+				<expiry>999</expiry>
+				<certificate>yes</certificate>
+				<certificateName>My CAE Use of English</certificateName>
+				<progresstestcode>L5_CAE_UOE</progresstestcode>
+				<passpercent>60</passpercent>
+				<passaction>NONE</passaction>
+				<linkedbooks>
+					<book>L5_CAE_A</book>
+				</linkedbooks>
+			</test>
+		</progresstests>
+		<dummybooks>
+			<book>L5_READ_A</book>
+		</dummybooks>
+	</level>
+</root>

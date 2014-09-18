@@ -7,6 +7,7 @@ public class Constants
     //Configuration XML files
     public static final String COUNTRY_XML_FILE_NAME = "country.xml";    
     public static final String INSTITUTION_XML_FILE_NAME = "institution.xml";
+    public static final String CAPES_FILE_NAME = "capes.xml";
     
     //myelt_analytics index constants    
     public static final String MYELT_ANALYTICS_INDEX = "myelt_analytics";    

@@ -4,7 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import myeltanalytics.model.AccessCode;
@@ -12,8 +13,10 @@ import myeltanalytics.model.Constants;
 import myeltanalytics.model.ElasticSearchUser;
 import myeltanalytics.model.Institution;
 import myeltanalytics.model.Milestone;
+import myeltanalytics.model.MilestoneInfo;
 import myeltanalytics.model.User;
 import myeltanalytics.service.ApplicationContextProvider;
+import myeltanalytics.service.HelperService;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.Client;
@@ -155,19 +158,30 @@ public class UsersSyncThread implements Runnable
                     user.setUserCountry(rs.getString("countryCode"));                                     
                     user.setCourses(populateCourses(user.getId()));
                     user.setAccesscodes(populateAccessCodes(user.getId()));
+                    
+                    /*****************************************
+                     *  Populate Milestones for CAPES users
+                     ******************************************/
                     if (user.getInstitution().getDistrict() != null && user.getInstitution().getDistrict().equals("CAPES")) {
                         user.setMilestones(populateMilestones(user.getId()));
                         if (user.getMilestones() != null && user.getMilestones().size() > 0) {
-                            Milestone lastMilestone = user.getMilestones().get(0);
+                        	//Get last accessed milestone
+                            Milestone lastMilestone = user.getMilestones().get(user.getMilestones().keySet().toArray()[0]);
                             user.setLastMilestoneLevel(lastMilestone.getLevel());
                             user.setLastMilestoneId(lastMilestone.getId());
                             user.setLastMilestoneStatus(lastMilestone.getStatus());
-                            user.setLastMilestoneAccessedDate(lastMilestone.getAccessedDate());                            
+                            user.setLastMilestoneAccessedDate(lastMilestone.getAccessedDate());
+                            user.setLastMilestoneStartedDate(lastMilestone.getStartedDate());
+                            user.setLastMilestoneIsActive(lastMilestone.getIsActive());
+                            //Read some additional milestone info from capes.xml
+                            if(lastMilestone.getTestName() != null){
+                            	user.setLastMilestoneTestName(lastMilestone.getTestName());
+                            	user.setLastMilestoneExpiry(lastMilestone.getExpiry());
+                            	user.setLastMilestonePassAction(lastMilestone.getPassAction());
+                            	user.setLastMilestonePassPercent(lastMilestone.getPassPercent());
+                            }
                         }
-                        
                     }
-                    
-                    
                     return user;
                 }
             });
@@ -183,11 +197,15 @@ public class UsersSyncThread implements Runnable
         return user;
     }
     
-    private List<Milestone> populateMilestones(long userId)
+    /**
+     * Function to get milestone info for CAPES users from MySQL database.
+     * @param userId unique id of user(CAPES)
+     * @return Milestones Map
+     */
+    private HashMap<String,Milestone> populateMilestones(long userId)
     {
-        List<Milestone> milestones = new LinkedList<Milestone>();
-        milestones = auxJdbcTemplate.query(
-            "Select MilestoneID,Status,LevelNo,StartedDate from MyeltWorkflowMilestones where UserID=? order by AccessedDate DESC;", new Object[] { userId },
+         List<Milestone> results = auxJdbcTemplate.query(
+            "Select MilestoneID,Status,LevelNo,Score,MaxScore,StartedDate,AccessedDate,CompletedDate,IsActive from MyeltWorkflowMilestones where UserID=? order by AccessedDate DESC;", new Object[] { userId },
             new RowMapper<Milestone>() {
                 @Override
                 public Milestone mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -195,13 +213,37 @@ public class UsersSyncThread implements Runnable
                     milestone.setId(rs.getString("MilestoneID"));
                     if (rs.getLong("StartedDate") != 0) {
                         DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-                        milestone.setAccessedDate(dateFormat.format(rs.getLong("StartedDate")));
+                        milestone.setStartedDate(dateFormat.format(rs.getLong("StartedDate")));
                     }                    
                     milestone.setLevel(rs.getString("LevelNo"));
                     milestone.setStatus(rs.getString("Status"));
+                    if (rs.getLong("AccessedDate") != 0) {
+                        DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+                        milestone.setAccessedDate(dateFormat.format(rs.getLong("AccessedDate")));
+                    }
+                    if (rs.getLong("CompletedDate") != 0) {
+                        DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+                        milestone.setCompletedDate(dateFormat.format(rs.getLong("CompletedDate")));
+                    }
+                    milestone.setScore(rs.getString("Score"));
+                    milestone.setMaxScore(rs.getString("MaxScore"));
+                    milestone.setIsActive(rs.getString("IsActive"));
+                    
+                    //Get additional milestone info from capes.xml 
+                    MilestoneInfo milestoneInfo  = HelperService.milestoneInfo.get(milestone.getId());
+                    if(milestoneInfo != null){
+                    	milestone.setExpiry(milestoneInfo.getExpiry());
+                    	milestone.setTestName(milestoneInfo.getName());
+                    	milestone.setPassAction(milestoneInfo.getPassAction());
+                    	milestone.setPassPercent(milestoneInfo.getPassPercent());
+                    }
                     return milestone;
                 }
             });
+	        HashMap<String, Milestone> milestones = new LinkedHashMap<String , Milestone>();
+	        for(Milestone milestone : results){
+	        	milestones.put(milestone.getId(),milestone);
+	        }
         return milestones;
     }
     

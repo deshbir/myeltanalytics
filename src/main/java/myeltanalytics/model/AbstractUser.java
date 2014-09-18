@@ -1,5 +1,6 @@
 package myeltanalytics.model;
 
+import java.util.HashMap;
 import java.util.List;
 
 import myeltanalytics.service.HelperService;
@@ -18,11 +19,17 @@ public abstract class AbstractUser
     private String firstName,lastName;
     private Country userCountry;
     private List<String> courses;
-    private List<Milestone> milestones;
+    private HashMap<String ,Milestone> milestones;
     private String lastMilestoneId;
     private String lastMilestoneStatus;
     private String lastMilestoneLevel;
+    private String lastMilestoneStartedDate;
     private String lastMilestoneAccessedDate;
+    private String lastMilestoneIsActive;
+    private String lastMilestoneTestName;
+    private String lastMilestonePassPercent;
+    private String lastMilestonePassAction;
+    private String lastMilestoneExpiry;
     
 
     /**
@@ -100,7 +107,6 @@ public abstract class AbstractUser
     {
         this.userType = userType;
     }
-
     
     /**
      * @return the dateCreated
@@ -110,8 +116,6 @@ public abstract class AbstractUser
         return dateCreated;
     }
 
-
-
     /**
      * @param dateCreated the dateCreated to set
      */
@@ -119,9 +123,7 @@ public abstract class AbstractUser
     {
         this.dateCreated = dateCreated;
     }
-
-
-
+    
     /**
      * @return the dateLastLogin
      */
@@ -129,9 +131,7 @@ public abstract class AbstractUser
     {
         return dateLastLogin;
     }
-
-
-
+    
     /**
      * @param date the dateLastLogin to set
      */
@@ -139,9 +139,7 @@ public abstract class AbstractUser
     {
         this.dateLastLogin = date;
     }
-
-
-
+    
     /**
      * @return the firstName
      */
@@ -160,8 +158,6 @@ public abstract class AbstractUser
         this.firstName = firstName;
     }
 
-
-
     /**
      * @return the lastName
      */
@@ -170,8 +166,6 @@ public abstract class AbstractUser
         return lastName;
     }
 
-
-
     /**
      * @param lastName the lastName to set
      */
@@ -179,29 +173,22 @@ public abstract class AbstractUser
     {
         this.lastName = lastName;
     }
-
-
+    
     public List<String> getCourses()
     {
         return courses;
     }
-
-
-
+    
     public void setCourses(List<String> courses)
     {
         this.courses = courses;
     }
-
-
-
+    
     public Country getUserCountry()
     {
         return userCountry;
     }
-
-
-
+    
     public void setUserCountry(Country userCountry)
     {
         this.userCountry = userCountry;
@@ -218,35 +205,30 @@ public abstract class AbstractUser
         }
     }
 
-
-
     public String getDatabaseURL()
     {
         return databaseURL;
     }
 
-
-
     public void setDatabaseURL(String databaseURL)
     {
         this.databaseURL = databaseURL;
     }
-
-
-
-    public List<Milestone> getMilestones()
-    {
-        return milestones;
-    }
-
-
-
-    public void setMilestones(List<Milestone> milestones)
-    {
-        this.milestones = milestones;
-    }
     
-    public String getLastMilestoneId()
+	
+	public HashMap<String, Milestone> getMilestones() {
+		return milestones;
+	}
+
+
+
+	public void setMilestones(HashMap<String, Milestone> milestones) {
+		this.milestones = milestones;
+	}
+
+
+
+	public String getLastMilestoneId()
     {
         return lastMilestoneId;
     }
@@ -285,7 +267,53 @@ public abstract class AbstractUser
     {
         this.lastMilestoneAccessedDate = lastMilestoneAccessedDate;
     }
+    
+	public String getLastMilestoneStartedDate() {
+		return lastMilestoneStartedDate;
+	}
 
+	public void setLastMilestoneStartedDate(String lastMilestoneStartedDate) {
+		this.lastMilestoneStartedDate = lastMilestoneStartedDate;
+	}
+	
+	public String getLastMilestoneIsActive() {
+		return lastMilestoneIsActive;
+	}
+	
+	public void setLastMilestoneIsActive(String lastMilestoneIsActive) {
+		this.lastMilestoneIsActive = lastMilestoneIsActive;
+	}
 
+	public String getLastMilestoneTestName() {
+		return lastMilestoneTestName;
+	}
 
+	public void setLastMilestoneTestName(String lastMilestoneTestName) {
+		this.lastMilestoneTestName = lastMilestoneTestName;
+	}
+
+	public String getLastMilestonePassPercent() {
+		return lastMilestonePassPercent;
+	}
+
+	public void setLastMilestonePassPercent(String lastMilestonePassPercent) {
+		this.lastMilestonePassPercent = lastMilestonePassPercent;
+	}
+
+	public String getLastMilestonePassAction() {
+		return lastMilestonePassAction;
+	}
+	
+	public void setLastMilestonePassAction(String lastMilestonePassAction) {
+		this.lastMilestonePassAction = lastMilestonePassAction;
+	}
+
+	public String getLastMilestoneExpiry() {
+		return lastMilestoneExpiry;
+	}
+	
+	public void setLastMilestoneExpiry(String lastMilestoneExpiry) {
+		this.lastMilestoneExpiry = lastMilestoneExpiry;
+	}
+	
 }
