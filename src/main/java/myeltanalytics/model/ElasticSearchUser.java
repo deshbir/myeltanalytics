@@ -57,6 +57,9 @@ public class ElasticSearchUser extends AbstractUser {
             esUser.setLastMilestoneAccessedDate(user.getLastMilestoneAccessedDate());
             esUser.setLastMilestoneIsActive(user.getLastMilestoneIsActive());
             esUser.setLastMilestoneStartedDate(user.getLastMilestoneStartedDate());
+            esUser.setLastMilestonecompletedDate(user.getLastMilestonecompletedDate());
+            esUser.setLastMilestoneMaxScore(user.getLastMilestoneMaxScore());
+            esUser.setLastMilestoneScore(user.getLastMilestoneScore());
             if(user.getLastMilestoneTestName() != null){
 	            esUser.setLastMilestoneTestName(user.getLastMilestoneTestName());
 	            esUser.setLastMilestoneExpiry(user.getLastMilestoneExpiry());

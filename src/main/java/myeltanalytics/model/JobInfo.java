@@ -77,10 +77,6 @@ public class JobInfo
         this.errorRecords++;
     }
     
-    public synchronized void deccrementSuccessRecords() {
-        this.successRecords--;
-    }
-
     public String getStartDateTime()
     {
         return startDateTime;

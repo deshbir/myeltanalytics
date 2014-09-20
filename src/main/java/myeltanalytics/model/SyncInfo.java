@@ -3,6 +3,7 @@ package myeltanalytics.model;
 public class SyncInfo {
 	private String status;
 	private String jobId;
+	private String exceptionClasss;
 	private String message;
 	private String stacktrace;
 
@@ -29,6 +30,12 @@ public class SyncInfo {
 	}
 	public void setJobId(String jobId) {
 		this.jobId = jobId;
+	}
+	public String getExceptionClasss() {
+		return exceptionClasss;
+	}
+	public void setExceptionClasss(String exceptionClasss) {
+		this.exceptionClasss = exceptionClasss;
 	}
 	
 }

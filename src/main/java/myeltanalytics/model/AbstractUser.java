@@ -23,13 +23,17 @@ public abstract class AbstractUser
     private String lastMilestoneId;
     private String lastMilestoneStatus;
     private String lastMilestoneLevel;
-    private String lastMilestoneStartedDate;
-    private String lastMilestoneAccessedDate;
+    private String lastMilestoneScore;
+    private String lastMilestoneMaxScore;
     private String lastMilestoneIsActive;
     private String lastMilestoneTestName;
     private String lastMilestonePassPercent;
     private String lastMilestonePassAction;
     private String lastMilestoneExpiry;
+    private String lastMilestoneStartedDate;
+    private String lastMilestoneAccessedDate;
+    private String lastMilestonecompletedDate;
+    
     private SyncInfo syncInfo;
     
 
@@ -323,5 +327,29 @@ public abstract class AbstractUser
 
 	public void setSyncInfo(SyncInfo syncInfo) {
 		this.syncInfo = syncInfo;
+	}
+
+	public String getLastMilestoneScore() {
+		return lastMilestoneScore;
+	}
+
+	public void setLastMilestoneScore(String lastMilestoneScore) {
+		this.lastMilestoneScore = lastMilestoneScore;
+	}
+
+	public String getLastMilestoneMaxScore() {
+		return lastMilestoneMaxScore;
+	}
+
+	public void setLastMilestoneMaxScore(String lastMilestoneMaxScore) {
+		this.lastMilestoneMaxScore = lastMilestoneMaxScore;
+	}
+
+	public String getLastMilestonecompletedDate() {
+		return lastMilestonecompletedDate;
+	}
+
+	public void setLastMilestonecompletedDate(String lastMilestonecompletedDate) {
+		this.lastMilestonecompletedDate = lastMilestonecompletedDate;
 	}
 }

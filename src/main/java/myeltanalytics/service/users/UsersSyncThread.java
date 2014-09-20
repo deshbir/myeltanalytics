@@ -72,6 +72,7 @@ public class UsersSyncThread implements Runnable
                 			stackTrace = stackTrace + stactTraceElement[i].toString();
                 		}
                 	}
+                	syncInfo.setExceptionClasss(e.getClass().getSimpleName());
                 	syncInfo.setStacktrace(stackTrace);
                 	syncInfo.setStatus("Error");
             		esUser = getErrorEsUser(syncInfo);
@@ -87,7 +88,6 @@ public class UsersSyncThread implements Runnable
                     {
                         // TODO Auto-generated catch block
                         LOGGER.error("Failure for json processing= " + loginName, e1);
-                        
                     }
                 	LOGGER.error("Failure for LoginName= " + loginName, e);
                 	return;
@@ -97,44 +97,33 @@ public class UsersSyncThread implements Runnable
                 syncInfo.setStatus("Success");
             	syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
             	user.setSyncInfo(syncInfo);
-                if(accessCodes.size() ==0){
-                    try{ 
-                    	esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
-                    }catch(Exception ex){
-                    	//created custom EsUser if error occurs while creating EsUser using user object from MySQL and push it into ES database with "SynInfo.status = error"..
-                    	isErrorUser = true;
-                    	syncInfo.setMessage(ex.getMessage());
-                		syncInfo.setStacktrace(ex.getStackTrace().clone().toString());
-                		syncInfo.setStatus("Error");
-                		syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
-                		esUser = getErrorEsUser(syncInfo);
-                		LOGGER.error("Failure for LoginName= " + loginName, ex);
-                    }
-                }
-                else {
-                    for(int i = 0 ;i < accessCodes.size(); i++){
-                        AccessCode accessCode  =  accessCodes.get(i);
-                        String userType = null; 
-                        if(i == 0){
-                            userType = "USER_WITH_ACCESSCODE";
-                        } else {
-                            userType = "ADDITIONAL_ACCESSCODE";
-                        }
-                        try{
-                        	esUser = ElasticSearchUser.transformUser(user, accessCode, userType);
-                        }catch(Exception ex){
-                        	//created custom EsUser if error occurs while creating EsUser using user object from MySQL and push it into ES database with "SynInfo.status = error"..
-                        	isErrorUser = true;
-                        	syncInfo.setMessage(ex.getMessage());
-                    		syncInfo.setStacktrace(ex.getStackTrace().clone().toString());
-                    		syncInfo.setStatus("Error");
-                    		syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
-                    		esUser = getErrorEsUser(syncInfo);
-                    		LOGGER.error("Failure for LoginName= " + loginName, ex);
-                        }
-                        	
-                    }
-                }
+            	try{ 
+            		if(accessCodes.size() ==0){
+            			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
+            		}
+            		else {
+            			for(int i = 0 ;i < accessCodes.size(); i++){
+            				AccessCode accessCode  =  accessCodes.get(i);
+            				String userType = null; 
+            				if(i == 0){
+            					userType = "USER_WITH_ACCESSCODE";
+            				} else {
+            					userType = "ADDITIONAL_ACCESSCODE";
+            				}
+            				esUser = ElasticSearchUser.transformUser(user, accessCode, userType);
+            			}
+            		}
+            	}catch(Exception ex){
+            		//created custom EsUser if error occurs while creating EsUser using user object from MySQL and push it into ES database with "SynInfo.status = error"..
+            		isErrorUser = true;
+            		syncInfo.setMessage(ex.getMessage());
+            		syncInfo.setStacktrace(ex.getStackTrace().clone().toString());
+            		syncInfo.setStatus("Error");
+            		syncInfo.setExceptionClasss(ex.getClass().getSimpleName());
+            		syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
+            		esUser = getErrorEsUser(syncInfo);
+            		//LOGGER.error("Failure for LoginName= " + loginName, ex);
+            	}
                 try{
                 	pushuser(esUser);
                 }catch(Exception e){
@@ -142,32 +131,17 @@ public class UsersSyncThread implements Runnable
                 }
                 if(isErrorUser){
                 	UsersSyncService.jobInfo.incrementErrorRecords();
-                	try
-                    {
-                        UsersSyncService.jobInfo.setLastIdentifier(loginName);
-                        usersSyncService.updateLastSyncedUserStatus();
-                    }
-                    catch (JsonProcessingException e1)
-                    {
-                        // TODO Auto-generated catch block
-                        LOGGER.error("Failure for json processing= " + loginName, e1);
-                    }
-                	
                 }else{
-	                UsersSyncService.jobInfo.incrementSuccessRecords();
-	                try
-	                {
-	                	UsersSyncService.jobInfo.setLastIdentifier(loginName);
-	                    usersSyncService.updateLastSyncedUserStatus();
-	                }
-	                
-	                catch (JsonProcessingException e1)
-	                {
-	                	
-	                	UsersSyncService.jobInfo.deccrementSuccessRecords();
-	                	// TODO Auto-generated catch block
-	                    LOGGER.error("Failure for json processing= " + loginName, e1);
-	                }
+                	UsersSyncService.jobInfo.incrementSuccessRecords();
+                }
+            	try
+                {
+                    UsersSyncService.jobInfo.setLastIdentifier(loginName);
+                    usersSyncService.updateLastSyncedUserStatus();
+                }
+                catch (JsonProcessingException e1)
+                {                	// TODO Auto-generated catch block
+                    LOGGER.error("Failure for json processing= " + loginName, e1);
                 }
         }
     }
@@ -244,6 +218,9 @@ public class UsersSyncThread implements Runnable
                             user.setLastMilestoneAccessedDate(lastMilestone.getAccessedDate());
                             user.setLastMilestoneStartedDate(lastMilestone.getStartedDate());
                             user.setLastMilestoneIsActive(lastMilestone.getIsActive());
+                            user.setLastMilestonecompletedDate(lastMilestone.getCompletedDate());
+                            user.setLastMilestoneMaxScore(lastMilestone.getMaxScore());
+                            user.setLastMilestoneScore(lastMilestone.getScore());
                             //Read some additional milestone info from capes.xml
                             if(lastMilestone.getTestName() != null){
                             	user.setLastMilestoneTestName(lastMilestone.getTestName());
@@ -275,25 +252,24 @@ public class UsersSyncThread implements Runnable
      */
     private HashMap<String,Milestone> populateMilestones(long userId)
     {
-         List<Milestone> results = auxJdbcTemplate.query(
+         
+    	List<Milestone> results = auxJdbcTemplate.query(
             "Select MilestoneID,Status,LevelNo,Score,MaxScore,StartedDate,AccessedDate,CompletedDate,IsActive from MyeltWorkflowMilestones where UserID=? order by AccessedDate DESC;", new Object[] { userId },
             new RowMapper<Milestone>() {
                 @Override
                 public Milestone mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Milestone milestone = new Milestone();
+                    DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                     milestone.setId(rs.getString("MilestoneID"));
                     if (rs.getLong("StartedDate") != 0) {
-                        DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                         milestone.setStartedDate(dateFormat.format(rs.getLong("StartedDate")));
                     }                    
                     milestone.setLevel(rs.getString("LevelNo"));
                     milestone.setStatus(rs.getString("Status"));
                     if (rs.getLong("AccessedDate") != 0) {
-                        DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                         milestone.setAccessedDate(dateFormat.format(rs.getLong("AccessedDate")));
                     }
                     if (rs.getLong("CompletedDate") != 0) {
-                        DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                         milestone.setCompletedDate(dateFormat.format(rs.getLong("CompletedDate")));
                     }
                     milestone.setScore(rs.getString("Score"));
@@ -371,7 +347,7 @@ public class UsersSyncThread implements Runnable
     //function to create EsUser which is not in sync with MySQL user  
     private ElasticSearchUser getErrorEsUser(SyncInfo syncInfo){
     	ElasticSearchUser esUser = new ElasticSearchUser();
-		ElasticSearchInstitution elasticSearchInstitution = new ElasticSearchInstitution(institutionId);
+    	ElasticSearchInstitution elasticSearchInstitution = new ElasticSearchInstitution(institutionId);
 		esUser.setUserName(loginName);
 		esUser.setInstitution(elasticSearchInstitution);
 		esUser.setSyncInfo(syncInfo);
