@@ -52,97 +52,92 @@ public class UsersSyncThread implements Runnable
     
     @Override
     public void run() {
-        if(UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))){            
-        	User user = null;
-        	ElasticSearchUser esUser = null;
+        if (UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))) {
+            
+        	User user = null;        	
+        	ElasticSearchUser esUser = null;        	
         	SyncInfo syncInfo = new SyncInfo();
-                //LOGGER.debug("Starting sync for user with LoginName= " + loginName + ", InstitutionId= " + institutionId);
-                try{
-                	user = populateUser(loginName, institutionId);
-                }catch(Exception e){
-                	//created custom EsUser if error occurs while reading user from MySQL and push it into ES database with "SynInfo.status = error".
-                	syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
-                	syncInfo.setMessage(e.getMessage());
-                	StackTraceElement []stactTraceElement =  e.getStackTrace().clone();
-                	String stackTrace = null;
-                	for(int i = 0; i < stactTraceElement.length ; i++ ){
-                		if(stackTrace == null){
-                			stackTrace = stactTraceElement[i].toString();
-                		}else{
-                			stackTrace = stackTrace + stactTraceElement[i].toString();
-                		}
-                	}
-                	syncInfo.setExceptionClasss(e.getClass().getSimpleName());
-                	syncInfo.setStacktrace(stackTrace);
-                	syncInfo.setStatus("Error");
-            		esUser = getErrorEsUser(syncInfo);
-                	try{
-                		pushuser(esUser);
-                	}catch(Exception ex){
-                	}
-                	UsersSyncService.jobInfo.incrementErrorRecords();
-                	try{
-                		UsersSyncService.jobInfo.setLastIdentifier(loginName);
-                		usersSyncService.updateLastSyncedUserStatus();
-                	}catch (JsonProcessingException e1)
-                    {
-                        // TODO Auto-generated catch block
-                        LOGGER.error("Failure for json processing= " + loginName, e1);
-                    }
-                	LOGGER.error("Failure for LoginName= " + loginName, e);
-                	return;
-                }
-                boolean isErrorUser = false;
-                List<AccessCode> accessCodes = user.getAccesscodes();
-                syncInfo.setStatus("Success");
+        	
+            //LOGGER.debug("Starting sync for user with LoginName= " + loginName + ", InstitutionId= " + institutionId);
+            try {
+                // Getting user's data from MySQL database
+            	user = populateUser(loginName, institutionId);
+            } catch(Exception e) {
+                /*********************************************************************************************************
+                 * Add an Error User Record in ElasticSearch if any error occurs while reading user's data from MySQL.
+                 *********************************************************************************************************/
+                LOGGER.error("Failure while reading data from MySQL for LoginName= " + loginName, e);                
             	syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
-            	user.setSyncInfo(syncInfo);
-            	try{ 
-            		if(accessCodes.size() ==0){
-            			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
+            	syncInfo.setMessage(e.getMessage());
+            	
+            	StackTraceElement []stackTraceElement =  e.getStackTrace().clone();
+            	String stackTrace = null;
+            	for(int i = 0; i < stackTraceElement.length ; i++ ){
+            		if(stackTrace == null){
+            			stackTrace = stackTraceElement[i].toString();
+            		}else{
+            			stackTrace = stackTrace + stackTraceElement[i].toString();
             		}
-            		else {
-            			for(int i = 0 ;i < accessCodes.size(); i++){
-            				AccessCode accessCode  =  accessCodes.get(i);
-            				String userType = null; 
-            				if(i == 0){
-            					userType = "USER_WITH_ACCESSCODE";
-            				} else {
-            					userType = "ADDITIONAL_ACCESSCODE";
-            				}
-            				esUser = ElasticSearchUser.transformUser(user, accessCode, userType);
-            			}
-            		}
-            	}catch(Exception ex){
-            		//created custom EsUser if error occurs while creating EsUser using user object from MySQL and push it into ES database with "SynInfo.status = error"..
-            		isErrorUser = true;
-            		syncInfo.setMessage(ex.getMessage());
-            		syncInfo.setStacktrace(ex.getStackTrace().clone().toString());
-            		syncInfo.setStatus("Error");
-            		syncInfo.setExceptionClasss(ex.getClass().getSimpleName());
-            		syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
-            		esUser = getErrorEsUser(syncInfo);
-            		//LOGGER.error("Failure for LoginName= " + loginName, ex);
             	}
-                try{
-                	pushuser(esUser);
-                }catch(Exception e){
-                	isErrorUser = true;
-                }
-                if(isErrorUser){
-                	UsersSyncService.jobInfo.incrementErrorRecords();
-                }else{
-                	UsersSyncService.jobInfo.incrementSuccessRecords();
-                }
-            	try
-                {
-                    UsersSyncService.jobInfo.setLastIdentifier(loginName);
-                    usersSyncService.updateLastSyncedUserStatus();
-                }
-                catch (JsonProcessingException e1)
-                {                	// TODO Auto-generated catch block
-                    LOGGER.error("Failure for json processing= " + loginName, e1);
-                }
+            	syncInfo.setStacktrace(stackTrace);
+            	
+            	syncInfo.setExceptionClasss(e.getClass().getSimpleName());            	
+            	syncInfo.setStatus("Error");
+        		esUser = getErrorEsUser(syncInfo);      		
+            	
+        		try {
+        		    pushuser(esUser);
+        		    UsersSyncService.jobInfo.incrementErrorRecords();            	
+            		UsersSyncService.jobInfo.setLastIdentifier(loginName);
+            		usersSyncService.updateLastSyncedUserStatus();
+            	} catch (Exception ex)  {
+                    LOGGER.error("Failure while pushing to elasticsearch for LoginName= " + loginName, ex);
+                }       		
+            	return;
+            }
+            
+            try {
+                syncInfo.setStatus("Success");
+                syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
+                user.setSyncInfo(syncInfo);
+            
+                List<AccessCode> accessCodes = user.getAccesscodes();           
+            	
+        		if(accessCodes.size() ==0){
+        			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
+        			pushuser(esUser);
+        		}
+        		else {
+        			for(int i = 0 ;i < accessCodes.size(); i++){
+        				AccessCode accessCode  =  accessCodes.get(i);
+        				String userType = null; 
+        				if(i == 0){
+        					userType = "USER_WITH_ACCESSCODE";
+        				} else {
+        					userType = "ADDITIONAL_ACCESSCODE";
+        				}
+        				esUser = ElasticSearchUser.transformUser(user, accessCode, userType);
+        				pushuser(esUser);
+        			}
+        		}
+        		UsersSyncService.jobInfo.incrementSuccessRecords();
+        		
+            }
+            catch (Exception e) {
+                LOGGER.error("Failure while pushing to elasticsearch for LoginName= " + loginName, e);
+                UsersSyncService.jobInfo.incrementErrorRecords();
+            }
+            
+            UsersSyncService.jobInfo.setLastIdentifier(loginName);
+            
+        	try
+            {
+                usersSyncService.updateLastSyncedUserStatus();
+            }
+            catch (JsonProcessingException e1)
+            {                	// TODO Auto-generated catch block
+                LOGGER.error("Failure for json processing= " + loginName, e1);
+            }
         }
     }
     
