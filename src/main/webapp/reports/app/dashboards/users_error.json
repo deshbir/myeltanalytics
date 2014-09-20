@@ -1,5 +1,5 @@
 {
-  "title": "Error Users",
+  "title": "Failed Users",
   "services": {
     "query": {
       "list": {
@@ -65,206 +65,12 @@
           "title": "Total"
         },
         {
+          "error": false,
           "span": 12,
           "editable": true,
-          "type": "histogram",
-          "loadingEditor": false,
-          "mode": "count",
-          "time_field": "dateCreated",
-          "value_field": null,
-          "x-axis": true,
-          "y-axis": true,
-          "scale": 1,
-          "y_format": "none",
-          "grid": {
-            "max": null,
-            "min": 0
-          },
-          "queries": {
-            "mode": "unpinned",
-            "ids": [
-              0
-            ]
-          },
-          "annotate": {
-            "enable": false,
-            "query": "*",
-            "size": 20,
-            "field": "_type",
-            "sort": [
-              "_score",
-              "desc"
-            ]
-          },
-          "auto_int": false,
-          "resolution": 100,
-          "interval": "1M",
-          "intervals": [
-            "auto",
-            "1s",
-            "1m",
-            "5m",
-            "10m",
-            "30m",
-            "1h",
-            "3h",
-            "12h",
-            "1d",
-            "1w",
-            "1y",
-            "1M"
-          ],
-          "lines": false,
-          "fill": 0,
-          "linewidth": 3,
-          "points": false,
-          "pointradius": 5,
-          "bars": true,
-          "stack": true,
-          "spyable": true,
-          "zoomlinks": true,
-          "options": true,
-          "legend": true,
-          "show_query": true,
-          "interactive": true,
-          "legend_counts": true,
-          "timezone": "browser",
-          "percentage": false,
-          "zerofill": true,
-          "derivative": false,
-          "tooltip": {
-            "value_type": "cumulative",
-            "query_as_alias": true
-          },
-          "title": "New Users added VS Time"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Options",
-      "height": "280px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 6,
-          "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "studentType",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "unpinned",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "By learning model"
-        },
-        {
-          "error": false,
-          "span": 6,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "institution.name",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "bar",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0,
-              2
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "By Institution"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Row2",
-      "height": "250px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 6,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "accessCode.productName",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "bar",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "unpinned",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "By Product"
-        },
-        {
-          "error": false,
-          "span": 6,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "disciplines",
+          "field": "syncInfo.exceptionClasss",
           "exclude": [],
           "missing": false,
           "other": false,
@@ -290,40 +96,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "By Discipline"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Row3",
-      "height": "250px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 12,
-          "editable": true,
-          "type": "map",
-          "loadingEditor": false,
-          "map": "world",
-          "colors": [
-            "#A0E2E2",
-            "#265656"
-          ],
-          "size": 100,
-          "exclude": [],
-          "spyable": true,
-          "queries": {
-            "mode": "unpinned",
-            "ids": [
-              0
-            ]
-          },
-          "title": "by country",
-          "field": "country.code"
+          "title": "Error By Type"
         }
       ],
       "notice": false
