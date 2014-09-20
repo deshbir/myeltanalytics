@@ -228,6 +228,11 @@ public class UsersSyncService
         }
         
         //Create required aliases for Users reports
+        if (!helperService.isIndexExist(Constants.USERS_ERROR_ALIAS, elasticSearchClient)) {
+            TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Constants.USER_ERROR);
+            elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_ERROR_ALIAS, usersOnlyFilter).execute().actionGet();
+        }     
+        
         if (!helperService.isIndexExist(Constants.USERS_ALL_ALIAS, elasticSearchClient)) {
             TermsFilterBuilder usersOnlyFilter = FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESSCODE, Constants.USER_WITHOUT_ACCESSCODE);
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_ALL_ALIAS, usersOnlyFilter).execute().actionGet();

@@ -8,7 +8,6 @@ import myeltanalytics.service.HelperService;
 import org.dom4j.Node;
 
 public class ElasticSearchUser extends AbstractUser {
-        private String syncJobId;
         private String recordType; 
         private String studentType;
         private AccessCode accessCode;
@@ -19,10 +18,9 @@ public class ElasticSearchUser extends AbstractUser {
         private String region;
         private ElasticSearchInstitution institution;
         
-        public static ElasticSearchUser transformUser(User user, AccessCode ac,String recordType, String jobId)
+        public static ElasticSearchUser transformUser(User user, AccessCode ac,String recordType)
         {
             ElasticSearchUser esUser = new ElasticSearchUser();
-            esUser.setSyncJobId(jobId);
             esUser.setAccessCode(ac);
             esUser.setId(user.getId());
             esUser.setDatabaseURL(user.getDatabaseURL());
@@ -65,6 +63,8 @@ public class ElasticSearchUser extends AbstractUser {
 	            esUser.setLastMilestonePassAction(user.getLastMilestonePassAction());
 	            esUser.setLastMilestonePassPercent(user.getLastMilestonePassPercent());
             }
+
+            esUser.setSyncInfo(user.getSyncInfo());
             return esUser;
         }
       
@@ -222,16 +222,5 @@ public class ElasticSearchUser extends AbstractUser {
         {
             this.institution = institution;
         }
-
-        public String getSyncJobId()
-        {
-            return syncJobId;
-        }
-
-        public void setSyncJobId(String syncJobId)
-        {
-            this.syncJobId = syncJobId;
-        } 
-
        
  }

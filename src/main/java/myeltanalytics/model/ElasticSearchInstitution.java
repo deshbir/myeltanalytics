@@ -2,7 +2,12 @@ package myeltanalytics.model;
 
 public class ElasticSearchInstitution extends AbstractInstitution
 {
-    
+	
+	public ElasticSearchInstitution(String id)
+    {
+        super(id);
+    }
+	
     protected ElasticSearchInstitution(String id, String name)
     {
         super(id, name);

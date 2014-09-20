@@ -22,6 +22,10 @@ public class Institution extends AbstractInstitution
         this.other = other;
         this.district = district;
     }
+    
+    public Institution(String id){
+    	super(id);
+    }
     /**
      * @return the other
      */

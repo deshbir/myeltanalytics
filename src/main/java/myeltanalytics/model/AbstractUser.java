@@ -30,6 +30,7 @@ public abstract class AbstractUser
     private String lastMilestonePassPercent;
     private String lastMilestonePassAction;
     private String lastMilestoneExpiry;
+    private SyncInfo syncInfo;
     
 
     /**
@@ -315,5 +316,12 @@ public abstract class AbstractUser
 	public void setLastMilestoneExpiry(String lastMilestoneExpiry) {
 		this.lastMilestoneExpiry = lastMilestoneExpiry;
 	}
-	
+
+	public SyncInfo getSyncInfo() {
+		return syncInfo;
+	}
+
+	public void setSyncInfo(SyncInfo syncInfo) {
+		this.syncInfo = syncInfo;
+	}
 }

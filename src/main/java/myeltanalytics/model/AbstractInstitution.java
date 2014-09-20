@@ -6,7 +6,10 @@ public abstract class AbstractInstitution
     private String name;
     
     
-   
+   public AbstractInstitution(String id){
+	   this.id = id;
+   }
+    
     protected AbstractInstitution(String id, String name)
     {
        this.id = id;
