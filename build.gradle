@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC3")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:+")
     }
 }
 
@@ -21,32 +21,32 @@ repositories {
 dependencies {
     
     //Spring-boot Starter 
-    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-web:+")
 
     //Spring JDBC
-    compile("org.apache.tomcat:tomcat-jdbc")
-    compile("org.springframework:spring-jdbc")
-    compile("org.springframework.boot:spring-boot-starter-jdbc:0.5.0.M6")
-    compile("mysql:mysql-connector-java")
+    compile("org.apache.tomcat:tomcat-jdbc:+")
+    compile("org.springframework:spring-jdbc:+")
+    compile("org.springframework.boot:spring-boot-starter-jdbc:+")
+    compile("mysql:mysql-connector-java:+")
     
     //Spring Security
-    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("org.springframework.boot:spring-boot-starter-security:+")
     
     //Elasticsearch
-    compile ("org.elasticsearch:elasticsearch:1.1.1")
+    compile ("org.elasticsearch:elasticsearch:1.2.1")
     
     //Tomcat
-    compile("org.springframework.boot:spring-boot-starter-tomcat")
-    compile("org.apache.tomcat.embed:tomcat-embed-jasper")
+    compile("org.springframework.boot:spring-boot-starter-tomcat:+")
+    compile("org.apache.tomcat.embed:tomcat-embed-jasper:+")
     
-    compile("javax.servlet:jstl")
-    compile("com.fasterxml.jackson.core:jackson-databind")
-    compile("log4j:log4j:1.2.16")
-    compile("org.json:json:20090211")
-    compile("dom4j:dom4j:1.5.1")
-    compile('net.sf.supercsv:super-csv:2.2.0')
+    compile("javax.servlet:jstl:+")
+    compile("com.fasterxml.jackson.core:jackson-databind:+")
+    compile("log4j:log4j:+")
+    compile("org.json:json:+")
+    compile("dom4j:dom4j:+")
+    compile('net.sf.supercsv:super-csv:+')
     
-    testCompile("junit:junit")
+    testCompile("junit:junit:+")
 }
 
 
