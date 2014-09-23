@@ -38,6 +38,7 @@ dependencies {
     //Tomcat
     compile("org.springframework.boot:spring-boot-starter-tomcat:+")
     compile("org.apache.tomcat.embed:tomcat-embed-jasper:+")
+    compile("org.apache.tomcat.embed:tomcat-embed-core:+")
     
     compile("javax.servlet:jstl:+")
     compile("com.fasterxml.jackson.core:jackson-databind:+")
