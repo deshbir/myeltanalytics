@@ -1,5 +1,7 @@
 package myeltanalytics.service.users;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -69,18 +71,10 @@ public class UsersSyncThread implements Runnable
                 LOGGER.error("Failure while reading data from MySQL for LoginName= " + loginName, e);                
             	syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
             	syncInfo.setMessage(e.getMessage());
-            	
-            	StackTraceElement []stackTraceElement =  e.getStackTrace().clone();
-            	String stackTrace = null;
-            	for(int i = 0; i < stackTraceElement.length ; i++ ){
-            		if(stackTrace == null){
-            			stackTrace = stackTraceElement[i].toString();
-            		}else{
-            			stackTrace = stackTrace + stackTraceElement[i].toString();
-            		}
-            	}
-            	syncInfo.setStacktrace(stackTrace);
-            	
+            	StringWriter sw = new StringWriter();
+            	PrintWriter pw = new PrintWriter(sw);
+            	e.printStackTrace(pw);
+            	syncInfo.setStacktrace(sw.toString());
             	syncInfo.setExceptionClasss(e.getClass().getSimpleName());            	
             	syncInfo.setStatus("Error");
         		esUser = getErrorEsUser(syncInfo);      		
