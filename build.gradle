@@ -45,6 +45,7 @@ dependencies {
     compile("org.json:json:+")
     compile("dom4j:dom4j:+")
     compile('net.sf.supercsv:super-csv:+')
+    compile('jaxen:jaxen:+')
     
     testCompile("junit:junit:+")
 }
