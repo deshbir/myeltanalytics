@@ -27,6 +27,8 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -98,30 +100,31 @@ public class UsersSyncService
         return myJdbcTemplate;
     }
     
-    public void startFreshSync() throws JsonProcessingException {
-        
+    public void startFreshSync(boolean isError) throws JsonProcessingException {
         String newJobId = UUID.randomUUID().toString();  
         LOGGER.info("Starting a fresh UsersSyncJob with syncJobId=" + newJobId);
-        
         LOGGER.info("Updating lastJobInfo for UsersSyncJob with syncJobId=" + newJobId);
         updateLastJobInfoInES(newJobId);
-        
         jobInfo.setJobId(newJobId);
         jobInfo.setLastIdentifier("");
         jobInfo.setSuccessRecords(0);
         jobInfo.setErrorRecords(0);
-        jobInfo.setTotalRecords(getTotalUsersCount());
-        
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         jobInfo.setStartDateTime(dateFormat.format(date));
-        
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);    
-        
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
-        
-        startSyncJob();
+        if(isError){
+        	SearchHit[] searchHits = getFailedUsers();
+        	jobInfo.setTotalRecords(searchHits.length);
+        	jobInfo.setFailedUserJob(true);
+        	startFailedUsersSync(searchHits);
+        }else{
+        	jobInfo.setFailedUserJob(false);
+        	jobInfo.setTotalRecords(getTotalUsersCount());
+        	startSyncJob();
+        }
     }
     
     public void stopSync() throws InterruptedException, JsonProcessingException {
@@ -135,7 +138,7 @@ public class UsersSyncService
     }
     
     public void resumeSync() throws JsonProcessingException {
-        LOGGER.info("Resuming UsersSyncJob with syncJobId=" + jobInfo.getJobId());
+    	LOGGER.info("Resuming UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         updateUserStatus();
@@ -470,5 +473,20 @@ public class UsersSyncService
 //          .actionGet();
 //      
 //  }
-
+    //Get Records from 'users_error' index.
+    SearchHit[] getFailedUsers() {
+    	int totalHits = (int)elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).execute().actionGet().getHits().getTotalHits();
+    	return elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).setSize(totalHits).execute().actionGet().getHits().getHits();
+    }
+    
+    // Sync User from 'users_error' index.
+	 private void startFailedUsersSync(SearchHit[] searchHits)throws JsonProcessingException{
+		 for(SearchHit searchHit : searchHits ){
+			String loginName = (String)searchHit.getSource().get("userName");
+			String institutionID = (String)searchHit.getSource().get("institution").toString().split(",")[0].substring(4);
+			userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
+			Runnable worker = new UsersSyncThread(loginName, institutionID);
+	        userSyncExecutor.execute(worker);
+		}
+	 }
 }

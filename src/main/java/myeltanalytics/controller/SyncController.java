@@ -79,7 +79,7 @@ public class SyncController {
     @ResponseBody
     String startFreshUsersSync() throws JsonProcessingException{
         try {
-            usersSyncService.startFreshSync();
+            usersSyncService.startFreshSync(false);
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
@@ -97,7 +97,9 @@ public class SyncController {
     String pauseUsersSync() throws JsonProcessingException, InterruptedException{
         try {
             usersSyncService.stopSync();        
-            return helperService.constructSuccessResponse();
+            JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
+            jobInfoJson.put("status", "success");
+            return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
             return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
@@ -190,5 +192,22 @@ public class SyncController {
             return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
         }
         
-    } 
+    }
+
+    @RequestMapping(value= "/users/failedUserSync")
+    @ResponseBody
+    public String failedUserSync() throws JsonProcessingException{ 
+    	try {
+            usersSyncService.startFreshSync(true);
+            JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
+            jobInfoJson.put("status", "success");
+            return jobInfoJson.toString();
+        } catch (CannotGetJdbcConnectionException e) {
+            LOGGER.error("Error communicating with MySQL Server.", e);
+            return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
+        } catch (Exception e) {
+            LOGGER.error("Error Startng Users Sync Job.", e);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
+        }
+    }
 }
