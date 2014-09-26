@@ -121,7 +121,6 @@ public class UsersSyncThread implements Runnable
         		}
         		if(isErrorRecord){
         			UsersSyncService.jobInfo.decrementErrorRecords();
-        			System.out.println(UsersSyncService.jobInfo.getErrorRecords());
         			UsersSyncService.jobInfo.incrementFailedUserProcessed();
         		}
         		UsersSyncService.jobInfo.incrementSuccessRecords();
