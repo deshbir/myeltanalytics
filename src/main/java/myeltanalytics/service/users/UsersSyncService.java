@@ -177,13 +177,11 @@ public class UsersSyncService
         jdbcTemplate.query(query,
             new RowCallbackHandler()
             {
-        	int i = 0;
         	@Override
         	public void processRow(ResultSet rs) throws SQLException
         	{
-        		if(i < 100){
+
             	try {
-            		i++;
                     String loginName = rs.getString("LoginName");
                     String institutionID = rs.getString("InstitutionID");
                     Runnable worker = new UsersSyncThread(loginName, institutionID,false);
@@ -191,7 +189,7 @@ public class UsersSyncService
                 } catch (Exception e) {
                     LOGGER.error("Error while processing User row" ,e);
                 }
-        	}}
+        	}
             });
     }
     
