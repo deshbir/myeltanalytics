@@ -15,15 +15,32 @@ var UsersSyncHelper = new function() {
                   $("#usersStopButton").hide();
                   $("#usersResumeButton").hide();
                   $("#usersStartButton").show();
+                  if(responseJson.errorRecords > 0){
+                	  $("#userFailedRecord i.fa-spin").hide();
+                	  $("#userFailedRecord i.fa-repeat").show().css("cursor","pointer");
+                  }
                   UsersSyncHelper.abortFetchingSyncStatus();
               }
               $("#usersJobStartDateTime").html(responseJson.startDateTime);
               $("#usersJobStatus").html(responseJson.jobStatus);
               $("#usersSuccessRecords").html(responseJson.successRecords);
               $("#usersErrorRecords").html(responseJson.errorRecords);
-              if(responseJson.errorRecords > 0){
-            	  $("#userFailedRecord i.fa-spin").hide();
-            	  $("#userFailedRecord i.fa-repeat").show().css("cursor","pointer");
+              if(responseJson.failedsUserStatus == "Completed" && !(responseJson.jobStatus == "Completed")){
+            	  $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
+                  $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
+                  $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
+                  $("#usersStopButton").hide();
+                  $("#usersResumeButton").removeAttr("disabled");
+                  $("#usersResumeButton").show();
+                  $("#usersStartButton").show();
+                  if(responseJson.errorRecords > 0){
+	                  $("#userFailedRecord i.fa-repeat").show();
+	                  $("#userFailedRecord i.fa-spin").hide();
+                  }else{
+                	  $("#userFailedRecord i.fa-repeat").hide();
+	                  $("#userFailedRecord i.fa-spin").hide();
+                  }
+                  UsersSyncHelper.abortFetchingSyncStatus();
               }
             })
         }, 5000);
@@ -54,14 +71,10 @@ var UsersSyncHelper = new function() {
         	   }
                $("#usersJobStatus").removeClass("badge-info").addClass("badge-error");
                $("#usersJobStatus").html("Paused");
-               
                $("#usersProgressContainer").removeClass("active");
                $("#usersSyncPanel .panel-heading i").removeClass("fa-spin"); 
-               
                $("#usersStopButton").hide();
-               if(!responseJson.failedUserJob){
                	$("#usersResumeButton").show();
-               }
                $("#usersStartButton").show();
            }  
            $("#usersStopButton").removeAttr("disabled");

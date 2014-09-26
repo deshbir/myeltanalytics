@@ -15,7 +15,13 @@ public class JobInfo
     private long errorRecords;
     private String startDateTime;
     private boolean isFailedUserJob;
-    public long getTotalRecords()
+    private String failedsUserStatus;
+	private long failedUserProcessed;
+	private long totalFailedUsersToProcess;
+	
+	
+    
+	public long getTotalRecords()
     {
         return totalRecords;
     }
@@ -77,6 +83,10 @@ public class JobInfo
         this.errorRecords++;
     }
     
+    public synchronized void decrementErrorRecords() {
+        this.errorRecords--;
+    }
+    
     public String getStartDateTime()
     {
         return startDateTime;
@@ -94,5 +104,32 @@ public class JobInfo
 	public void setFailedUserJob(boolean isFailedUserJob) {
 		this.isFailedUserJob = isFailedUserJob;
 	}
-    
+	public String getFailedsUserStatus() {
+		return failedsUserStatus;
+	}
+
+	public synchronized void setFailedsUserStatus(String failedsUserStatus) {
+		this.failedsUserStatus = failedsUserStatus;
+	}
+
+	public long getFailedUserProcessed() {
+		return failedUserProcessed;
+	}
+
+	public synchronized void setFailedUserProcessed(long failedUserProcessed) {
+		this.failedUserProcessed = failedUserProcessed;
+	}
+
+	public long getTotalFailedUsersToProcess() {
+		return totalFailedUsersToProcess;
+	}
+
+	public synchronized void setTotalFailedUser(long totalFailedUsersToProcess) {
+		this.totalFailedUsersToProcess = totalFailedUsersToProcess;
+	}
+	
+	public synchronized void incrementFailedUserProcessed(){
+		this.failedUserProcessed++;
+	}
+
 }

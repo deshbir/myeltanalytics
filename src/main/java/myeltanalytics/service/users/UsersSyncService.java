@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -100,7 +101,7 @@ public class UsersSyncService
         return myJdbcTemplate;
     }
     
-    public void startFreshSync(boolean isError) throws JsonProcessingException {
+    public void startFreshSync() throws JsonProcessingException {
         String newJobId = UUID.randomUUID().toString();  
         LOGGER.info("Starting a fresh UsersSyncJob with syncJobId=" + newJobId);
         LOGGER.info("Updating lastJobInfo for UsersSyncJob with syncJobId=" + newJobId);
@@ -115,16 +116,10 @@ public class UsersSyncService
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);    
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
-        if(isError){
-        	SearchHit[] searchHits = getFailedUsers();
-        	jobInfo.setTotalRecords(searchHits.length);
-        	jobInfo.setFailedUserJob(true);
-        	startFailedUsersSync(searchHits);
-        }else{
-        	jobInfo.setFailedUserJob(false);
-        	jobInfo.setTotalRecords(getTotalUsersCount());
-        	startSyncJob();
-        }
+        jobInfo.setFailedUserJob(false);
+        jobInfo.setTotalRecords(getTotalUsersCount());
+        jobInfo.setFailedsUserStatus(Constants.STATUS_NOT_STARTED);
+        startSyncJob();
     }
     
     public void stopSync() throws InterruptedException, JsonProcessingException {
@@ -137,12 +132,22 @@ public class UsersSyncService
         LOGGER.info("Aborted UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     }
     
-    public void resumeSync() throws JsonProcessingException {
+    public void resumeSync(boolean isError) throws JsonProcessingException {
     	LOGGER.info("Resuming UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
         updateUserStatus();
-        startSyncJob();
+        if(isError){
+        	jobInfo.setFailedsUserStatus(Constants.STATUS_INPROGRESS);
+        	jobInfo.setFailedUserProcessed(0);
+        	SearchHit[] searchHits = getFailedUsers();
+        	jobInfo.setTotalFailedUser(searchHits.length);
+        	jobInfo.setFailedUserJob(true);
+        	startFailedUsersSync(searchHits);
+        }else{
+        	jobInfo.setFailedsUserStatus(Constants.STATUS_NOT_STARTED);
+        	startSyncJob();
+        }
     }
     
     private void startSyncJob() {
@@ -174,39 +179,52 @@ public class UsersSyncService
         jdbcTemplate.query(query,
             new RowCallbackHandler()
             {
-                @Override
-                public void processRow(ResultSet rs) throws SQLException
-                {
-                    try {
-                        String loginName = rs.getString("LoginName");
-                        String institutionID = rs.getString("InstitutionID");
-                        Runnable worker = new UsersSyncThread(loginName, institutionID);
-                        userSyncExecutor.execute(worker);    
-                    } catch (Exception e) {
-                        LOGGER.error("Error while processing User row" ,e);
-                    }
+        	int i = 0;
+        	@Override
+        	public void processRow(ResultSet rs) throws SQLException
+        	{
+        		if(i < 100){
+            	try {
+            		i++;
+                    String loginName = rs.getString("LoginName");
+                    String institutionID = rs.getString("InstitutionID");
+                    Runnable worker = new UsersSyncThread(loginName, institutionID,false);
+                    userSyncExecutor.execute(worker);    
+                } catch (Exception e) {
+                    LOGGER.error("Error while processing User row" ,e);
                 }
+        	}}
             });
     }
     
     public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
         
         boolean isCompleted = false;
-        if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
-            isCompleted = true;
-            jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
-        }
+        if(!(jobInfo.getFailedsUserStatus().equals(Constants.STATUS_INPROGRESS))){
+	        if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
+	            isCompleted = true;
+	            jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
+	        }
+	        updateUserStatus();
+	        recordsProcessed++;
         
-        updateUserStatus();
-        recordsProcessed++;
-        
-        if (isCompleted) {
-           //delete the records that have not been update/synced; they are records that have been deleted in database
-            helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
-        } else {
-            if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
-                startSyncJob();
-            }
+	        if (isCompleted) {
+	           //delete the records that have not been update/synced; they are records that have been deleted in database
+	            helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
+	        } else {
+	            if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
+	                startSyncJob();
+	            }
+	        }
+        }else{
+        	if(jobInfo.getFailedUserProcessed() == jobInfo.getTotalFailedUsersToProcess()){
+        		helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
+        		jobInfo.setFailedsUserStatus(Constants.STATUS_COMPLETED);
+        		if(!(jobInfo.getJobStatus().equals(Constants.STATUS_COMPLETED))){
+        			jobInfo.setJobStatus(Constants.STATUS_PAUSED);
+        		}
+        	}
+        	updateUserStatus();
         }
     }
     
@@ -482,11 +500,12 @@ public class UsersSyncService
     // Sync User from 'users_error' index.
 	 private void startFailedUsersSync(SearchHit[] searchHits)throws JsonProcessingException{
 		 for(SearchHit searchHit : searchHits ){
-			String loginName = (String)searchHit.getSource().get("userName");
-			String institutionID = (String)searchHit.getSource().get("institution").toString().split(",")[0].substring(4);
-			userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
-			Runnable worker = new UsersSyncThread(loginName, institutionID);
-	        userSyncExecutor.execute(worker);
+			 String loginName = (String)searchHit.getSource().get("userName");
+			 Map<String, String> institutionMap = (HashMap<String,String>)(searchHit.getSource().get("institution"));
+			 String institutionID = institutionMap.get("id");
+			 userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
+			 Runnable worker = new UsersSyncThread(loginName, institutionID,true);
+			 userSyncExecutor.execute(worker);
 		}
 	 }
 }
