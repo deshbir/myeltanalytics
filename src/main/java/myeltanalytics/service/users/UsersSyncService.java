@@ -195,26 +195,26 @@ public class UsersSyncService
     
     public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
         
-        boolean isCompleted = false;
+//        boolean isCompleted = false;
         if(!(jobInfo.getFailedsUserStatus().equals(Constants.STATUS_INPROGRESS))){
 	        if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
-	            isCompleted = true;
+//	            isCompleted = true;
 	            jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
 	        }
 	        updateUserStatus();
 	        recordsProcessed++;
         
-	        if (isCompleted) {
-	           //delete the records that have not been update/synced; they are records that have been deleted in database
-	            helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
-	        } else {
-	            if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
-	                startSyncJob();
-	            }
-	        }
-        }else{
+//	        if (isCompleted) {
+//	           //delete the records that have not been update/synced; they are records that have been deleted in database
+//	            //helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
+//	        } else {
+            if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
+                startSyncJob();
+            }
+//	        }
+        } else {
         	if(jobInfo.getFailedUserProcessed() == jobInfo.getTotalFailedUsersToProcess()){
-        		helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
+        		//helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
         		jobInfo.setFailedsUserStatus(Constants.STATUS_COMPLETED);
         		if(!(jobInfo.getJobStatus().equals(Constants.STATUS_COMPLETED))){
         			jobInfo.setJobStatus(Constants.STATUS_PAUSED);
