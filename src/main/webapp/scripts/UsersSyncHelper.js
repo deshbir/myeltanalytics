@@ -169,13 +169,9 @@ this.startFailedUserSync = function () {
                 Util.showError(responseJson.errorMessage);
             } else {
                 $("#usersTotalRecords").html(responseJson.totalRecords);
-                $("#usersJobStartDateTime").html(responseJson.startDateTime);
-                $("#usersSuccessRecords").html("0");
-                $("#usersErrorRecords").html("0");
+                $("#usersJobStartDateTime").html(responseJson.startDateTime);                
                 $("#usersJobStatus").removeClass("badge-error").removeClass("badge-success").addClass("badge-info");
-                $("#usersJobStatus").html("InProgress");
-                $("#usersProgressContainer .progress-bar").css('width', '0%');
-                $("#usersProgressContainer .progress-bar").html('0%');
+                $("#usersJobStatus").html("InProgress");               
                 $("#usersProgressContainer").addClass("active"); 
                 $("#usersResumeButton").hide();
                 $("#usersStartButton").hide();
