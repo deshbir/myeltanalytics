@@ -147,8 +147,8 @@ public class UsersSyncService
     	LOGGER.info("Starting Failed UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	jobInfo.setFailedsUserStatus(Constants.STATUS_INPROGRESS);
     	jobInfo.setFailedUserProcessed(0);
-    	List<SearchHit> searchHits = getFailedUsers();
-    	jobInfo.setTotalFailedUser(searchHits.size());
+    	SearchHit[] searchHits = getFailedUsers();
+    	jobInfo.setTotalFailedUser(searchHits.length);
     	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	updateUserStatus();
     	startFailedUsersSync(searchHits);
@@ -498,9 +498,10 @@ public class UsersSyncService
     /*
      * Get all Records from 'users_error' index.
      */
-    List<SearchHit> getFailedUsers() {
+    SearchHit[] getFailedUsers() {
     	int totalHits = (int)elasticSearchClient.prepareCount(Constants.USERS_ERROR_ALIAS).execute().actionGet().getCount();
-    	List<SearchHit> searchHits  = new ArrayList<SearchHit>();
+    	SearchHit [] searchHits = new SearchHit[totalHits];
+    	int i = 0;
     	SearchResponse scrollResp = elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS)
     	        .setSearchType(SearchType.SCAN)
     	        .setScroll(new TimeValue(60000))
@@ -509,7 +510,8 @@ public class UsersSyncService
     	while (true) {
     	    scrollResp = elasticSearchClient.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
     	    for (SearchHit hit : scrollResp.getHits().hits()) {
-    	    searchHits.add(hit);
+    	    	searchHits[i] = hit;
+    	    	i++;
     	    }
     	    if (scrollResp.getHits().getHits().length == 0) {
     	        break;
@@ -521,7 +523,7 @@ public class UsersSyncService
     /*
      *  Sync User from 'users_error' index.
      */
-	 private void startFailedUsersSync(List<SearchHit> searchHits)throws JsonProcessingException{
+	private void startFailedUsersSync(SearchHit[] searchHits)throws JsonProcessingException{
 		 userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
 		 for(SearchHit searchHit : searchHits ){
 			 String loginName = (String)searchHit.getSource().get("userName");

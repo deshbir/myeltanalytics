@@ -56,7 +56,7 @@ public class UsersSyncThread implements Runnable
     
     @Override
     public void run() {
-        if (UsersSyncService.jobInfo != null && !(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED))) {
+        if (UsersSyncService.jobInfo != null && (!(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED) || isErrorRecord))) {
             
         	User user = null;        	
         	ElasticSearchUser esUser = null;        	
