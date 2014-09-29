@@ -113,7 +113,7 @@ public class SyncController {
     @ResponseBody
     String resumeUsersSync() throws JsonProcessingException{ 
         try {
-            usersSyncService.resumeSync(false);
+            usersSyncService.resumeSync();
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
@@ -198,7 +198,7 @@ public class SyncController {
     @ResponseBody
     public String failedUserSync() throws JsonProcessingException{ 
     	try {
-            usersSyncService.resumeSync(true);
+            usersSyncService.startFailedUsersSync();
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
