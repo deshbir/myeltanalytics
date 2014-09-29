@@ -131,17 +131,19 @@ public class UsersSyncService
     
     public void resumeSync(boolean isError) throws JsonProcessingException {
     	LOGGER.info("Resuming UsersSyncJob with syncJobId=" + jobInfo.getJobId());
-        jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
-        LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
-        updateUserStatus();
         if(isError){
         	jobInfo.setFailedsUserStatus(Constants.STATUS_INPROGRESS);
         	jobInfo.setFailedUserProcessed(0);
         	SearchHit[] searchHits = getFailedUsers();
         	jobInfo.setTotalFailedUser(searchHits.length);
+        	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
+        	updateUserStatus();
         	startFailedUsersSync(searchHits);
-        }else{
+        } else {
+        	jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
         	jobInfo.setFailedsUserStatus(Constants.STATUS_NOT_STARTED);
+        	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
+        	updateUserStatus();
         	startSyncJob();
         }
     }
