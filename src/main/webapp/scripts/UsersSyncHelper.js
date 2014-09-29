@@ -30,7 +30,6 @@ var UsersSyncHelper = new function() {
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
                   $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
                   $("#usersStopButton").hide();
-                  $("#usersResumeButton").removeAttr("disabled");
                   $("#usersResumeButton").show();
                   $("#usersStartButton").show();
                   if(responseJson.errorRecords > 0){
@@ -66,7 +65,7 @@ var UsersSyncHelper = new function() {
                Util.showError(responseJson.errorMessage);
            } else {
         	   if(responseJson.errorRecords > 0){
-        		   $("#userFailedRecord i.fa-repeat").show().css("cursor","pointer");
+        		   $("#userFailedRecord i.fa-repeat").show();
         		   $("#userFailedRecord i.fa-spin").hide();
         	   }
                $("#usersJobStatus").removeClass("badge-info").addClass("badge-error");
@@ -74,7 +73,7 @@ var UsersSyncHelper = new function() {
                $("#usersProgressContainer").removeClass("active");
                $("#usersSyncPanel .panel-heading i").removeClass("fa-spin"); 
                $("#usersStopButton").hide();
-               	$("#usersResumeButton").show();
+               $("#usersResumeButton").show();
                $("#usersStartButton").show();
            }  
            $("#usersStopButton").removeAttr("disabled");
@@ -152,14 +151,12 @@ var UsersSyncHelper = new function() {
             $("#usersResumeButton").removeAttr("disabled");
             $("#usersResumeButton i.fa-play-circle-o").show();
             $("#usersResumeButton i.fa-spin").hide();
-            
-           
         });
     };
     
 this.startFailedUserSync = function () {
-        
-        $("#usersStartButton").attr("disabled","disabled");
+
+		$("#usersStartButton").attr("disabled","disabled");
         $("#usersResumeButton").attr("disabled","disabled");
         $("#userFailedRecord i.fa-repeat").hide();
         $("#userFailedRecord i.fa-spin").show();
@@ -180,8 +177,8 @@ this.startFailedUserSync = function () {
                 UsersSyncHelper.triggerFetchingSyncStatus();
             }
             $("#usersStartButton").removeAttr("disabled");
+            $("#usersResumeButton").removeAttr("disabled");
             $("#usersStartButton i.fa-play").show();
-            $("#usersStartButton i.fa-spin").hide();
         });
     };
     

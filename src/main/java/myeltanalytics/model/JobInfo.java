@@ -14,7 +14,6 @@ public class JobInfo
     private long successRecords;
     private long errorRecords;
     private String startDateTime;
-    private boolean isFailedUserJob;
     private String failedsUserStatus;
 	private long failedUserProcessed;
 	private long totalFailedUsersToProcess;
@@ -96,14 +95,6 @@ public class JobInfo
     {
         this.startDateTime = startDateTime;
     }
-
-	public boolean isFailedUserJob() {
-		return isFailedUserJob;
-	}
-
-	public void setFailedUserJob(boolean isFailedUserJob) {
-		this.isFailedUserJob = isFailedUserJob;
-	}
 	public String getFailedsUserStatus() {
 		return failedsUserStatus;
 	}

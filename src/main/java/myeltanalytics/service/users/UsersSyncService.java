@@ -114,7 +114,6 @@ public class UsersSyncService
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);    
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
-        jobInfo.setFailedUserJob(false);
         jobInfo.setTotalRecords(getTotalUsersCount());
         jobInfo.setFailedsUserStatus(Constants.STATUS_NOT_STARTED);
         startSyncJob();
@@ -140,7 +139,6 @@ public class UsersSyncService
         	jobInfo.setFailedUserProcessed(0);
         	SearchHit[] searchHits = getFailedUsers();
         	jobInfo.setTotalFailedUser(searchHits.length);
-        	jobInfo.setFailedUserJob(true);
         	startFailedUsersSync(searchHits);
         }else{
         	jobInfo.setFailedsUserStatus(Constants.STATUS_NOT_STARTED);
@@ -487,19 +485,25 @@ public class UsersSyncService
 //          .actionGet();
 //      
 //  }
-    //Get Records from 'users_error' index.
+    
+    
+    /*
+     * Get all Records from 'users_error' index.
+     */
     SearchHit[] getFailedUsers() {
     	int totalHits = (int)elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).execute().actionGet().getHits().getTotalHits();
     	return elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).setSize(totalHits).execute().actionGet().getHits().getHits();
     }
     
-    // Sync User from 'users_error' index.
+    /*
+     *  Sync User from 'users_error' index.
+     */
 	 private void startFailedUsersSync(SearchHit[] searchHits)throws JsonProcessingException{
+		 userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
 		 for(SearchHit searchHit : searchHits ){
 			 String loginName = (String)searchHit.getSource().get("userName");
 			 Map<String, String> institutionMap = (HashMap<String,String>)(searchHit.getSource().get("institution"));
 			 String institutionID = institutionMap.get("id");
-			 userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
 			 Runnable worker = new UsersSyncThread(loginName, institutionID,true);
 			 userSyncExecutor.execute(worker);
 		}

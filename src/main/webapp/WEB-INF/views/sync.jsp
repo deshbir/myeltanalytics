@@ -135,7 +135,7 @@
                                                <span id="usersErrorRecords" class="syncinfo pull-right odometer text-danger">${usersJobInfo.errorRecords}</span>
                                                <i class="fa fa-warning fa-lg"></i>
                                                <span class="syncinfoHeading" id="userFailedRecord">Failed records  
-													<i class="fa fa-repeat fa-lg" style="${failedUsersSyncButtonDisplay};cursor:pointer" onclick="UsersSyncHelper.startFailedUserSync()";></i>
+													<i class="fa fa-repeat fa-lg" style="${failedUsersSyncButtonDisplay};cursor:pointer;color:red" onclick="UsersSyncHelper.startFailedUserSync()";></i>
 													<i style="display:none;cursor:pointer" class="fa fa-spin fa-spinner fa-lg"></i>
                                                </span>
                                            </td>
