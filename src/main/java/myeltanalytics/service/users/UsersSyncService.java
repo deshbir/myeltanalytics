@@ -5,8 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +23,10 @@ import org.apache.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -142,8 +147,8 @@ public class UsersSyncService
     	LOGGER.info("Starting Failed UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	jobInfo.setFailedsUserStatus(Constants.STATUS_INPROGRESS);
     	jobInfo.setFailedUserProcessed(0);
-    	SearchHit[] searchHits = getFailedUsers();
-    	jobInfo.setTotalFailedUser(searchHits.length);
+    	List<SearchHit> searchHits = getFailedUsers();
+    	jobInfo.setTotalFailedUser(searchHits.size());
     	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	updateUserStatus();
     	startFailedUsersSync(searchHits);
@@ -493,16 +498,30 @@ public class UsersSyncService
     /*
      * Get all Records from 'users_error' index.
      */
-    SearchHit[] getFailedUsers() {
-    	int totalHits = (int)elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).execute().actionGet().getHits().getTotalHits();
-    	LOGGER.info("Elasticsearch Failed user count=" + totalHits + " for syncJobId=" + jobInfo.getJobId());
-    	return elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).setSize(totalHits).execute().actionGet().getHits().getHits();
+    List<SearchHit> getFailedUsers() {
+    	int totalHits = (int)elasticSearchClient.prepareCount(Constants.USERS_ERROR_ALIAS).execute().actionGet().getCount();
+    	List<SearchHit> searchHits  = new ArrayList<SearchHit>();
+    	SearchResponse scrollResp = elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS)
+    	        .setSearchType(SearchType.SCAN)
+    	        .setScroll(new TimeValue(60000))
+    	        .setSize(100).execute().actionGet();
+    	
+    	while (true) {
+    	    scrollResp = elasticSearchClient.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
+    	    for (SearchHit hit : scrollResp.getHits().hits()) {
+    	    searchHits.add(hit);
+    	    }
+    	    if (scrollResp.getHits().getHits().length == 0) {
+    	        break;
+    	    }
+    	}
+    	return searchHits;
     }
     
     /*
      *  Sync User from 'users_error' index.
      */
-	 private void startFailedUsersSync(SearchHit[] searchHits)throws JsonProcessingException{
+	 private void startFailedUsersSync(List<SearchHit> searchHits)throws JsonProcessingException{
 		 userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
 		 for(SearchHit searchHit : searchHits ){
 			 String loginName = (String)searchHit.getSource().get("userName");
