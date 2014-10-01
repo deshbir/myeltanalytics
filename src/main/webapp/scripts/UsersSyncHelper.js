@@ -8,7 +8,7 @@ var UsersSyncHelper = new function() {
               var responseJson = eval("(" + data + ")");
               $("#usersProgressContainer .progress-bar").css('width', responseJson.percent +'%');
               $("#usersProgressContainer .progress-bar").html(responseJson.percent + '%');
-              if (responseJson.jobStatus == "Completed") {
+              if (responseJson.jobStatus == "Completed" && !(responseJson.failedsUserStatus == "InProgress")) {
                   $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
                   $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
