@@ -188,23 +188,23 @@ public class UsersSyncService
     
     public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
         
-        boolean isCompleted = false;
+        //boolean isCompleted = false;
         if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
-            isCompleted = true;
+            //isCompleted = true;
             jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
         }
         
         updateUserStatus();
         recordsProcessed++;
         
-        if (isCompleted) {
+        //if (isCompleted) {
            //delete the records that have not been update/synced; they are records that have been deleted in database
-            helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
-        } else {
-            if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
-                startSyncJob();
-            }
+            //helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
+        //} else {
+        if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
+            startSyncJob();
         }
+        //}
     }
     
     public synchronized void updateUserStatus() throws JsonProcessingException{
