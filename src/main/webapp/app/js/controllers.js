@@ -1,7 +1,7 @@
 var myeltAnalyticsControllers = angular.module('myeltAnalyticsControllers', []);
 
-myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
-     function ($scope, $http) {
+myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http','$q',
+     function ($scope, $http,$q) {
         $scope.reports = {
             "uniqueUsers": {
                 "title": "Accounts",
@@ -148,8 +148,23 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http',
             }
 
         };
-    
-       $scope.openReport = function (filename) {
+        $scope.FYear = 14;
+        $scope.open_myeltUsageReport = function(){
+        	var studentRegURL  = $http.get("../api/reports/myeltusage/studentReg/"+$scope.FYear),
+    			productRegURL  = $http.get("../api/reports/myeltusage/productReg/"+$scope.FYear),
+    			activeUserURL  = $http.get("../api/reports/myeltusage/activeUsers/"+$scope.FYear);
+	    		$q.all([studentRegURL,productRegURL,activeUserURL]).then(function(arrayOfResult){
+	    			$scope.studentRegData = arrayOfResult[0].data;
+	    			$scope.prodRegData = arrayOfResult[1].data;
+	    			$scope.activeUsersData = arrayOfResult[2].data;
+	    			setTimeout( function() {
+	    					jQuery.fancybox.open(jQuery("#myeltUsageReport").html());
+	    			}
+	    			,0);
+	    		});
+
+        };
+        $scope.openReport = function (filename) {
            var iframeWidth = $(window).width() - 100;
            var iframeHeight = $(window).height() - 100;
            var fullURL = "../reports/index.html#/dashboard/file/" + filename;
@@ -210,4 +225,3 @@ myeltAnalyticsControllers.controller('RulesController', ['$scope','$http',
         });  
     }
  ]);
-
