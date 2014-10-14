@@ -44,7 +44,7 @@ dependencies {
     compile("com.fasterxml.jackson.core:jackson-databind:+")
     compile("log4j:log4j:+")
     compile("org.json:json:+")
-    compile("dom4j:dom4j:+")
+    compile("dom4j:dom4j:1.6.1")
     compile('net.sf.supercsv:super-csv:+')
     compile('jaxen:jaxen:+')
     

@@ -236,8 +236,8 @@ public class UsersSyncService
         	if(failedRecordProcessed == 10000){
         		getFailedUsers();
         		startFailedRecordsSync();
-        	}
         }
+        //}
     }
     
     public synchronized void updateUserStatus() throws JsonProcessingException{
