@@ -40,7 +40,6 @@ dependencies {
     compile("org.apache.tomcat.embed:tomcat-embed-jasper:7.0.54")
     compile("org.apache.tomcat.embed:tomcat-embed-core:7.0.54")
     
-    provided("javax.servlet:jstl:+")
     compile("com.fasterxml.jackson.core:jackson-databind:+")
     compile("log4j:log4j:+")
     compile("org.json:json:+")
