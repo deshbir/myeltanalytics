@@ -45,22 +45,23 @@ public class UsersSyncThread implements Runnable
     
     private String institutionId;
     
-    private boolean isErrorRecord;
     private JdbcTemplate auxJdbcTemplate;
     
-    public UsersSyncThread(String loginName, String institutionId , boolean isErrorRecord) {
+    public UsersSyncThread(String loginName, String institutionId) {
         this.loginName = loginName;
         this.institutionId = institutionId;
-        this.isErrorRecord = isErrorRecord; 
     }
     
     @Override
     public void run() {
-        if (UsersSyncService.jobInfo != null && (!(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED)) || isErrorRecord)) {
+        if (UsersSyncService.jobInfo != null && (!(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_PAUSED)))) {
             
         	User user = null;        	
         	ElasticSearchUser esUser = null;        	
-        	SyncInfo syncInfo = new SyncInfo();
+        	SyncInfo syncInfo = new SyncInfo();        	
+        	syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
+        	
+        	UsersSyncService.jobInfo.setLastIdentifier(loginName);
         	
             //LOGGER.debug("Starting sync for user with LoginName= " + loginName + ", InstitutionId= " + institutionId);
             try {
@@ -71,7 +72,6 @@ public class UsersSyncThread implements Runnable
                  * Add an Error User Record in ElasticSearch if any error occurs while reading user's data from MySQL.
                  *********************************************************************************************************/
                 LOGGER.error("Failure while reading data from MySQL for LoginName= " + loginName, e);                
-            	syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
             	syncInfo.setMessage(e.getMessage());
             	StringWriter sw = new StringWriter();
             	PrintWriter pw = new PrintWriter(sw);
@@ -83,12 +83,12 @@ public class UsersSyncThread implements Runnable
             	
         		try {
         		    pushuser(esUser);
-        		    if(!isErrorRecord){
+        		    if(UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
+        		    	UsersSyncService.jobInfo.incrementRetryRecordsProcessed();
+        		    } else {
         		    	UsersSyncService.jobInfo.incrementErrorRecords();
-        		    }else{
-        		    	UsersSyncService.jobInfo.incrementFailedUserProcessed();
         		    }
-            		UsersSyncService.jobInfo.setLastIdentifier(loginName);
+            		
             		usersSyncService.updateLastSyncedUserStatus();
             	} catch (Exception ex)  {
                     LOGGER.error("Failure while pushing to elasticsearch for LoginName= " + loginName, ex);
@@ -97,7 +97,6 @@ public class UsersSyncThread implements Runnable
             }
             try {
                 syncInfo.setStatus("Success");
-                syncInfo.setJobId(UsersSyncService.jobInfo.getJobId());
                 user.setSyncInfo(syncInfo);
             
                 List<AccessCode> accessCodes = user.getAccesscodes();           
@@ -119,23 +118,21 @@ public class UsersSyncThread implements Runnable
         				pushuser(esUser);
         			}
         		}
-        		if(isErrorRecord){
+        		if (UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
         			UsersSyncService.jobInfo.decrementErrorRecords();
-        			UsersSyncService.jobInfo.incrementFailedUserProcessed();
+        			UsersSyncService.jobInfo.incrementRetryRecordsProcessed();
         		}
         		UsersSyncService.jobInfo.incrementSuccessRecords();
         		
             }
             catch (Exception e) {
                 LOGGER.error("Failure while pushing to elasticsearch for LoginName= " + loginName, e);
-                if(!isErrorRecord){
+                if (UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
+                	UsersSyncService.jobInfo.incrementRetryRecordsProcessed();
+                } else {
                 	UsersSyncService.jobInfo.incrementErrorRecords();
-                }else{
-                	UsersSyncService.jobInfo.incrementFailedUserProcessed();
                 }
             }
-            
-            UsersSyncService.jobInfo.setLastIdentifier(loginName);
             
         	try
             {

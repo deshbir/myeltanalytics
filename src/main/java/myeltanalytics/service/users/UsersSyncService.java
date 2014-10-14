@@ -119,7 +119,6 @@ public class UsersSyncService
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
         jobInfo.setTotalRecords(getTotalUsersCount());
-        jobInfo.setFailedsUserStatus(Constants.STATUS_NOT_STARTED);
         startSyncJob();
     }
     
@@ -136,21 +135,22 @@ public class UsersSyncService
     public void resumeSync() throws JsonProcessingException {
     	LOGGER.info("Resuming UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
-    	jobInfo.setFailedsUserStatus(Constants.STATUS_NOT_STARTED);
     	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	updateUserStatus();
     	startSyncJob();
     }
     
-    public void startFailedUsersSync() throws JsonProcessingException {
-    	LOGGER.info("Starting Failed UsersSyncJob with syncJobId=" + jobInfo.getJobId());
-    	jobInfo.setFailedsUserStatus(Constants.STATUS_INPROGRESS);
-    	jobInfo.setFailedUserProcessed(0);
-    	jobInfo.setTotalFailedUser(elasticSearchClient.prepareCount(Constants.USERS_ERROR_ALIAS).execute().actionGet().getCount());
-    	getFailedUsers();
+    public void retryFailedUsers() throws JsonProcessingException {
+    	LOGGER.info("Retrying to sync Failed users for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
+    	jobInfo.setJobStatus(Constants.STATUS_INPROGRESS_RETRY);
+    	jobInfo.setRetryJobStatus(Constants.STATUS_INPROGRESS);
+    	jobInfo.setRetryRecordsProcessed(0);
+    	jobInfo.setTotalRetryRecords(elasticSearchClient.prepareCount(Constants.USERS_ERROR_ALIAS).execute().actionGet().getCount());
     	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	updateUserStatus();
-    	startFailedRecordsSync();
+    	
+    	getFailedUsers();    	
+    	retryFailedUsersJob();
     }
     
     private void startSyncJob() {
@@ -189,7 +189,7 @@ public class UsersSyncService
             	try {
                     String loginName = rs.getString("LoginName");
                     String institutionID = rs.getString("InstitutionID");
-                    Runnable worker = new UsersSyncThread(loginName, institutionID,false);
+                    Runnable worker = new UsersSyncThread(loginName, institutionID);
                     userSyncExecutor.execute(worker);    
                 } catch (Exception e) {
                     LOGGER.error("Error while processing User row" ,e);
@@ -200,36 +200,37 @@ public class UsersSyncService
     
     public synchronized void updateLastSyncedUserStatus() throws JsonProcessingException{
         
-//        boolean isCompleted = false;
-        if(!(jobInfo.getFailedsUserStatus().equals(Constants.STATUS_INPROGRESS))){
+        //If not retry failed users job
+    	if(!(jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY))){
+    		recordsProcessed++;
 	        if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
-//	            isCompleted = true;
 	            jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
+	            updateUserStatus();
+	        } else {
+	        	updateUserStatus();
+	        	if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
+	                 startSyncJob();
+	            }
 	        }
-	        updateUserStatus();
-	        recordsProcessed++;
-        
-//	        if (isCompleted) {
-//	           //delete the records that have not been update/synced; they are records that have been deleted in database
-//	            //helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
-//	        } else {
-            if (recordsProcessed == Constants.SQL_RECORDS_LIMIT) {
-                startSyncJob();
-            }
-//	        }
-        } else {
-        	if(jobInfo.getFailedUserProcessed() == jobInfo.getTotalFailedUsersToProcess()){
-        		//helperService.deleteUnsyncedRecords(elasticSearchClient, Constants.USERS_INDEX, Constants.USERS_TYPE, jobInfo.getJobId());
-        		jobInfo.setFailedsUserStatus(Constants.STATUS_COMPLETED);
-        		if(!(jobInfo.getJobStatus().equals(Constants.STATUS_COMPLETED))){
-        			jobInfo.setJobStatus(Constants.STATUS_PAUSED);
-        		}
-        	}
-        	updateUserStatus();
-        	failedRecordProcessed++;
-        	if(failedRecordProcessed == 10000){
-        		getFailedUsers();
-        		startFailedRecordsSync();
+        } 
+    	//If retry failed users job
+    	else {
+    		failedRecordProcessed++;
+    		//If retry failed users job is completed, update status
+        	if(jobInfo.getRetryRecordsProcessed() == jobInfo.getTotalRetryRecords()){
+        		jobInfo.setRetryJobStatus(Constants.STATUS_COMPLETED);
+        		if (jobInfo.getErrorRecords() + jobInfo.getSuccessRecords() == jobInfo.getTotalRecords()) {
+    	            jobInfo.setJobStatus(Constants.STATUS_COMPLETED);
+    	        } else {
+    	        	jobInfo.setJobStatus(Constants.STATUS_PAUSED);
+    	        }
+        		updateUserStatus();
+        	} else {
+        		updateUserStatus();
+        		if(failedRecordProcessed == 10000){
+            		getFailedUsers();
+            		retryFailedUsersJob();
+            	}
         	}
         }
     }
@@ -488,60 +489,30 @@ public class UsersSyncService
 
   }
     
-//  private void deletePreviousJobData()
-//  {
-//      //delete the user_type
-//      elasticSearchClient.prepareDeleteByQuery(Constants.USERS_INDEX)
-//          .setQuery(QueryBuilders.termQuery("_type", Constants.USERS_TYPE))
-//          .execute()
-//          .actionGet();
-//      
-//  }
-    
-    
     /*
      * Get all Records from 'users_error' index.
      */
     void getFailedUsers() {
-//				failedUsersSearchHits = new SearchHit[totalHits];
-//				elasticSearchClient.prepareSearch("users_error").addField("Source").execute().actionGet();
-				int failedUserArraySize = 0;
-				if( (jobInfo.getTotalFailedUsersToProcess() - jobInfo.getFailedUserProcessed()) > 10000){
-    				failedUserArraySize = 10000;
-				}else{
-					failedUserArraySize = (int)(jobInfo.getTotalFailedUsersToProcess() - jobInfo.getFailedUserProcessed());
-				}
-    			failedUsersSearchHits = elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).setSize(failedUserArraySize).execute().actionGet().getHits().getHits();
-//				int i = 0;
-//				SearchResponse scrollResp = elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS)
-//				.setSearchType(SearchType.SCAN)
-//				.setScroll(new TimeValue(60000))
-//				.setSize(100).execute().actionGet();
-//				    	
-//				while (true) {
-//				scrollResp = elasticSearchClient.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
-//				for (SearchHit hit : scrollResp.getHits().hits()) {
-//			    	failedUsersSearchHits[i] = hit;
-//				i++;
-//				}
-//				if (scrollResp.getHits().getHits().length == 0) {
-//				break;
-//				}
-//}
-
+		int failedUserArraySize = 0;
+		if ((jobInfo.getTotalRetryRecords() - jobInfo.getRetryRecordsProcessed()) > 10000) {
+			failedUserArraySize = 10000;
+		} else {
+			failedUserArraySize = (int)(jobInfo.getTotalRetryRecords() - jobInfo.getRetryRecordsProcessed());
+		}
+		failedUsersSearchHits = elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).setSize(failedUserArraySize).execute().actionGet().getHits().getHits();
     }
     
     /*
      *  Sync User from 'users_error' index.
      */
-	private void startFailedRecordsSync()throws JsonProcessingException{
+	private void retryFailedUsersJob()throws JsonProcessingException{
 		failedRecordProcessed = 0; 
 		userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
 		for (SearchHit searchHit : failedUsersSearchHits){
-			String loginName = (String)searchHit.getSource().get("userName");
+			 String loginName = (String)searchHit.getSource().get("userName");
 			 Map<String, String> institutionMap = (HashMap<String,String>)(searchHit.getSource().get("institution"));
 			 String institutionID = institutionMap.get("id");
-			 Runnable worker = new UsersSyncThread(loginName, institutionID,true);
+			 Runnable worker = new UsersSyncThread(loginName, institutionID);
 			 userSyncExecutor.execute(worker);
 		}
 	}

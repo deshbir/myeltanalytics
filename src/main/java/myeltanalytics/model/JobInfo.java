@@ -14,12 +14,34 @@ public class JobInfo
     private long successRecords;
     private long errorRecords;
     private String startDateTime;
-    private String failedsUserStatus;
-	private long failedUserProcessed;
-	private long totalFailedUsersToProcess;
-	
-	
+    private String retryJobStatus;
+	private long retryRecordsProcessed;
+	private long totalRetryRecords;
     
+	public String getRetryJobStatus() {
+		return retryJobStatus;
+	}
+
+	public void setRetryJobStatus(String retryJobStatus) {
+		this.retryJobStatus = retryJobStatus;
+	}
+
+	public long getRetryRecordsProcessed() {
+		return retryRecordsProcessed;
+	}
+
+	public void setRetryRecordsProcessed(long retryRecordsProcessed) {
+		this.retryRecordsProcessed = retryRecordsProcessed;
+	}
+
+	public long getTotalRetryRecords() {
+		return totalRetryRecords;
+	}
+
+	public void setTotalRetryRecords(long totalRetryRecords) {
+		this.totalRetryRecords = totalRetryRecords;
+	}
+
 	public long getTotalRecords()
     {
         return totalRecords;
@@ -86,6 +108,10 @@ public class JobInfo
         this.errorRecords--;
     }
     
+    public synchronized void incrementRetryRecordsProcessed(){
+		this.retryRecordsProcessed++;
+	}
+    
     public String getStartDateTime()
     {
         return startDateTime;
@@ -95,32 +121,5 @@ public class JobInfo
     {
         this.startDateTime = startDateTime;
     }
-	public String getFailedsUserStatus() {
-		return failedsUserStatus;
-	}
-
-	public synchronized void setFailedsUserStatus(String failedsUserStatus) {
-		this.failedsUserStatus = failedsUserStatus;
-	}
-
-	public long getFailedUserProcessed() {
-		return failedUserProcessed;
-	}
-
-	public synchronized void setFailedUserProcessed(long failedUserProcessed) {
-		this.failedUserProcessed = failedUserProcessed;
-	}
-
-	public long getTotalFailedUsersToProcess() {
-		return totalFailedUsersToProcess;
-	}
-
-	public synchronized void setTotalFailedUser(long totalFailedUsersToProcess) {
-		this.totalFailedUsersToProcess = totalFailedUsersToProcess;
-	}
-	
-	public synchronized void incrementFailedUserProcessed(){
-		this.failedUserProcessed++;
-	}
 
 }

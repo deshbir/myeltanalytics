@@ -26,7 +26,7 @@ public class Constants
     public static final String STATUS_INPROGRESS = "InProgress";
     public static final String STATUS_PAUSED = "Paused";
     public static final String STATUS_COMPLETED = "Completed";
-    public static final String STATUS_NOT_STARTED = "notStarted";
+    public static final String STATUS_INPROGRESS_RETRY = "InProgressRetry";
     
     //Users constants
     public static final String USER_WITH_ACCESSCODE = "user_with_accesscode";

@@ -194,11 +194,11 @@ public class SyncController {
         
     }
 
-    @RequestMapping(value= "/users/failedUserSync")
+    @RequestMapping(value= "/users/retryFailed")
     @ResponseBody
-    public String failedUserSync() throws JsonProcessingException{ 
+    public String retryFailedUsers() throws JsonProcessingException{ 
     	try {
-            usersSyncService.startFailedUsersSync();
+            usersSyncService.retryFailedUsers();
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();

@@ -8,7 +8,7 @@ var UsersSyncHelper = new function() {
               var responseJson = eval("(" + data + ")");
               $("#usersProgressContainer .progress-bar").css('width', responseJson.percent +'%');
               $("#usersProgressContainer .progress-bar").html(responseJson.percent + '%');
-              if (responseJson.jobStatus == "Completed" && !(responseJson.failedsUserStatus == "InProgress")) {
+              if (responseJson.jobStatus == "Completed" && !(responseJson.retryJobStatus == "InProgress")) {
                   $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
                   $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
@@ -25,7 +25,7 @@ var UsersSyncHelper = new function() {
               $("#usersJobStatus").html(responseJson.jobStatus);
               $("#usersSuccessRecords").html(responseJson.successRecords);
               $("#usersErrorRecords").html(responseJson.errorRecords);
-              if(responseJson.failedsUserStatus == "Completed" && !(responseJson.jobStatus == "Completed")){
+              if(responseJson.retryJobStatus == "Completed" && !(responseJson.jobStatus == "Completed")){
             	  $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
                   $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
@@ -149,18 +149,18 @@ var UsersSyncHelper = new function() {
             } 
             $("#usersStartButton").removeAttr("disabled");
             $("#usersResumeButton").removeAttr("disabled");
-            $("#usersResumeButton i.fa-play-circle-o").show();
+            $("#usersResumeButton i.fa-play-circle-o").show();d
             $("#usersResumeButton i.fa-spin").hide();
         });
     };
     
-this.startFailedUserSync = function () {
+	this.retryFailedUsers = function () {
 
 		$("#usersStartButton").attr("disabled","disabled");
         $("#usersResumeButton").attr("disabled","disabled");
         $("#userFailedRecord i.fa-repeat").hide();
         $("#userFailedRecord i.fa-spin").show();
-        $.get("/myeltanalytics/sync/users/failedUserSync", function(data){
+        $.get("/myeltanalytics/sync/users/retryFailed", function(data){
             var responseJson = eval("(" + data + ")");
             if (responseJson.status == "error") {
                 Util.showError(responseJson.errorMessage);
