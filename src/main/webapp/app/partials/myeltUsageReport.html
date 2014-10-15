@@ -1,0 +1,318 @@
+<div class="container-fluid">
+		<a href="#/reports"><i class="fa fa-arrow-circle-o-left" style="font-size:2em;" title="go back to Reports page"></i></a>
+		<h1 class="text-center">MyELT Usage Report (FY{{FYear}})</h1>
+		<div class="table-responsive">
+			<h3><em>New Student User Registrations</em></h3>
+			<table class="table table-bordered text-right">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Jun '13</th>
+						<th>Jul '13</th>
+						<th>Aug '13</th>
+						<th>Sep '13</th>
+						<th>Oct '13</th>
+						<th>Nov '13</th>
+						<th>Dec '13</th>
+						<th>Jan '14</th>
+						<th>Feb '14</th>
+						<th>Mar '14</th>
+						<th>Apr '14</th>
+						<th>May '14</th>
+						<th>Jun '14</th>
+						<th>Last 12 Months</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><b>CAPES</b></td>
+						<td>{{studentRegData.CAPES.Jun13}}</td>
+						<td>{{studentRegData.CAPES.Jul13}}</td>
+						<td>{{studentRegData.CAPES.Aug13}}</td>
+						<td>{{studentRegData.CAPES.Sep13}}</td>
+						<td>{{studentRegData.CAPES.Oct13}}</td>
+						<td>{{studentRegData.CAPES.Nov13}}</td>
+						<td>{{studentRegData.CAPES.Dec13}}</td>
+						<td>{{studentRegData.CAPES.Jan14}}</td>
+						<td>{{studentRegData.CAPES.Feb14}}</td>
+						<td>{{studentRegData.CAPES.Mar14}}</td>
+						<td>{{studentRegData.CAPES.Apr14}}</td>
+						<td>{{studentRegData.CAPES.May14}}</td>
+						<td>{{studentRegData.CAPES.Jun14}}</td>
+						<td>{{studentRegData.CAPES.Last12Month}}</td>
+					</tr>
+					<tr>
+						<td><b>ICPNA</b></td>
+						<td>{{studentRegData.ICPNA.Jun13}}</td>
+						<td>{{studentRegData.ICPNA.Jul13}}</td>
+						<td>{{studentRegData.ICPNA.Aug13}}</td>
+						<td>{{studentRegData.ICPNA.Sep13}}</td>
+						<td>{{studentRegData.ICPNA.Oct13}}</td>
+						<td>{{studentRegData.ICPNA.Nov13}}</td>
+						<td>{{studentRegData.ICPNA.Dec13}}</td>
+						<td>{{studentRegData.ICPNA.Jan14}}</td>
+						<td>{{studentRegData.ICPNA.Feb14}}</td>
+						<td>{{studentRegData.ICPNA.Mar14}}</td>
+						<td>{{studentRegData.ICPNA.Apr14}}</td>
+						<td>{{studentRegData.ICPNA.May14}}</td>
+						<td>{{studentRegData.ICPNA.Jun14}}</td>
+						<td>{{studentRegData.ICPNA.Last12Month}}</td>
+					</tr>
+					<tr>
+						<td><b>All Other</b></td>
+						<td>{{studentRegData.AllOther.Jun13}}</td>
+						<td>{{studentRegData.AllOther.Jul13}}</td>
+						<td>{{studentRegData.AllOther.Aug13}}</td>
+						<td>{{studentRegData.AllOther.Sep13}}</td>
+						<td>{{studentRegData.AllOther.Oct13}}</td>
+						<td>{{studentRegData.AllOther.Nov13}}</td>
+						<td>{{studentRegData.AllOther.Dec13}}</td>
+						<td>{{studentRegData.AllOther.Jan14}}</td>
+						<td>{{studentRegData.AllOther.Feb14}}</td>
+						<td>{{studentRegData.AllOther.Mar14}}</td>
+						<td>{{studentRegData.AllOther.Apr14}}</td>
+						<td>{{studentRegData.AllOther.May14}}</td>
+						<td>{{studentRegData.AllOther.Jun14}}</td>
+						<td>{{studentRegData.AllOther.Last12Month}}</td>
+					</tr>
+					<tr>
+						<td><b>Total</b></td>
+						<td>{{studentRegData.ICPNA.Jun13 + studentRegData.CAPES.Jun13 + studentRegData.AllOther.Jun13 }}</td>
+						<td>{{studentRegData.ICPNA.Jul13 + studentRegData.CAPES.Jul13 + studentRegData.AllOther.Jul13 }}</td>
+						<td>{{studentRegData.ICPNA.Aug13 + studentRegData.CAPES.Aug13 + studentRegData.AllOther.Aug13 }}</td>
+						<td>{{studentRegData.ICPNA.Sep13 + studentRegData.CAPES.Sep13 + studentRegData.AllOther.Sep13 }}</td>
+						<td>{{studentRegData.ICPNA.Oct13 + studentRegData.CAPES.Oct13 + studentRegData.AllOther.Oct13 }}</td>
+						<td>{{studentRegData.ICPNA.Nov13 + studentRegData.CAPES.Nov13 + studentRegData.AllOther.Nov13 }}</td>
+						<td>{{studentRegData.ICPNA.Dec13 + studentRegData.CAPES.Dec13 + studentRegData.AllOther.Dec13 }}</td>
+						<td>{{studentRegData.ICPNA.Jan14 + studentRegData.CAPES.Jan14 + studentRegData.AllOther.Jan14 }}</td>
+						<td>{{studentRegData.ICPNA.Feb14 + studentRegData.CAPES.Feb14 + studentRegData.AllOther.Feb14 }}</td>
+						<td>{{studentRegData.ICPNA.Mar14 + studentRegData.CAPES.Mar14 + studentRegData.AllOther.Mar14 }}</td>
+						<td>{{studentRegData.ICPNA.Apr14 + studentRegData.CAPES.Apr14 + studentRegData.AllOther.Apr14 }}</td>
+						<td>{{studentRegData.ICPNA.May14 + studentRegData.CAPES.May14 + studentRegData.AllOther.May14 }}</td>
+						<td>{{studentRegData.ICPNA.Jun14 + studentRegData.CAPES.Jun14 + studentRegData.AllOther.Jun14 }}</td>
+						<td>{{studentRegData.ICPNA.Last12Month + studentRegData.CAPES.Last12Month + studentRegData.AllOther.Last12Month }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<b>Note</b>
+			<ol>
+				<li>
+					 [CAPES] New Student registrations for a particular month are determined based on number of 
+					 unique student who logged in for the first time in that month. Any student account that may have been created but
+					 have not been used (logged in) are ignored. The numbers based on all CAPES institues in MyELT (across MAIN and AUXs DBs). 
+				</li>
+				<li>
+					  [ICPNA] New Student registrations for ICPNA are not currently available in this report. These numbers need to determined
+					   manually based on month ingestion reports. 
+				</li>
+				<li>
+					 [All Other] New Student registrations in "All Other" institutes are determined based on number of
+					  unique student accounts registered (or created by Admins/Instructors) in that month (irrespective of whether 
+					 they were used or not). Accounts created in TEST institutes ('TLTELT' ,'TLIBERO' ,'TLUS' ,'TEST' ,'TLEMEA' ,
+					 'TLASIA','COMPROTEST','MYELT') were ignored. 
+				</li>
+			</ol>
+		</div>
+		<div class="table-responsive">
+			<h3><em>New Product Registrations</em></h3>
+			<table class="table table-bordered text-right">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Jun '13</th>
+						<th>Jul '13</th>
+						<th>Aug '13</th>
+						<th>Sep '13</th>
+						<th>Oct '13</th>
+						<th>Nov '13</th>
+						<th>Dec '13</th>
+						<th>Jan '14</th>
+						<th>Feb '14</th>
+						<th>Mar '14</th>
+						<th>Apr '14</th>
+						<th>May '14</th>
+						<th>Jun '14</th>
+						<th>Last 12 Months</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><b>CAPES</b></td>
+						<td>{{prodRegData.CAPES.Jun13}}</td>
+						<td>{{prodRegData.CAPES.Jul13}}</td>
+						<td>{{prodRegData.CAPES.Aug13}}</td>
+						<td>{{prodRegData.CAPES.Sep13}}</td>
+						<td>{{prodRegData.CAPES.Oct13}}</td>
+						<td>{{prodRegData.CAPES.Nov13}}</td>
+						<td>{{prodRegData.CAPES.Dec13}}</td>
+						<td>{{prodRegData.CAPES.Jan14}}</td>
+						<td>{{prodRegData.CAPES.Feb14}}</td>
+						<td>{{prodRegData.CAPES.Mar14}}</td>
+						<td>{{prodRegData.CAPES.Apr14}}</td>
+						<td>{{prodRegData.CAPES.May14}}</td>
+						<td>{{prodRegData.CAPES.Jun14}}</td>
+						<td>{{prodRegData.CAPES.Last12Month}}</td>
+					</tr>
+					<tr>
+						<td><b>ICPNA</b></td>
+						<td>{{prodRegData.ICPNA.Jun13}}</td>
+						<td>{{prodRegData.ICPNA.Jul13}}</td>
+						<td>{{prodRegData.ICPNA.Aug13}}</td>
+						<td>{{prodRegData.ICPNA.Sep13}}</td>
+						<td>{{prodRegData.ICPNA.Oct13}}</td>
+						<td>{{prodRegData.ICPNA.Nov13}}</td>
+						<td>{{prodRegData.ICPNA.Dec13}}</td>
+						<td>{{prodRegData.ICPNA.Jan14}}</td>
+						<td>{{prodRegData.ICPNA.Feb14}}</td>
+						<td>{{prodRegData.ICPNA.Mar14}}</td>
+						<td>{{prodRegData.ICPNA.Apr14}}</td>
+						<td>{{prodRegData.ICPNA.May14}}</td>
+						<td>{{prodRegData.ICPNA.Jun14}}</td>
+						<td>{{prodRegData.ICPNA.Last12Month}}</td>
+					</tr>
+					<tr>
+						<td><b>All Other</b></td>
+						<td>{{prodRegData.AllOther.Jun13}}</td>
+						<td>{{prodRegData.AllOther.Jul13}}</td>
+						<td>{{prodRegData.AllOther.Aug13}}</td>
+						<td>{{prodRegData.AllOther.Sep13}}</td>
+						<td>{{prodRegData.AllOther.Oct13}}</td>
+						<td>{{prodRegData.AllOther.Nov13}}</td>
+						<td>{{prodRegData.AllOther.Dec13}}</td>
+						<td>{{prodRegData.AllOther.Jan14}}</td>
+						<td>{{prodRegData.AllOther.Feb14}}</td>
+						<td>{{prodRegData.AllOther.Mar14}}</td>
+						<td>{{prodRegData.AllOther.Apr14}}</td>
+						<td>{{prodRegData.AllOther.May14}}</td>
+						<td>{{prodRegData.AllOther.Jun14}}</td>
+						<td>{{prodRegData.AllOther.Last12Month}}</td>
+					</tr>
+					<tr>
+						<td><b>Total</b></td>
+						<td>{{prodRegData.ICPNA.Jun13 + prodRegData.CAPES.Jun13 + prodRegData.AllOther.Jun13 }}</td>
+						<td>{{prodRegData.ICPNA.Jul13 + prodRegData.CAPES.Jul13 + prodRegData.AllOther.Jul13 }}</td>
+						<td>{{prodRegData.ICPNA.Aug13 + prodRegData.CAPES.Aug13 + prodRegData.AllOther.Aug13 }}</td>
+						<td>{{prodRegData.ICPNA.Sep13 + prodRegData.CAPES.Sep13 + prodRegData.AllOther.Sep13 }}</td>
+						<td>{{prodRegData.ICPNA.Oct13 + prodRegData.CAPES.Oct13 + prodRegData.AllOther.Oct13 }}</td>
+						<td>{{prodRegData.ICPNA.Nov13 + prodRegData.CAPES.Nov13 + prodRegData.AllOther.Nov13 }}</td>
+						<td>{{prodRegData.ICPNA.Dec13 + prodRegData.CAPES.Dec13 + prodRegData.AllOther.Dec13 }}</td>
+						<td>{{prodRegData.ICPNA.Jan14 + prodRegData.CAPES.Jan14 + prodRegData.AllOther.Jan14 }}</td>
+						<td>{{prodRegData.ICPNA.Feb14 + prodRegData.CAPES.Feb14 + prodRegData.AllOther.Feb14 }}</td>
+						<td>{{prodRegData.ICPNA.Mar14 + prodRegData.CAPES.Mar14 + prodRegData.AllOther.Mar14 }}</td>
+						<td>{{prodRegData.ICPNA.Apr14 + prodRegData.CAPES.Apr14 + prodRegData.AllOther.Apr14 }}</td>
+						<td>{{prodRegData.ICPNA.May14 + prodRegData.CAPES.May14 + prodRegData.AllOther.May14 }}</td>
+						<td>{{prodRegData.ICPNA.Jun14 + prodRegData.CAPES.Jun14 + prodRegData.AllOther.Jun14 }}</td>
+						<td>{{prodRegData.ICPNA.Last12Month + prodRegData.CAPES.Last12Month + prodRegData.AllOther.Last12Month }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<b>Note</b>
+			<ol>
+				<li>
+					 [CAPES] New Product registrations for a particular month are determined based on number of
+					  unique student accounts created (by CAPES Admins) in that month. Notes, these will includes CAPES accounts that 
+					 may have been created ahead of time for distribution on a later date. 
+				</li>
+				<li>
+					  [ICPNA] New Product registrations for ICPNA are not currently available in this report. These numbers
+					   need to determined manually based on month ingestion reports. 
+				</li>
+				<li>
+					  [All Other] New Product registrations for "All Other" institutes are determined based on sum of CAC's consumed during
+					   that month, and unique product permissions assigned by Admins, and global institution- 
+					   level permissions that may have specified during that month. Products registerations in TEST instituteswere ignored.
+				</li>
+			</ol>
+		</div>
+		<div class="table-responsive">
+			<h3><em>Active User Accounts</em></h3>
+			<table class="table table-bordered text-right">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Jun '13</th>
+						<th>Jul '13</th>
+						<th>Aug '13</th>
+						<th>Sep '13</th>
+						<th>Oct '13</th>
+						<th>Nov '13</th>
+						<th>Dec '13</th>
+						<th>Jan '14</th>
+						<th>Feb '14</th>
+						<th>Mar '14</th>
+						<th>Apr '14</th>
+						<th>May '14</th>
+						<th>Jun '14</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><b>CAPES</b></td>
+						<td>{{activeUsersData.CAPES.Jun13}}</td>
+						<td>{{activeUsersData.CAPES.Jul13}}</td>
+						<td>{{activeUsersData.CAPES.Aug13}}</td>
+						<td>{{activeUsersData.CAPES.Sep13}}</td>
+						<td>{{activeUsersData.CAPES.Oct13}}</td>
+						<td>{{activeUsersData.CAPES.Nov13}}</td>
+						<td>{{activeUsersData.CAPES.Dec13}}</td>
+						<td>{{activeUsersData.CAPES.Jan14}}</td>
+						<td>{{activeUsersData.CAPES.Feb14}}</td>
+						<td>{{activeUsersData.CAPES.Mar14}}</td>
+						<td>{{activeUsersData.CAPES.Apr14}}</td>
+						<td>{{activeUsersData.CAPES.May14}}</td>
+						<td>{{activeUsersData.CAPES.Jun14}}</td>
+					</tr>
+					<tr>
+						<td><b>ICPNA</b></td>
+						<td>{{activeUsersData.ICPNA.Jun13}}</td>
+						<td>{{activeUsersData.ICPNA.Jul13}}</td>
+						<td>{{activeUsersData.ICPNA.Aug13}}</td>
+						<td>{{activeUsersData.ICPNA.Sep13}}</td>
+						<td>{{activeUsersData.ICPNA.Oct13}}</td>
+						<td>{{activeUsersData.ICPNA.Nov13}}</td>
+						<td>{{activeUsersData.ICPNA.Dec13}}</td>
+						<td>{{activeUsersData.ICPNA.Jan14}}</td>
+						<td>{{activeUsersData.ICPNA.Feb14}}</td>
+						<td>{{activeUsersData.ICPNA.Mar14}}</td>
+						<td>{{activeUsersData.ICPNA.Apr14}}</td>
+						<td>{{activeUsersData.ICPNA.May14}}</td>
+						<td>{{activeUsersData.ICPNA.Jun14}}</td>
+					</tr>
+					<tr>
+						<td><b>All Other</b></td>
+						<td>{{activeUsersData.AllOther.Jun13}}</td>
+						<td>{{activeUsersData.AllOther.Jul13}}</td>
+						<td>{{activeUsersData.AllOther.Aug13}}</td>
+						<td>{{activeUsersData.AllOther.Sep13}}</td>
+						<td>{{activeUsersData.AllOther.Oct13}}</td>
+						<td>{{activeUsersData.AllOther.Nov13}}</td>
+						<td>{{activeUsersData.AllOther.Dec13}}</td>
+						<td>{{activeUsersData.AllOther.Jan14}}</td>
+						<td>{{activeUsersData.AllOther.Feb14}}</td>
+						<td>{{activeUsersData.AllOther.Mar14}}</td>
+						<td>{{activeUsersData.AllOther.Apr14}}</td>
+						<td>{{activeUsersData.AllOther.May14}}</td>
+						<td>{{activeUsersData.AllOther.Jun14}}</td>
+					</tr>
+					<tr>
+						<td><b>Total</b></td>
+						<td>{{activeUsersData.ICPNA.Jun13 + activeUsersData.CAPES.Jun13 + activeUsersData.AllOther.Jun13 }}</td>
+						<td>{{activeUsersData.ICPNA.Jul13 + activeUsersData.CAPES.Jul13 + activeUsersData.AllOther.Jul13 }}</td>
+						<td>{{activeUsersData.ICPNA.Aug13 + activeUsersData.CAPES.Aug13 + activeUsersData.AllOther.Aug13 }}</td>
+						<td>{{activeUsersData.ICPNA.Sep13 + activeUsersData.CAPES.Sep13 + activeUsersData.AllOther.Sep13 }}</td>
+						<td>{{activeUsersData.ICPNA.Oct13 + activeUsersData.CAPES.Oct13 + activeUsersData.AllOther.Oct13 }}</td>
+						<td>{{activeUsersData.ICPNA.Nov13 + activeUsersData.CAPES.Nov13 + activeUsersData.AllOther.Nov13 }}</td>
+						<td>{{activeUsersData.ICPNA.Dec13 + activeUsersData.CAPES.Dec13 + activeUsersData.AllOther.Dec13 }}</td>
+						<td>{{activeUsersData.ICPNA.Jan14 + activeUsersData.CAPES.Jan14 + activeUsersData.AllOther.Jan14 }}</td>
+						<td>{{activeUsersData.ICPNA.Feb14 + activeUsersData.CAPES.Feb14 + activeUsersData.AllOther.Feb14 }}</td>
+						<td>{{activeUsersData.ICPNA.Mar14 + activeUsersData.CAPES.Mar14 + activeUsersData.AllOther.Mar14 }}</td>
+						<td>{{activeUsersData.ICPNA.Apr14 + activeUsersData.CAPES.Apr14 + activeUsersData.AllOther.Apr14 }}</td>
+						<td>{{activeUsersData.ICPNA.May14 + activeUsersData.CAPES.May14 + activeUsersData.AllOther.May14 }}</td>
+						<td>{{activeUsersData.ICPNA.Jun14 + activeUsersData.CAPES.Jun14 + activeUsersData.AllOther.Jun14 }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<b>Note:</b> Active user accounts for a month are determined based on number uniques student
+			 that logged into MyELT (at-least once) in that month. This data is not available for past months.
+		</div>
+    </div>

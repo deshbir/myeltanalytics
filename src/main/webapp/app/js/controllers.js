@@ -145,23 +145,16 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http','$q
                     "disabled": "true",
                     "file": ""
                 }]
+            },
+            "myeltUsageReport": {
+            	"title" : "MyELT Usage Report",
+            	"list": [{
+            		"name" : "FY14 (current)",
+            		"disabled": "false",
+            		"file": "",
+            		"year": "14"
+            	}]
             }
-
-        };
-        $scope.FYear = 14;
-        $scope.open_myeltUsageReport = function(){
-        	var studentRegURL  = $http.get("../api/reports/myeltusage/studentReg/"+$scope.FYear),
-    			productRegURL  = $http.get("../api/reports/myeltusage/productReg/"+$scope.FYear),
-    			activeUserURL  = $http.get("../api/reports/myeltusage/activeUsers/"+$scope.FYear);
-	    		$q.all([studentRegURL,productRegURL,activeUserURL]).then(function(arrayOfResult){
-	    			$scope.studentRegData = arrayOfResult[0].data;
-	    			$scope.prodRegData = arrayOfResult[1].data;
-	    			$scope.activeUsersData = arrayOfResult[2].data;
-	    			setTimeout( function() {
-	    					jQuery.fancybox.open(jQuery("#myeltUsageReport").html());
-	    			}
-	    			,0);
-	    		});
 
         };
         $scope.openReport = function (filename) {
@@ -224,4 +217,18 @@ myeltAnalyticsControllers.controller('RulesController', ['$scope','$http',
             $scope.ignoreinstitutions = data;
         });  
     }
+ ]);
+myeltAnalyticsControllers.controller('MyELTUsageReportController', ['$scope','$http','$q','$routeParams',
+    function ($scope, $http, $q,$routeParams) {
+		jQuery(window).scrollTop(0);
+		$scope.FYear = $routeParams.year;
+    	var studentRegURL  = $http.get("../api/reports/myeltusage/studentReg/"+$scope.FYear),
+			productRegURL  = $http.get("../api/reports/myeltusage/productReg/"+$scope.FYear),
+			activeUserURL  = $http.get("../api/reports/myeltusage/activeUsers/"+$scope.FYear);
+		$q.all([studentRegURL,productRegURL,activeUserURL]).then(function(arrayOfResult){
+			$scope.studentRegData = arrayOfResult[0].data;
+			$scope.prodRegData = arrayOfResult[1].data;
+			$scope.activeUsersData = arrayOfResult[2].data;
+		});
+	}
  ]);

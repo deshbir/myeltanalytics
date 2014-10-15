@@ -149,7 +149,7 @@ var UsersSyncHelper = new function() {
             } 
             $("#usersStartButton").removeAttr("disabled");
             $("#usersResumeButton").removeAttr("disabled");
-            $("#usersResumeButton i.fa-play-circle-o").show();d
+            $("#usersResumeButton i.fa-play-circle-o").show();
             $("#usersResumeButton i.fa-spin").hide();
         });
     };

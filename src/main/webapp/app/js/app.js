@@ -16,6 +16,10 @@ myeltAnalyticsApp.config(['$routeProvider',
             templateUrl: 'partials/rules.html',
             controller: 'RulesController'
         }).
+        when('/reports/myeltUsage/:year', {
+            templateUrl: 'partials/myeltUsageReport.html',
+            controller: 'MyELTUsageReportController'
+        }).
         otherwise({
           redirectTo: '/reports'
         });

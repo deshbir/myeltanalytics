@@ -77,33 +77,43 @@
                                     <c:when test="${usersJobInfo.jobStatus eq 'Paused'}">
                                           <c:set var="usersStartButtonDisplay" value=""></c:set>
                                           <c:set var="usersResumeButtonDisplay" value=""></c:set>
-                                          <c:set var="usersStopButtonDisplay" value="display:none"></c:set>  
+                                          <c:set var="usersStopButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="failedUsersSyncInProcessButtonDisplay" value="display:none"></c:set>  
                                     </c:when>
                                     <c:when test="${usersJobInfo.jobStatus eq 'InProgress'}">
                                           <c:set var="usersStartButtonDisplay" value="display:none"></c:set>
                                           <c:set var="usersResumeButtonDisplay" value="display:none"></c:set>
                                           <c:set var="usersStopButtonDisplay" value=""></c:set>  
+                                          <c:set var="failedUsersSyncInProcessButtonDisplay" value="display:none"></c:set>
+                                    </c:when>
+                                    <c:when test="${usersJobInfo.jobStatus eq 'InProgressRetry'}">
+                                          <c:set var="usersStartButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="usersResumeButtonDisplay" value="display:none"></c:set>
+                                          <c:set var="usersStopButtonDisplay" value=""></c:set>
+                                          <c:set var="failedUsersSyncButtonDisplay" value="display:none"></c:set>
+										  <c:set var="failedUsersSyncInProcessButtonDisplay" value=""></c:set>  
                                     </c:when>
                                     <c:when test="${usersJobInfo.jobStatus eq 'Completed'}">
                                           <c:set var="usersStartButtonDisplay" value=""></c:set>
                                           <c:set var="usersResumeButtonDisplay" value="display:none"></c:set>
                                           <c:set var="usersStopButtonDisplay" value="display:none"></c:set>  
+                                    	  <c:set var="failedUsersSyncInProcessButtonDisplay" value="display:none"></c:set>
                                     </c:when>
                                     <c:otherwise>
                                           <c:set var="usersStartButtonDisplay" value=""></c:set>
                                           <c:set var="usersResumeButtonDisplay" value="display:none"></c:set>
                                           <c:set var="usersStopButtonDisplay" value="display:none"></c:set>
+										  <c:set var="failedUsersSyncInProcessButtonDisplay" value="display:none"></c:set> 
                                     </c:otherwise>
                                </c:choose>
-                                    <c:choose>
-                                    	<c:when test="${usersJobInfo.errorRecords > 0 && !(usersStartButtonDisplay eq 'display:none')}">
-                                    		<c:set var="failedUsersSyncButtonDisplay" value=""></c:set>
-                                    	</c:when>
-                                    	<c:otherwise>
-                                    		<c:set var="failedUsersSyncButtonDisplay" value="display:none"></c:set>
-                                    	</c:otherwise>
-                                    	
-                                    </c:choose>
+								<c:choose>
+									<c:when test="${usersJobInfo.errorRecords > 0 &&  !(usersJobInfo.jobStatus eq 'InProgress' || usersJobInfo.jobStatus eq 'InProgressRetry')}">
+										<c:set var="failedUsersSyncButtonDisplay" value=""></c:set>
+									</c:when>
+									<c:otherwise>
+										<c:set var="failedUsersSyncButtonDisplay" value="display:none"></c:set>
+									</c:otherwise>
+								</c:choose>
                                <table class="table table-bordered">
                                    <tbody>
                                        <tr>
@@ -136,14 +146,13 @@
                                                <i class="fa fa-warning fa-lg"></i>
                                                <span class="syncinfoHeading" id="userFailedRecord">Failed records  
 													<i class="fa fa-repeat fa-lg" style="${failedUsersSyncButtonDisplay};cursor:pointer;color:red" onclick="UsersSyncHelper.retryFailedUsers()";></i>
-													<i style="display:none;cursor:pointer" class="fa fa-spin fa-spinner fa-lg"></i>
+													<i style="${failedUsersSyncInProcessButtonDisplay};cursor:pointer" class="fa fa-spin fa-spinner fa-lg"></i>
                                                </span>
                                            </td>
                                        </tr>
                                    </tbody>
                                	
                                </table>
-                               
                                <button id="usersResumeButton" style="${usersResumeButtonDisplay}" class="btn btn-primary" onclick="UsersSyncHelper.resumeSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
                                <button id="usersStartButton" style="${usersStartButtonDisplay}" class="btn btn-primary" onclick="UsersSyncHelper.startSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
                                <button id="usersStopButton" style="${usersStopButtonDisplay}" class="btn btn-danger" onclick="UsersSyncHelper.stopSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
@@ -284,7 +293,7 @@
         </div>
         <script>
             $(document).ready(function(){
-                <c:if test="${usersJobInfo.jobStatus eq 'InProgress'}">
+                <c:if test="${usersJobInfo.jobStatus eq 'InProgress' || usersJobInfo.jobStatus eq 'InProgressRetry'}">
                     UsersSyncHelper.triggerFetchingSyncStatus();
                </c:if> 
                <c:if test="${submissionsJobInfo.jobStatus eq 'InProgress'}">
