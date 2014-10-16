@@ -145,8 +145,8 @@
                                                <span id="usersErrorRecords" class="syncinfo pull-right odometer text-danger">${usersJobInfo.errorRecords}</span>
                                                <i class="fa fa-warning fa-lg"></i>
                                                <span class="syncinfoHeading" id="userFailedRecord">Failed records  
-													<i class="fa fa-repeat fa-lg" style="${failedUsersSyncButtonDisplay};cursor:pointer;color:red" onclick="UsersSyncHelper.retryFailedUsers()";></i>
-													<i style="${failedUsersSyncInProcessButtonDisplay};cursor:pointer" class="fa fa-spin fa-spinner fa-lg"></i>
+													<i class="fa fa-repeat fa-lg pointer" style="${failedUsersSyncButtonDisplay};color:red" onclick="UsersSyncHelper.retryFailedUsers()";></i>
+													<i style="${failedUsersSyncInProcessButtonDisplay}" class="fa fa-spin fa-spinner fa-lg"></i>
                                                </span>
                                            </td>
                                        </tr>

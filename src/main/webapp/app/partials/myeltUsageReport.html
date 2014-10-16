@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" style="margin-bottom:10px;">
 		<a href="#/reports"><i class="fa fa-arrow-circle-o-left" style="font-size:2em;" title="go back to Reports page"></i></a>
 		<h1 class="text-center">MyELT Usage Report (FY{{FYear}})</h1>
 		<div class="table-responsive">
@@ -7,90 +7,118 @@
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Jun '13</th>
-						<th>Jul '13</th>
-						<th>Aug '13</th>
-						<th>Sep '13</th>
-						<th>Oct '13</th>
-						<th>Nov '13</th>
-						<th>Dec '13</th>
-						<th>Jan '14</th>
-						<th>Feb '14</th>
-						<th>Mar '14</th>
-						<th>Apr '14</th>
-						<th>May '14</th>
-						<th>Jun '14</th>
+						<th>Jun '{{FYear-1}}</th>
+						<th>Jul '{{FYear-1}}</th>
+						<th>Aug '{{FYear-1}}</th>
+						<th>Sep '{{FYear-1}}</th>
+						<th>Oct '{{FYear-1}}</th>
+						<th>Nov '{{FYear-1}}</th>
+						<th>Dec '{{FYear-1}}</th>
+						<th>Jan '{{FYear}}</th>
+						<th>Feb '{{FYear}}</th>
+						<th>Mar '{{FYear}}</th>
+						<th>Apr '{{FYear}}</th>
+						<th>May '{{FYear}}</th>
+						<th>Jun '{{FYear}}</th>
 						<th>Last 12 Months</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td><b>CAPES</b></td>
-						<td>{{studentRegData.CAPES.Jun13}}</td>
-						<td>{{studentRegData.CAPES.Jul13}}</td>
-						<td>{{studentRegData.CAPES.Aug13}}</td>
-						<td>{{studentRegData.CAPES.Sep13}}</td>
-						<td>{{studentRegData.CAPES.Oct13}}</td>
-						<td>{{studentRegData.CAPES.Nov13}}</td>
-						<td>{{studentRegData.CAPES.Dec13}}</td>
-						<td>{{studentRegData.CAPES.Jan14}}</td>
-						<td>{{studentRegData.CAPES.Feb14}}</td>
-						<td>{{studentRegData.CAPES.Mar14}}</td>
-						<td>{{studentRegData.CAPES.Apr14}}</td>
-						<td>{{studentRegData.CAPES.May14}}</td>
-						<td>{{studentRegData.CAPES.Jun14}}</td>
+						<td>{{studentRegData.CAPES.Jun}}</td>
+						<td>{{studentRegData.CAPES.Jul}}</td>
+						<td>{{studentRegData.CAPES.Aug}}</td>
+						<td>{{studentRegData.CAPES.Sep}}</td>
+						<td>{{studentRegData.CAPES.Oct}}</td>
+						<td>{{studentRegData.CAPES.Nov}}</td>
+						<td>{{studentRegData.CAPES.Dec}}</td>
+						<td>{{studentRegData.CAPES.Jan}}</td>
+						<td>{{studentRegData.CAPES.Feb}}</td>
+						<td>{{studentRegData.CAPES.Mar}}</td>
+						<td>{{studentRegData.CAPES.Apr}}</td>
+						<td>{{studentRegData.CAPES.May}}</td>
+						<td>{{studentRegData.CAPES.Jun2}}</td>
 						<td>{{studentRegData.CAPES.Last12Month}}</td>
 					</tr>
 					<tr>
 						<td><b>ICPNA</b></td>
-						<td>{{studentRegData.ICPNA.Jun13}}</td>
-						<td>{{studentRegData.ICPNA.Jul13}}</td>
-						<td>{{studentRegData.ICPNA.Aug13}}</td>
-						<td>{{studentRegData.ICPNA.Sep13}}</td>
-						<td>{{studentRegData.ICPNA.Oct13}}</td>
-						<td>{{studentRegData.ICPNA.Nov13}}</td>
-						<td>{{studentRegData.ICPNA.Dec13}}</td>
-						<td>{{studentRegData.ICPNA.Jan14}}</td>
-						<td>{{studentRegData.ICPNA.Feb14}}</td>
-						<td>{{studentRegData.ICPNA.Mar14}}</td>
-						<td>{{studentRegData.ICPNA.Apr14}}</td>
-						<td>{{studentRegData.ICPNA.May14}}</td>
-						<td>{{studentRegData.ICPNA.Jun14}}</td>
-						<td>{{studentRegData.ICPNA.Last12Month}}</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<!-- <td>{{studentRegData.ICPNA.Jun}}</td>
+						<td>{{studentRegData.ICPNA.Jul}}</td>
+						<td>{{studentRegData.ICPNA.Aug}}</td>
+						<td>{{studentRegData.ICPNA.Sep}}</td>
+						<td>{{studentRegData.ICPNA.Oct}}</td>
+						<td>{{studentRegData.ICPNA.Nov}}</td>
+						<td>{{studentRegData.ICPNA.Dec}}</td>
+						<td>{{studentRegData.ICPNA.Jan}}</td>
+						<td>{{studentRegData.ICPNA.Feb}}</td>
+						<td>{{studentRegData.ICPNA.Mar}}</td>
+						<td>{{studentRegData.ICPNA.Apr}}</td>
+						<td>{{studentRegData.ICPNA.May}}</td>
+						<td>{{studentRegData.ICPNA.Jun2}}</td>
+						<td>{{studentRegData.ICPNA.Last12Month}}</td> -->
 					</tr>
 					<tr>
 						<td><b>All Other</b></td>
-						<td>{{studentRegData.AllOther.Jun13}}</td>
-						<td>{{studentRegData.AllOther.Jul13}}</td>
-						<td>{{studentRegData.AllOther.Aug13}}</td>
-						<td>{{studentRegData.AllOther.Sep13}}</td>
-						<td>{{studentRegData.AllOther.Oct13}}</td>
-						<td>{{studentRegData.AllOther.Nov13}}</td>
-						<td>{{studentRegData.AllOther.Dec13}}</td>
-						<td>{{studentRegData.AllOther.Jan14}}</td>
-						<td>{{studentRegData.AllOther.Feb14}}</td>
-						<td>{{studentRegData.AllOther.Mar14}}</td>
-						<td>{{studentRegData.AllOther.Apr14}}</td>
-						<td>{{studentRegData.AllOther.May14}}</td>
-						<td>{{studentRegData.AllOther.Jun14}}</td>
+						<td>{{studentRegData.AllOther.Jun}}</td>
+						<td>{{studentRegData.AllOther.Jul}}</td>
+						<td>{{studentRegData.AllOther.Aug}}</td>
+						<td>{{studentRegData.AllOther.Sep}}</td>
+						<td>{{studentRegData.AllOther.Oct}}</td>
+						<td>{{studentRegData.AllOther.Nov}}</td>
+						<td>{{studentRegData.AllOther.Dec}}</td>
+						<td>{{studentRegData.AllOther.Jan}}</td>
+						<td>{{studentRegData.AllOther.Feb}}</td>
+						<td>{{studentRegData.AllOther.Mar}}</td>
+						<td>{{studentRegData.AllOther.Apr}}</td>
+						<td>{{studentRegData.AllOther.May}}</td>
+						<td>{{studentRegData.AllOther.Jun2}}</td>
 						<td>{{studentRegData.AllOther.Last12Month}}</td>
 					</tr>
 					<tr>
 						<td><b>Total</b></td>
-						<td>{{studentRegData.ICPNA.Jun13 + studentRegData.CAPES.Jun13 + studentRegData.AllOther.Jun13 }}</td>
-						<td>{{studentRegData.ICPNA.Jul13 + studentRegData.CAPES.Jul13 + studentRegData.AllOther.Jul13 }}</td>
-						<td>{{studentRegData.ICPNA.Aug13 + studentRegData.CAPES.Aug13 + studentRegData.AllOther.Aug13 }}</td>
-						<td>{{studentRegData.ICPNA.Sep13 + studentRegData.CAPES.Sep13 + studentRegData.AllOther.Sep13 }}</td>
-						<td>{{studentRegData.ICPNA.Oct13 + studentRegData.CAPES.Oct13 + studentRegData.AllOther.Oct13 }}</td>
-						<td>{{studentRegData.ICPNA.Nov13 + studentRegData.CAPES.Nov13 + studentRegData.AllOther.Nov13 }}</td>
-						<td>{{studentRegData.ICPNA.Dec13 + studentRegData.CAPES.Dec13 + studentRegData.AllOther.Dec13 }}</td>
-						<td>{{studentRegData.ICPNA.Jan14 + studentRegData.CAPES.Jan14 + studentRegData.AllOther.Jan14 }}</td>
-						<td>{{studentRegData.ICPNA.Feb14 + studentRegData.CAPES.Feb14 + studentRegData.AllOther.Feb14 }}</td>
-						<td>{{studentRegData.ICPNA.Mar14 + studentRegData.CAPES.Mar14 + studentRegData.AllOther.Mar14 }}</td>
-						<td>{{studentRegData.ICPNA.Apr14 + studentRegData.CAPES.Apr14 + studentRegData.AllOther.Apr14 }}</td>
-						<td>{{studentRegData.ICPNA.May14 + studentRegData.CAPES.May14 + studentRegData.AllOther.May14 }}</td>
-						<td>{{studentRegData.ICPNA.Jun14 + studentRegData.CAPES.Jun14 + studentRegData.AllOther.Jun14 }}</td>
-						<td>{{studentRegData.ICPNA.Last12Month + studentRegData.CAPES.Last12Month + studentRegData.AllOther.Last12Month }}</td>
+						<td>{{studentRegData.CAPES.Jun + studentRegData.AllOther.Jun}}</td>
+						<td>{{studentRegData.CAPES.Jul + studentRegData.AllOther.Jul}}</td>
+						<td>{{studentRegData.CAPES.Aug + studentRegData.AllOther.Aug}}</td>
+						<td>{{studentRegData.CAPES.Sep + studentRegData.AllOther.Sep}}</td>
+						<td>{{studentRegData.CAPES.Oct + studentRegData.AllOther.Oct}}</td>
+						<td>{{studentRegData.CAPES.Nov + studentRegData.AllOther.Nov}}</td>
+						<td>{{studentRegData.CAPES.Dec + studentRegData.AllOther.Dec}}</td>
+						<td>{{studentRegData.CAPES.Jan + studentRegData.AllOther.Jan}}</td>
+						<td>{{studentRegData.CAPES.Feb + studentRegData.AllOther.Feb}}</td>
+						<td>{{studentRegData.CAPES.Mar + studentRegData.AllOther.Mar}}</td>
+						<td>{{studentRegData.CAPES.Apr + studentRegData.AllOther.Apr}}</td>
+						<td>{{studentRegData.CAPES.May + studentRegData.AllOther.May}}</td>
+						<td>{{studentRegData.CAPES.Jun2 + studentRegData.AllOther.Jun2}}</td>
+						<td>{{studentRegData.CAPES.Last12Month + studentRegData.AllOther.Last12Month }}</td>
+						<!-- <td>{{studentRegData.ICPNA.Jun + studentRegData.CAPES.Jun + studentRegData.AllOther.Jun }}</td>
+						<td>{{studentRegData.ICPNA.Jul + studentRegData.CAPES.Jul + studentRegData.AllOther.Jul }}</td>
+						<td>{{studentRegData.ICPNA.Aug + studentRegData.CAPES.Aug + studentRegData.AllOther.Aug }}</td>
+						<td>{{studentRegData.ICPNA.Sep + studentRegData.CAPES.Sep + studentRegData.AllOther.Sep }}</td>
+						<td>{{studentRegData.ICPNA.Oct + studentRegData.CAPES.Oct + studentRegData.AllOther.Oct }}</td>
+						<td>{{studentRegData.ICPNA.Nov + studentRegData.CAPES.Nov + studentRegData.AllOther.Nov }}</td>
+						<td>{{studentRegData.ICPNA.Dec + studentRegData.CAPES.Dec + studentRegData.AllOther.Dec }}</td>
+						<td>{{studentRegData.ICPNA.Jan + studentRegData.CAPES.Jan + studentRegData.AllOther.Jan}}</td>
+						<td>{{studentRegData.ICPNA.Feb + studentRegData.CAPES.Feb + studentRegData.AllOther.Feb}}</td>
+						<td>{{studentRegData.ICPNA.Mar + studentRegData.CAPES.Mar + studentRegData.AllOther.Mar}}</td>
+						<td>{{studentRegData.ICPNA.Apr + studentRegData.CAPES.Apr + studentRegData.AllOther.Apr}}</td>
+						<td>{{studentRegData.ICPNA.May + studentRegData.CAPES.May + studentRegData.AllOther.May}}</td>
+						<td>{{studentRegData.ICPNA.Jun2 + studentRegData.CAPES.Jun2 + studentRegData.AllOther.Jun2}}</td>
+						<td>{{studentRegData.ICPNA.Last12Month + studentRegData.CAPES.Last12Month + studentRegData.AllOther.Last12Month }}</td> -->
 					</tr>
 				</tbody>
 			</table>
@@ -119,90 +147,118 @@
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Jun '13</th>
-						<th>Jul '13</th>
-						<th>Aug '13</th>
-						<th>Sep '13</th>
-						<th>Oct '13</th>
-						<th>Nov '13</th>
-						<th>Dec '13</th>
-						<th>Jan '14</th>
-						<th>Feb '14</th>
-						<th>Mar '14</th>
-						<th>Apr '14</th>
-						<th>May '14</th>
-						<th>Jun '14</th>
+						<th>Jun '{{FYear-1}}</th>
+						<th>Jul '{{FYear-1}}</th>
+						<th>Aug '{{FYear-1}}</th>
+						<th>Sep '{{FYear-1}}</th>
+						<th>Oct '{{FYear-1}}</th>
+						<th>Nov '{{FYear-1}}</th>
+						<th>Dec '{{FYear-1}}</th>
+						<th>Jan '{{FYear}}</th>
+						<th>Feb '{{FYear}}</th>
+						<th>Mar '{{FYear}}</th>
+						<th>Apr '{{FYear}}</th>
+						<th>May '{{FYear}}</th>
+						<th>Jun '{{FYear}}</th>
 						<th>Last 12 Months</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td><b>CAPES</b></td>
-						<td>{{prodRegData.CAPES.Jun13}}</td>
-						<td>{{prodRegData.CAPES.Jul13}}</td>
-						<td>{{prodRegData.CAPES.Aug13}}</td>
-						<td>{{prodRegData.CAPES.Sep13}}</td>
-						<td>{{prodRegData.CAPES.Oct13}}</td>
-						<td>{{prodRegData.CAPES.Nov13}}</td>
-						<td>{{prodRegData.CAPES.Dec13}}</td>
-						<td>{{prodRegData.CAPES.Jan14}}</td>
-						<td>{{prodRegData.CAPES.Feb14}}</td>
-						<td>{{prodRegData.CAPES.Mar14}}</td>
-						<td>{{prodRegData.CAPES.Apr14}}</td>
-						<td>{{prodRegData.CAPES.May14}}</td>
-						<td>{{prodRegData.CAPES.Jun14}}</td>
+						<td>{{prodRegData.CAPES.Jun}}</td>
+						<td>{{prodRegData.CAPES.Jul}}</td>
+						<td>{{prodRegData.CAPES.Aug}}</td>
+						<td>{{prodRegData.CAPES.Sep}}</td>
+						<td>{{prodRegData.CAPES.Oct}}</td>
+						<td>{{prodRegData.CAPES.Nov}}</td>
+						<td>{{prodRegData.CAPES.Dec}}</td>
+						<td>{{prodRegData.CAPES.Jan}}</td>
+						<td>{{prodRegData.CAPES.Feb}}</td>
+						<td>{{prodRegData.CAPES.Mar}}</td>
+						<td>{{prodRegData.CAPES.Apr}}</td>
+						<td>{{prodRegData.CAPES.May}}</td>
+						<td>{{prodRegData.CAPES.Jun2}}</td>
 						<td>{{prodRegData.CAPES.Last12Month}}</td>
 					</tr>
 					<tr>
 						<td><b>ICPNA</b></td>
-						<td>{{prodRegData.ICPNA.Jun13}}</td>
-						<td>{{prodRegData.ICPNA.Jul13}}</td>
-						<td>{{prodRegData.ICPNA.Aug13}}</td>
-						<td>{{prodRegData.ICPNA.Sep13}}</td>
-						<td>{{prodRegData.ICPNA.Oct13}}</td>
-						<td>{{prodRegData.ICPNA.Nov13}}</td>
-						<td>{{prodRegData.ICPNA.Dec13}}</td>
-						<td>{{prodRegData.ICPNA.Jan14}}</td>
-						<td>{{prodRegData.ICPNA.Feb14}}</td>
-						<td>{{prodRegData.ICPNA.Mar14}}</td>
-						<td>{{prodRegData.ICPNA.Apr14}}</td>
-						<td>{{prodRegData.ICPNA.May14}}</td>
-						<td>{{prodRegData.ICPNA.Jun14}}</td>
-						<td>{{prodRegData.ICPNA.Last12Month}}</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<!-- <td>{{prodRegData.ICPNA.Jun}}</td>
+						<td>{{prodRegData.ICPNA.Jul}}</td>
+						<td>{{prodRegData.ICPNA.Aug}}</td>
+						<td>{{prodRegData.ICPNA.Sep}}</td>
+						<td>{{prodRegData.ICPNA.Oct}}</td>
+						<td>{{prodRegData.ICPNA.Nov}}</td>
+						<td>{{prodRegData.ICPNA.Dec}}</td>
+						<td>{{prodRegData.ICPNA.Jan}}</td>
+						<td>{{prodRegData.ICPNA.Feb}}</td>
+						<td>{{prodRegData.ICPNA.Mar}}</td>
+						<td>{{prodRegData.ICPNA.Apr}}</td>
+						<td>{{prodRegData.ICPNA.May}}</td>
+						<td>{{prodRegData.ICPNA.Jun2}}</td>
+						<td>{{prodRegData.ICPNA.Last12Month}}</td> -->
 					</tr>
 					<tr>
 						<td><b>All Other</b></td>
-						<td>{{prodRegData.AllOther.Jun13}}</td>
-						<td>{{prodRegData.AllOther.Jul13}}</td>
-						<td>{{prodRegData.AllOther.Aug13}}</td>
-						<td>{{prodRegData.AllOther.Sep13}}</td>
-						<td>{{prodRegData.AllOther.Oct13}}</td>
-						<td>{{prodRegData.AllOther.Nov13}}</td>
-						<td>{{prodRegData.AllOther.Dec13}}</td>
-						<td>{{prodRegData.AllOther.Jan14}}</td>
-						<td>{{prodRegData.AllOther.Feb14}}</td>
-						<td>{{prodRegData.AllOther.Mar14}}</td>
-						<td>{{prodRegData.AllOther.Apr14}}</td>
-						<td>{{prodRegData.AllOther.May14}}</td>
-						<td>{{prodRegData.AllOther.Jun14}}</td>
+						<td>{{prodRegData.AllOther.Jun}}</td>
+						<td>{{prodRegData.AllOther.Jul}}</td>
+						<td>{{prodRegData.AllOther.Aug}}</td>
+						<td>{{prodRegData.AllOther.Sep}}</td>
+						<td>{{prodRegData.AllOther.Oct}}</td>
+						<td>{{prodRegData.AllOther.Nov}}</td>
+						<td>{{prodRegData.AllOther.Dec}}</td>
+						<td>{{prodRegData.AllOther.Jan}}</td>
+						<td>{{prodRegData.AllOther.Feb}}</td>
+						<td>{{prodRegData.AllOther.Mar}}</td>
+						<td>{{prodRegData.AllOther.Apr}}</td>
+						<td>{{prodRegData.AllOther.May}}</td>
+						<td>{{prodRegData.AllOther.Jun2}}</td>
 						<td>{{prodRegData.AllOther.Last12Month}}</td>
 					</tr>
 					<tr>
 						<td><b>Total</b></td>
-						<td>{{prodRegData.ICPNA.Jun13 + prodRegData.CAPES.Jun13 + prodRegData.AllOther.Jun13 }}</td>
-						<td>{{prodRegData.ICPNA.Jul13 + prodRegData.CAPES.Jul13 + prodRegData.AllOther.Jul13 }}</td>
-						<td>{{prodRegData.ICPNA.Aug13 + prodRegData.CAPES.Aug13 + prodRegData.AllOther.Aug13 }}</td>
-						<td>{{prodRegData.ICPNA.Sep13 + prodRegData.CAPES.Sep13 + prodRegData.AllOther.Sep13 }}</td>
-						<td>{{prodRegData.ICPNA.Oct13 + prodRegData.CAPES.Oct13 + prodRegData.AllOther.Oct13 }}</td>
-						<td>{{prodRegData.ICPNA.Nov13 + prodRegData.CAPES.Nov13 + prodRegData.AllOther.Nov13 }}</td>
-						<td>{{prodRegData.ICPNA.Dec13 + prodRegData.CAPES.Dec13 + prodRegData.AllOther.Dec13 }}</td>
-						<td>{{prodRegData.ICPNA.Jan14 + prodRegData.CAPES.Jan14 + prodRegData.AllOther.Jan14 }}</td>
-						<td>{{prodRegData.ICPNA.Feb14 + prodRegData.CAPES.Feb14 + prodRegData.AllOther.Feb14 }}</td>
-						<td>{{prodRegData.ICPNA.Mar14 + prodRegData.CAPES.Mar14 + prodRegData.AllOther.Mar14 }}</td>
-						<td>{{prodRegData.ICPNA.Apr14 + prodRegData.CAPES.Apr14 + prodRegData.AllOther.Apr14 }}</td>
-						<td>{{prodRegData.ICPNA.May14 + prodRegData.CAPES.May14 + prodRegData.AllOther.May14 }}</td>
-						<td>{{prodRegData.ICPNA.Jun14 + prodRegData.CAPES.Jun14 + prodRegData.AllOther.Jun14 }}</td>
-						<td>{{prodRegData.ICPNA.Last12Month + prodRegData.CAPES.Last12Month + prodRegData.AllOther.Last12Month }}</td>
+						<td>{{prodRegData.CAPES.Jun + prodRegData.AllOther.Jun}}</td>
+						<td>{{prodRegData.CAPES.Jul + prodRegData.AllOther.Jul}}</td>
+						<td>{{prodRegData.CAPES.Aug + prodRegData.AllOther.Aug}}</td>
+						<td>{{prodRegData.CAPES.Sep + prodRegData.AllOther.Sep}}</td>
+						<td>{{prodRegData.CAPES.Oct + prodRegData.AllOther.Oct}}</td>
+						<td>{{prodRegData.CAPES.Nov + prodRegData.AllOther.Nov}}</td>
+						<td>{{prodRegData.CAPES.Dec + prodRegData.AllOther.Dec}}</td>
+						<td>{{prodRegData.CAPES.Jan + prodRegData.AllOther.Jan}}</td>
+						<td>{{prodRegData.CAPES.Feb + prodRegData.AllOther.Feb}}</td>
+						<td>{{prodRegData.CAPES.Mar + prodRegData.AllOther.Mar}}</td>
+						<td>{{prodRegData.CAPES.Apr + prodRegData.AllOther.Apr}}</td>
+						<td>{{prodRegData.CAPES.May + prodRegData.AllOther.May}}</td>
+						<td>{{prodRegData.CAPES.Jun2 + prodRegData.AllOther.Jun2}}</td>
+						<td>{{prodRegData.CAPES.Last12Month + prodRegData.AllOther.Last12Month }}</td>
+						<!-- <td>{{prodRegData.ICPNA.Jun + prodRegData.CAPES.Jun + prodRegData.AllOther.Jun }}</td>
+						<td>{{prodRegData.ICPNA.Jul + prodRegData.CAPES.Jul + prodRegData.AllOther.Jul }}</td>
+						<td>{{prodRegData.ICPNA.Aug + prodRegData.CAPES.Aug + prodRegData.AllOther.Aug }}</td>
+						<td>{{prodRegData.ICPNA.Sep + prodRegData.CAPES.Sep + prodRegData.AllOther.Sep }}</td>
+						<td>{{prodRegData.ICPNA.Oct + prodRegData.CAPES.Oct + prodRegData.AllOther.Oct }}</td>
+						<td>{{prodRegData.ICPNA.Nov + prodRegData.CAPES.Nov + prodRegData.AllOther.Nov }}</td>
+						<td>{{prodRegData.ICPNA.Dec + prodRegData.CAPES.Dec + prodRegData.AllOther.Dec }}</td>
+						<td>{{prodRegData.ICPNA.Jan + prodRegData.CAPES.Jan + prodRegData.AllOther.Jan}}</td>
+						<td>{{prodRegData.ICPNA.Feb + prodRegData.CAPES.Feb + prodRegData.AllOther.Feb}}</td>
+						<td>{{prodRegData.ICPNA.Mar + prodRegData.CAPES.Mar + prodRegData.AllOther.Mar}}</td>
+						<td>{{prodRegData.ICPNA.Apr + prodRegData.CAPES.Apr + prodRegData.AllOther.Apr}}</td>
+						<td>{{prodRegData.ICPNA.May + prodRegData.CAPES.May + prodRegData.AllOther.May}}</td>
+						<td>{{prodRegData.ICPNA.Jun2 + prodRegData.CAPES.Jun2 + prodRegData.AllOther.Jun2}}</td>
+						<td>{{prodRegData.ICPNA.Last12Month + prodRegData.CAPES.Last12Month + prodRegData.AllOther.Last12Month }}</td> -->
 					</tr>
 				</tbody>
 			</table>
@@ -230,85 +286,134 @@
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Jun '13</th>
-						<th>Jul '13</th>
-						<th>Aug '13</th>
-						<th>Sep '13</th>
-						<th>Oct '13</th>
-						<th>Nov '13</th>
-						<th>Dec '13</th>
-						<th>Jan '14</th>
-						<th>Feb '14</th>
-						<th>Mar '14</th>
-						<th>Apr '14</th>
-						<th>May '14</th>
-						<th>Jun '14</th>
+						<th>Jun '{{FYear-1}}</th>
+						<th>Jul '{{FYear-1}}</th>
+						<th>Aug '{{FYear-1}}</th>
+						<th>Sep '{{FYear-1}}</th>
+						<th>Oct '{{FYear-1}}</th>
+						<th>Nov '{{FYear-1}}</th>
+						<th>Dec '{{FYear-1}}</th>
+						<th>Jan '{{FYear}}</th>
+						<th>Feb '{{FYear}}</th>
+						<th>Mar '{{FYear}}</th>
+						<th>Apr '{{FYear}}</th>
+						<th>May '{{FYear}}</th>
+						<th>Jun '{{FYear}}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td><b>CAPES</b></td>
-						<td>{{activeUsersData.CAPES.Jun13}}</td>
-						<td>{{activeUsersData.CAPES.Jul13}}</td>
-						<td>{{activeUsersData.CAPES.Aug13}}</td>
-						<td>{{activeUsersData.CAPES.Sep13}}</td>
-						<td>{{activeUsersData.CAPES.Oct13}}</td>
-						<td>{{activeUsersData.CAPES.Nov13}}</td>
-						<td>{{activeUsersData.CAPES.Dec13}}</td>
-						<td>{{activeUsersData.CAPES.Jan14}}</td>
-						<td>{{activeUsersData.CAPES.Feb14}}</td>
-						<td>{{activeUsersData.CAPES.Mar14}}</td>
-						<td>{{activeUsersData.CAPES.Apr14}}</td>
-						<td>{{activeUsersData.CAPES.May14}}</td>
-						<td>{{activeUsersData.CAPES.Jun14}}</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<!-- <td>{{activeUsersData.CAPES.Jun}}</td>
+						<td>{{activeUsersData.CAPES.Jul}}</td>
+						<td>{{activeUsersData.CAPES.Aug}}</td>
+						<td>{{activeUsersData.CAPES.Sep}}</td>
+						<td>{{activeUsersData.CAPES.Oct}}</td>
+						<td>{{activeUsersData.CAPES.Nov}}</td>
+						<td>{{activeUsersData.CAPES.Dec}}</td>
+						<td>{{activeUsersData.CAPES.Jan}}</td>
+						<td>{{activeUsersData.CAPES.Feb}}</td>
+						<td>{{activeUsersData.CAPES.Mar}}</td>
+						<td>{{activeUsersData.CAPES.Apr}}</td>
+						<td>{{activeUsersData.CAPES.May}}</td> -->
+						<td>{{activeUsersData.CAPES.Jun2}}</td>
 					</tr>
 					<tr>
 						<td><b>ICPNA</b></td>
-						<td>{{activeUsersData.ICPNA.Jun13}}</td>
-						<td>{{activeUsersData.ICPNA.Jul13}}</td>
-						<td>{{activeUsersData.ICPNA.Aug13}}</td>
-						<td>{{activeUsersData.ICPNA.Sep13}}</td>
-						<td>{{activeUsersData.ICPNA.Oct13}}</td>
-						<td>{{activeUsersData.ICPNA.Nov13}}</td>
-						<td>{{activeUsersData.ICPNA.Dec13}}</td>
-						<td>{{activeUsersData.ICPNA.Jan14}}</td>
-						<td>{{activeUsersData.ICPNA.Feb14}}</td>
-						<td>{{activeUsersData.ICPNA.Mar14}}</td>
-						<td>{{activeUsersData.ICPNA.Apr14}}</td>
-						<td>{{activeUsersData.ICPNA.May14}}</td>
-						<td>{{activeUsersData.ICPNA.Jun14}}</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<!-- <td>{{activeUsersData.ICPNA.Jun}}</td>
+						<td>{{activeUsersData.ICPNA.Jul}}</td>
+						<td>{{activeUsersData.ICPNA.Aug}}</td>
+						<td>{{activeUsersData.ICPNA.Sep}}</td>
+						<td>{{activeUsersData.ICPNA.Oct}}</td>
+						<td>{{activeUsersData.ICPNA.Nov}}</td>
+						<td>{{activeUsersData.ICPNA.Dec}}</td>
+						<td>{{activeUsersData.ICPNA.Jan}}</td>
+						<td>{{activeUsersData.ICPNA.Feb}}</td>
+						<td>{{activeUsersData.ICPNA.Mar}}</td>
+						<td>{{activeUsersData.ICPNA.Apr}}</td>
+						<td>{{activeUsersData.ICPNA.May}}</td> 
+						<td>{{activeUsersData.ICPNA.Jun2}}</td>-->
 					</tr>
 					<tr>
 						<td><b>All Other</b></td>
-						<td>{{activeUsersData.AllOther.Jun13}}</td>
-						<td>{{activeUsersData.AllOther.Jul13}}</td>
-						<td>{{activeUsersData.AllOther.Aug13}}</td>
-						<td>{{activeUsersData.AllOther.Sep13}}</td>
-						<td>{{activeUsersData.AllOther.Oct13}}</td>
-						<td>{{activeUsersData.AllOther.Nov13}}</td>
-						<td>{{activeUsersData.AllOther.Dec13}}</td>
-						<td>{{activeUsersData.AllOther.Jan14}}</td>
-						<td>{{activeUsersData.AllOther.Feb14}}</td>
-						<td>{{activeUsersData.AllOther.Mar14}}</td>
-						<td>{{activeUsersData.AllOther.Apr14}}</td>
-						<td>{{activeUsersData.AllOther.May14}}</td>
-						<td>{{activeUsersData.AllOther.Jun14}}</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<!-- <td>{{activeUsersData.AllOther.Jun}}</td>
+						<td>{{activeUsersData.AllOther.Jul}}</td>
+						<td>{{activeUsersData.AllOther.Aug}}</td>
+						<td>{{activeUsersData.AllOther.Sep}}</td>
+						<td>{{activeUsersData.AllOther.Oct}}</td>
+						<td>{{activeUsersData.AllOther.Nov}}</td>
+						<td>{{activeUsersData.AllOther.Dec}}</td>
+						<td>{{activeUsersData.AllOther.Jan}}</td>
+						<td>{{activeUsersData.AllOther.Feb}}</td>
+						<td>{{activeUsersData.AllOther.Mar}}</td>
+						<td>{{activeUsersData.AllOther.Apr}}</td>
+						<td>{{activeUsersData.AllOther.May}}</td> -->
+						<td>{{activeUsersData.AllOther.Jun2}}</td>
 					</tr>
 					<tr>
 						<td><b>Total</b></td>
-						<td>{{activeUsersData.ICPNA.Jun13 + activeUsersData.CAPES.Jun13 + activeUsersData.AllOther.Jun13 }}</td>
-						<td>{{activeUsersData.ICPNA.Jul13 + activeUsersData.CAPES.Jul13 + activeUsersData.AllOther.Jul13 }}</td>
-						<td>{{activeUsersData.ICPNA.Aug13 + activeUsersData.CAPES.Aug13 + activeUsersData.AllOther.Aug13 }}</td>
-						<td>{{activeUsersData.ICPNA.Sep13 + activeUsersData.CAPES.Sep13 + activeUsersData.AllOther.Sep13 }}</td>
-						<td>{{activeUsersData.ICPNA.Oct13 + activeUsersData.CAPES.Oct13 + activeUsersData.AllOther.Oct13 }}</td>
-						<td>{{activeUsersData.ICPNA.Nov13 + activeUsersData.CAPES.Nov13 + activeUsersData.AllOther.Nov13 }}</td>
-						<td>{{activeUsersData.ICPNA.Dec13 + activeUsersData.CAPES.Dec13 + activeUsersData.AllOther.Dec13 }}</td>
-						<td>{{activeUsersData.ICPNA.Jan14 + activeUsersData.CAPES.Jan14 + activeUsersData.AllOther.Jan14 }}</td>
-						<td>{{activeUsersData.ICPNA.Feb14 + activeUsersData.CAPES.Feb14 + activeUsersData.AllOther.Feb14 }}</td>
-						<td>{{activeUsersData.ICPNA.Mar14 + activeUsersData.CAPES.Mar14 + activeUsersData.AllOther.Mar14 }}</td>
-						<td>{{activeUsersData.ICPNA.Apr14 + activeUsersData.CAPES.Apr14 + activeUsersData.AllOther.Apr14 }}</td>
-						<td>{{activeUsersData.ICPNA.May14 + activeUsersData.CAPES.May14 + activeUsersData.AllOther.May14 }}</td>
-						<td>{{activeUsersData.ICPNA.Jun14 + activeUsersData.CAPES.Jun14 + activeUsersData.AllOther.Jun14 }}</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<td>-</td>
+						<!-- <td>{{activeUsersData.ICPNA.Jun + activeUsersData.CAPES.Jun + activeUsersData.AllOther.Jun}}</td>
+						<td>{{activeUsersData.ICPNA.Jul + activeUsersData.CAPES.Jul + activeUsersData.AllOther.Jul}}</td>
+						<td>{{activeUsersData.ICPNA.Aug + activeUsersData.CAPES.Aug + activeUsersData.AllOther.Aug}}</td>
+						<td>{{activeUsersData.ICPNA.Sep + activeUsersData.CAPES.Sep + activeUsersData.AllOther.Sep}}</td>
+						<td>{{activeUsersData.ICPNA.Oct + activeUsersData.CAPES.Oct + activeUsersData.AllOther.Oct}}</td>
+						<td>{{activeUsersData.ICPNA.Nov + activeUsersData.CAPES.Nov + activeUsersData.AllOther.Nov}}</td>
+						<td>{{activeUsersData.ICPNA.Dec + activeUsersData.CAPES.Dec + activeUsersData.AllOther.Dec}}</td>
+						<td>{{activeUsersData.ICPNA.Jan + activeUsersData.CAPES.Jan + activeUsersData.AllOther.Jan}}</td>
+						<td>{{activeUsersData.ICPNA.Feb + activeUsersData.CAPES.Feb + activeUsersData.AllOther.Feb}}</td>
+						<td>{{activeUsersData.ICPNA.Mar + activeUsersData.CAPES.Mar + activeUsersData.AllOther.Mar}}</td>
+						<td>{{activeUsersData.ICPNA.Apr + activeUsersData.CAPES.Apr + activeUsersData.AllOther.Apr}}</td>
+						<td>{{activeUsersData.ICPNA.May + activeUsersData.CAPES.May + activeUsersData.AllOther.May}}</td> -->
+						<td>{{activeUsersData.CAPES.Jun2 + activeUsersData.AllOther.Jun2}}</td>
 					</tr>
 				</tbody>
 			</table>

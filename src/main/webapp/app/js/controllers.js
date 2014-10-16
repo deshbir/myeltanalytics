@@ -149,10 +149,30 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http','$q
             "myeltUsageReport": {
             	"title" : "MyELT Usage Report",
             	"list": [{
-            		"name" : "FY14 (current)",
+            		"name" : "FY14 (Current)",
             		"disabled": "false",
             		"file": "",
             		"year": "14"
+            	},{
+            		"name" : "FY13",
+            		"disabled": "false",
+            		"file": "",
+            		"year": "13"
+            	},{
+            		"name" : "FY12",
+            		"disabled": "false",
+            		"file": "",
+            		"year": "12"
+            	},{
+            		"name" : "FY11",
+            		"disabled": "false",
+            		"file": "",
+            		"year": "11"
+            	},{
+            		"name" : "FY10",
+            		"disabled": "false",
+            		"file": "",
+            		"year": "10"
             	}]
             }
 
@@ -219,7 +239,7 @@ myeltAnalyticsControllers.controller('RulesController', ['$scope','$http',
     }
  ]);
 myeltAnalyticsControllers.controller('MyELTUsageReportController', ['$scope','$http','$q','$routeParams',
-    function ($scope, $http, $q,$routeParams) {
+    function ($scope, $http, $q, $routeParams) {
 		jQuery(window).scrollTop(0);
 		$scope.FYear = $routeParams.year;
     	var studentRegURL  = $http.get("../api/reports/myeltusage/studentReg/"+$scope.FYear),
