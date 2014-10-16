@@ -22,24 +22,12 @@ public class JobInfo
 		return retryJobStatus;
 	}
 
-	public void setRetryJobStatus(String retryJobStatus) {
-		this.retryJobStatus = retryJobStatus;
-	}
-
 	public long getRetryRecordsProcessed() {
 		return retryRecordsProcessed;
 	}
 
-	public void setRetryRecordsProcessed(long retryRecordsProcessed) {
-		this.retryRecordsProcessed = retryRecordsProcessed;
-	}
-
 	public long getTotalRetryRecords() {
 		return totalRetryRecords;
-	}
-
-	public void setTotalRetryRecords(long totalRetryRecords) {
-		this.totalRetryRecords = totalRetryRecords;
 	}
 
 	public long getTotalRecords()
@@ -70,6 +58,11 @@ public class JobInfo
     public String getJobStatus()
     {
         return jobStatus;
+    }
+    
+    public String getStartDateTime()
+    {
+        return startDateTime;
     }
     
     public synchronized void setTotalRecords(long totalRecords) {
@@ -110,16 +103,23 @@ public class JobInfo
     
     public synchronized void incrementRetryRecordsProcessed(){
 		this.retryRecordsProcessed++;
-	}
-    
-    public String getStartDateTime()
-    {
-        return startDateTime;
-    }
+	}  
 
-    public void setStartDateTime(String startDateTime)
+    public synchronized void setStartDateTime(String startDateTime)
     {
         this.startDateTime = startDateTime;
     }
+    
+    public synchronized void setRetryJobStatus(String retryJobStatus) {
+		this.retryJobStatus = retryJobStatus;
+	}
+    
+    public synchronized void setRetryRecordsProcessed(long retryRecordsProcessed) {
+		this.retryRecordsProcessed = retryRecordsProcessed;
+	}
+
+	public synchronized void setTotalRetryRecords(long totalRetryRecords) {
+		this.totalRetryRecords = totalRetryRecords;
+	}
 
 }
