@@ -16,7 +16,7 @@ myeltAnalyticsApp.config(['$routeProvider',
             templateUrl: 'partials/rules.html',
             controller: 'RulesController'
         }).
-        when('/reports/myeltUsage/:year', {
+        when('/reports/myeltUsage/:year/:month', {
             templateUrl: 'partials/myeltUsageReport.html',
             controller: 'MyELTUsageReportController'
         }).

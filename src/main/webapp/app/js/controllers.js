@@ -1,8 +1,20 @@
 var myeltAnalyticsControllers = angular.module('myeltAnalyticsControllers', []);
-
+var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http','$q',
      function ($scope, $http,$q) {
-        $scope.reports = {
+	    var currentMonth = new Date(),
+	    	lastMonth = new Date(),
+	    	secondLastMonth = new Date(),
+	    	thirdLastMonth = new Date(),
+	    	fourthLastMonth	= new Date(),
+	    	fifthLastMonth= new Date();
+		lastMonth.setMonth(currentMonth.getMonth() - 1);
+		secondLastMonth.setMonth(currentMonth.getMonth() - 2);
+		thirdLastMonth.setMonth(currentMonth.getMonth() - 3);
+		fourthLastMonth.setMonth(currentMonth.getMonth() - 4);
+		fifthLastMonth.setMonth(currentMonth.getMonth() - 5);
+		$scope.reports = {
             "uniqueUsers": {
                 "title": "Accounts",
                 "list": [{
@@ -149,30 +161,35 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http','$q
             "myeltUsageReport": {
             	"title" : "MyELT Usage Report",
             	"list": [{
-            		"name" : "FY14 (Current)",
+            		"name" : monthNames[currentMonth.getMonth()-1] +" '" +currentMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"year": "14"
+            		"period": currentMonth.getFullYear()+"/"+currentMonth.getMonth()
             	},{
-            		"name" : "FY13",
+            		"name" : monthNames[lastMonth.getMonth()-1] +" '" +lastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"year": "13"
+            		"period": lastMonth.getFullYear()+"/"+lastMonth.getMonth()
             	},{
-            		"name" : "FY12",
+            		"name" : monthNames[secondLastMonth.getMonth()-1] +" '" +secondLastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"year": "12"
+            		"period": secondLastMonth.getFullYear() +"/"+secondLastMonth.getMonth()
             	},{
-            		"name" : "FY11",
+            		"name" : monthNames[thirdLastMonth.getMonth()-1] +"'" +thirdLastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"year": "11"
+            		"period": thirdLastMonth.getFullYear()+"/"+thirdLastMonth.getMonth()
             	},{
-            		"name" : "FY10",
+            		"name" : monthNames[fourthLastMonth.getMonth()-1] +" '" +fourthLastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"year": "10"
+            		"period": fourthLastMonth.getFullYear()+"/"+fourthLastMonth.getMonth()
+            	},{
+            		"name" : monthNames[fifthLastMonth.getMonth()-1] +" '" +fifthLastMonth.getFullYear().toString().slice(-2),
+            		"disabled": "false",
+            		"file": "",
+            		"period": fifthLastMonth.getFullYear() +"/"+ fifthLastMonth.getMonth()
             	}]
             }
 
@@ -241,14 +258,39 @@ myeltAnalyticsControllers.controller('RulesController', ['$scope','$http',
 myeltAnalyticsControllers.controller('MyELTUsageReportController', ['$scope','$http','$q','$routeParams',
     function ($scope, $http, $q, $routeParams) {
 		jQuery(window).scrollTop(0);
-		$scope.FYear = $routeParams.year;
-    	var studentRegURL  = $http.get("../api/reports/myeltusage/studentReg/"+$scope.FYear),
-			productRegURL  = $http.get("../api/reports/myeltusage/productReg/"+$scope.FYear),
-			activeUserURL  = $http.get("../api/reports/myeltusage/activeUsers/"+$scope.FYear);
-		$q.all([studentRegURL,productRegURL,activeUserURL]).then(function(arrayOfResult){
-			$scope.studentRegData = arrayOfResult[0].data;
-			$scope.prodRegData = arrayOfResult[1].data;
-			$scope.activeUsersData = arrayOfResult[2].data;
+		$scope.year = $routeParams.year;
+		$scope.month  = $routeParams.month;
+    	var date = new Date();
+    	date.setMonth($scope.month -1);
+    	date.setYear($scope.year);
+    	$scope.keys = [];
+    	for(var i  = 0; i < 13; i++){
+    		$scope.keys.push({"data" : monthNames[date.getMonth()]+" '"+date.getFullYear().toString().slice(-2)});
+    		date.setMonth(date.getMonth()-1);
+    	}
+    	$scope.keys.reverse();
+    	$scope.keys.push({"data":"Last 12 Months"});
+		$http.get("../api/reports/myeltusage/"+$scope.year+"/"+$scope.month).success(function(data){
+			$scope.usageReportData = data;
+			$scope.newStudentsReg_capes = [];
+			$scope.newStudentsReg_allOther = [];
+			$scope.newStudentsReg_total = [];
+			$scope.newProductsReg_capes = [];
+			$scope.newProductsReg_allOther = [];
+			$scope.newProductsReg_total = [];
+			for(var j = 0 ; j < $scope.keys.length ; j++ ){
+				$scope.newStudentsReg_capes.push({"data" :$scope.usageReportData.new_student_registrations.CAPES[$scope.keys[j].data]});
+				$scope.newStudentsReg_allOther.push({"data":$scope.usageReportData.new_student_registrations.AllOther[$scope.keys[j].data]});
+				$scope.newStudentsReg_total.push({"data":$scope.usageReportData.new_student_registrations.CAPES[$scope.keys[j].data]+$scope.usageReportData.new_student_registrations.AllOther[$scope.keys[j].data]});
+				$scope.newProductsReg_capes.push({"data" :$scope.usageReportData.new_product_registrations.CAPES[$scope.keys[j].data]});
+				/*$scope.newProdReg_allOther.push({"data":$scope.usageReportData.new_product_registrations.AllOther[$scope.keys[j].data]});*/
+				$scope.newProductsReg_total.push({"data":$scope.usageReportData.new_product_registrations.CAPES[$scope.keys[j].data]/*+$scope.usageReportData.new_product_registrations.AllOther[$scope.keys[j].data]*/});
+				if(j == $scope.keys.length - 2){
+					$scope.activeUsers_capes = $scope.usageReportData.active_user_accounts.CAPES[$scope.keys[j].data];
+					$scope.activeUsers_allOther = $scope.usageReportData.active_user_accounts.AllOther[$scope.keys[j].data];
+					$scope.activeUsers_total = $scope.usageReportData.active_user_accounts.CAPES[$scope.keys[j].data]+$scope.usageReportData.active_user_accounts.AllOther[$scope.keys[j].data];
+				}
+			}
 		});
 	}
  ]);

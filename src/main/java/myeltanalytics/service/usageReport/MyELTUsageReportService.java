@@ -1,7 +1,8 @@
 package myeltanalytics.service.usageReport;
 
+import java.text.DateFormatSymbols;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,128 +19,139 @@ public class MyELTUsageReportService {
 	
 	 @Autowired
 	 private Client elasticSearchClient;
-	 
-	 
-	 public Map<String,Long> getNewRegAllOtherReportData(int year){
-			int month =6;
-			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
-			if(year > 0){
-				year = year+2000;
-			}else{
-				year = year + 1900;
+
+	 public Map<String,Long> getNewUsersRegCapesReportData(int year,int month){
+		Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
+		Calendar date = new GregorianCalendar();
+		date.set(Calendar.MONTH, month-1);
+		date.set(Calendar.YEAR,year);
+		long last12Month = 0;
+		String startDate,endDate;
+		for(int i  = 0; i < 13 ; i++){
+			startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
+			endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
+			QueryBuilder query = QueryBuilders.boolQuery()
+					.must(QueryBuilders.matchQuery("userType", "STUDENT"))
+					.must(QueryBuilders.matchQuery("milestones.PT.level", 0))
+					.must(QueryBuilders.matchQuery("studentType", "capes_model"))
+					.must(QueryBuilders.rangeQuery("milestones.PT.startedDate").from(startDate).to(endDate));
+			long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
+					.setQuery(query)
+					.execute()
+					.actionGet()
+					.getCount();
+			if(i < 12 ){
+				last12Month = last12Month + count;
 			}
+			String monthName=new DateFormatSymbols().getMonths()[date.get(Calendar.MONTH)];
+			dataMap.put(monthName.substring(0, Math.min(monthName.length(), 3)) +" '"+ String.valueOf(date.get(Calendar.YEAR)).substring(2), count);
+			date.add(Calendar.MONTH, -1);
+		}
+		dataMap.put("Last 12 Months", last12Month);
+		return dataMap;
+	}
+	
+	 public Map<String,Long> getNewUsersRegAllOtherReportData(int year, int month){
+			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
+			Calendar date = new GregorianCalendar();
+			date.set(Calendar.MONTH, month-1);
+			date.set(Calendar.YEAR,year);
 			long last12Month = 0;
 			String startDate,endDate;
-			long[] dataArray = new long[14];
-			for(int i  = 0; i < dataArray.length; i++){
-				if(month > 12){
-					month = 1;
-					startDate = year + "-" + month + "-01T00:00:00";
-					endDate   = year + "-" + month + "-"+ getDaysInMonth(month-1, year) + "T23:59:59";
-				}else if(month >= 6 && i != 12){
-					startDate = year-1 + "-" + month + "-01T00:00:00";
-					endDate   = year-1 + "-" + month + "-" + getDaysInMonth(month-1, year-1) + "T23:59:59";
-				}else{
-					startDate = year + "-" + month + "-01T00:00:00";
-					endDate   = year + "-" + month + "-" + getDaysInMonth(month-1, year) + "T23:59:59";
-				}
-				month++;
-				QueryBuilder qb = QueryBuilders.boolQuery()
+			for(int i  = 0; i < 13 ; i++){
+				startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
+				endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
+				QueryBuilder query = QueryBuilders.boolQuery()
 						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
 						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
 						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
 				long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
-					.setQuery(qb)
-					.execute()
-					.actionGet().getCount();
-					 dataArray[i] = count;
-					 if(i != 0){
-						 last12Month = last12Month + count;
-					 }
-					 
+						.setQuery(query)
+						.execute()
+						.actionGet()
+						.getCount();
+				if(i < 12 ){
+					last12Month = last12Month + count;
+				}
+				String monthName=new DateFormatSymbols().getMonths()[date.get(Calendar.MONTH)];
+				dataMap.put(monthName.substring(0, Math.min(monthName.length(), 3)) +" '"+ String.valueOf(date.get(Calendar.YEAR)).substring(2), count);
+				date.add(Calendar.MONTH, -1);
 			}
-			dataArray[13] = last12Month;
-			dataMap = convertReportDataArrayIntoMap(dataArray);
+			dataMap.put("Last 12 Months", last12Month);
 			return dataMap;
 		}
-		
-		public Map<String,Long> getNewRegCapesReportData(int year){
-			int month =6;
+	 
+	 public Map<String,Long> getNewProdRegCapesReportData(int year, int month){
 			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
-			if(year > 0){
-				year = year+2000;
-			}else{
-				year = year + 1900;
-			}
+			Calendar date = new GregorianCalendar();
+			date.set(Calendar.MONTH, month-1);
+			date.set(Calendar.YEAR,year);
 			long last12Month = 0;
 			String startDate,endDate;
-			long[] dataArray = new long[14];
-			for(int i  = 0; i < dataArray.length; i++){
-				if(month > 12){
-					month = 1;
-					startDate = year + "-" + month + "-01T00:00:00";
-					endDate   = year + "-" + month + "-"+ getDaysInMonth(month-1, year) + "T23:59:59";
-				}else if(month >= 6 && i != 12){
-					startDate = year-1 + "-" + month + "-01T00:00:00";
-					endDate   = year-1 + "-" + month + "-" + getDaysInMonth(month-1, year-1) + "T23:59:59";
-				}else{
-					startDate = year + "-" + month + "-01T00:00:00";
-					endDate   = year + "-" + month + "-" + getDaysInMonth(month-1, year) + "T23:59:59";
-				}
-				month++;
-				QueryBuilder qb = QueryBuilders.boolQuery()
-					.must(QueryBuilders.matchQuery("userType", "STUDENT"))
-					.must(QueryBuilders.matchQuery("milestones.PT.level", 0))
-					.must(QueryBuilders.matchQuery("studentType", "capes_model"))
-					.must(QueryBuilders.rangeQuery("milestones.PT.startedDate").from(startDate).to(endDate));
+			for(int i  = 0; i < 13 ; i++){
+				startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
+				endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
+				QueryBuilder query = QueryBuilders.boolQuery()
+						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
+						.must(QueryBuilders.matchQuery("studentType", "capes_model"))
+						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
 				long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
-					.setQuery(qb)
-					.execute()
-					.actionGet().getCount();
-					 dataArray[i] = count;
-					 if(i != 0){
-						 last12Month = last12Month + count;
-					 }
-					 
+						.setQuery(query)
+						.execute()
+						.actionGet()
+						.getCount();
+				if(i < 12 ){
+					last12Month = last12Month + count;
+				}
+				String monthName=new DateFormatSymbols().getMonths()[date.get(Calendar.MONTH)];
+				dataMap.put(monthName.substring(0, Math.min(monthName.length(), 3)) +" '"+ String.valueOf(date.get(Calendar.YEAR)).substring(2), count);
+				date.add(Calendar.MONTH, -1);
 			}
-			dataArray[13] = last12Month;
-			dataMap = convertReportDataArrayIntoMap(dataArray);
+			dataMap.put("Last 12 Months", last12Month);
 			return dataMap;
 		}
-		
-		private Map<String,Long> convertReportDataArrayIntoMap(long[] dataArray){
-			Map<String,Long> dataMap = new LinkedHashMap<String,Long>();
-			dataMap.put("Jun", dataArray[0]);
-			dataMap.put("Jul", dataArray[1]);
-			dataMap.put("Aug", dataArray[2]);
-			dataMap.put("Sep", dataArray[3]);
-			dataMap.put("Oct", dataArray[4]);
-			dataMap.put("Nov", dataArray[5]);
-			dataMap.put("Dec", dataArray[6]);
-			dataMap.put("Jan", dataArray[7]);
-			dataMap.put("Feb", dataArray[8]);
-			dataMap.put("Mar", dataArray[9]);
-			dataMap.put("Apr", dataArray[10]);
-			dataMap.put("May", dataArray[11]);
-			dataMap.put("Jun2", dataArray[12]);
-			dataMap.put("Last12Month", dataArray[13]);
+	 public Map<String,Long> getactiveUsersCapesReportData(int year, int month){
+			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
+			Calendar date = new GregorianCalendar();
+			date.set(Calendar.MONTH, month-1);
+			date.set(Calendar.YEAR,year);
+			String startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
+			String endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
+			QueryBuilder query = QueryBuilders.boolQuery()
+					.must(QueryBuilders.matchQuery("userType", "STUDENT"))
+					.must(QueryBuilders.matchQuery("studentType", "capes_model"))
+					.must(QueryBuilders.rangeQuery("dateLastLogin").from(startDate).to(endDate));
+			long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
+					.setQuery(query)
+					.execute()
+					.actionGet()
+					.getCount();
+			String monthName=new DateFormatSymbols().getMonths()[date.get(Calendar.MONTH)];
+			dataMap.put(monthName.substring(0, Math.min(monthName.length(), 3)) +" '"+ String.valueOf(date.get(Calendar.YEAR)).substring(2), count);
 			return dataMap;
-		}
-		private int getDaysInMonth(int month, int year) {
-		      Calendar cal = Calendar.getInstance();
-		      cal.set(Calendar.MONTH, month);
-		      cal.set(Calendar.DAY_OF_MONTH, 1);
-		      cal.set(Calendar.YEAR, year);
-		      Date startDate = cal.getTime();
-		      int nextMonth = (month == Calendar.DECEMBER) ? Calendar.JANUARY : month + 1;
-		      cal.set(Calendar.MONTH, nextMonth);
-		      if (month == Calendar.DECEMBER) {
-		         cal.set(Calendar.YEAR, year + 1);
-		      }
-		      Date endDate = cal.getTime();
-		      return (int)((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));
-		   }
+	 }
+	 
+	 public Map<String,Long> getactiveUsersAllOtherReportData(int year, int month){
+		Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
+		Calendar date = new GregorianCalendar();
+		date.set(Calendar.MONTH, month-1);
+		date.set(Calendar.YEAR,year);
+		String startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
+		String endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
+		QueryBuilder query = QueryBuilders.boolQuery()
+				.must(QueryBuilders.matchQuery("userType", "STUDENT"))
+				.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
+				.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
+				.must(QueryBuilders.rangeQuery("dateLastLogin").from(startDate).to(endDate));
+		long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
+				.setQuery(query)
+				.execute()
+				.actionGet()
+				.getCount();
+		String monthName=new DateFormatSymbols().getMonths()[date.get(Calendar.MONTH)];
+		dataMap.put(monthName.substring(0, Math.min(monthName.length(), 3)) +" '"+ String.valueOf(date.get(Calendar.YEAR)).substring(2), count);
+		return dataMap;
+	 }
+	 	
 }
-
-
