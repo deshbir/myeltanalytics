@@ -499,7 +499,10 @@ public class UsersSyncService
 		} else {
 			failedUserArraySize = (int)(jobInfo.getTotalRetryRecords() - jobInfo.getRetryRecordsProcessed());
 		}
-		failedUsersSearchHits = elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).setSize(failedUserArraySize).execute().actionGet().getHits().getHits();
+		String[] includeSource = new String[2];
+		includeSource[0] = "userName";
+		includeSource[1] = "institution.id";
+		failedUsersSearchHits = elasticSearchClient.prepareSearch(Constants.USERS_ERROR_ALIAS).setFetchSource(includeSource, null).setSize(failedUserArraySize).execute().actionGet().getHits().getHits();
     }
     
     /*
