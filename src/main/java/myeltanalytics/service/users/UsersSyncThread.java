@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -160,18 +161,14 @@ public class UsersSyncThread implements Runnable
         /**
          * UserInstitutionMap handling
          * 1. Instead of default jdbcTemplate (which maps to the Master DB), use institution DB specific jdbcTemplate
-         * 2. select DatabaseURL from institutions where Id=instId
+         * 2. Select DatabaseURL from institutions where Id=instId
          * 3. Use DatabaseURl to lookup URL for dataSource.
          * 4. Make a jdbcTemplate and query it
-         * 
-         * ---
-         * 
-         * 1. Add databaseURL as a field in USER ES record.
-         */
-       
+         */       
         String dbURL = jdbcTemplate.queryForObject("Select DatabaseURL from Institutions where ID = ?", new Object[]{institutionId}, String.class);
         auxJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
         
+        /** Populate users from Aux DB (Users table is in Aux DB) */
         User user = auxJdbcTemplate.queryForObject(
             "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from Users where name = ? limit 1", new Object[] { loginName },
             new RowMapper<User>() {
@@ -240,6 +237,7 @@ public class UsersSyncThread implements Runnable
         if (dbURL.indexOf("?") != -1) {
             dbURL = dbURL.substring(0, dbURL.indexOf("?"));
         }
+        //Add databaseURL as a field in USER ES record.
         user.setDatabaseURL(dbURL);
         return user;
     }
@@ -252,7 +250,8 @@ public class UsersSyncThread implements Runnable
     private HashMap<String,Milestone> populateMilestones(long userId)
     {
          
-    	List<Milestone> results = auxJdbcTemplate.query(
+        /** Populate milestones from Aux DB (MyeltWorkflowMilestoness table is in Aux DB) */
+        List<Milestone> results = auxJdbcTemplate.query(
             "Select MilestoneID,Status,LevelNo,Score,MaxScore,StartedDate,AccessedDate,CompletedDate,IsActive from MyeltWorkflowMilestones where UserID=? order by AccessedDate DESC;", new Object[] { userId },
             new RowMapper<Milestone>() {
                 @Override
@@ -293,33 +292,52 @@ public class UsersSyncThread implements Runnable
         return milestones;
     }
     
-    private List<AccessCode> populateAccessCodes(long userId)
+    private List<AccessCode> populateAccessCodes(final long userId)
     {
-        List<AccessCode> accessCode = jdbcTemplate.query(
-            "Select d.name as Discipline,bl.name as ProductName,SUBSTRING(ar.feature,11) as ProductCode,ba.AccessCode,ba.LastModified from AccessRights as ar, BookAccessCodes as ba,BookList as bl, Discipline as d where d.Abbr = bl.discipline and bl.Abbr=SUBSTRING(ar.feature,11) and ar.userId=ba.userId and ba.userId=? and ba.BookAbbr like CONCAT(SUBSTRING(ar.feature,11),'%') order by ba.LastModified", new Object[] {userId},
+    	/** AccessRights table is in Aux DB */
+    	List<AccessCode> accessCodes = auxJdbcTemplate.query(
+            "Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId=? And AccessLevel>0 order by LastModified", new Object[] {userId},
             new RowMapper<AccessCode>() {
                 @Override
                 public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    AccessCode accessCode = new AccessCode();
-                    accessCode.setCode(rs.getString("ProductCode") + "-" + rs.getString("AccessCode"));
+                	
+                    final String productCode = rs.getString("ProductCode");
+                    final Timestamp lastModified = rs.getTimestamp("LastModified");
+                    System.out.println(userId + "," + productCode + "," + lastModified);
                     
-                    DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-                    if (rs.getTimestamp("LastModified") != null) {
-                        accessCode.setDateCreated(dateFormat.format(rs.getTimestamp("LastModified")));
-                    } 
-                    
-                    accessCode.setProductCode(rs.getString("ProductCode"));
-                    accessCode.setProductName(rs.getString("ProductName"));
-                    accessCode.setDiscipline(rs.getString("Discipline"));
+                    /** BookAccessCodes, BookList, Discipline tables are in Main DB*/
+                    AccessCode accessCode = jdbcTemplate.queryForObject(
+                        "Select Discipline.name as Discipline, BookList.name as ProductName,BookAccessCodes.AccessCode from BookAccessCodes, BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" +  productCode + "' And BookAccessCodes.UserId='" + userId +  "' And BookAccessCodes.BookAbbr like '" + productCode + "%'",
+                        new RowMapper<AccessCode>() {
+                            @Override
+                            public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            	System.out.println(userId + "," + productCode);
+                                AccessCode accessCode = new AccessCode();
+                                accessCode.setCode(productCode + "-" + rs.getString("AccessCode"));
+                                
+                                DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+                                if (lastModified != null) {
+                                    accessCode.setDateCreated(dateFormat.format(lastModified));
+                                } 
+                                
+                                accessCode.setProductCode(productCode);
+                                accessCode.setProductName(rs.getString("ProductName"));
+                                accessCode.setDiscipline(rs.getString("Discipline"));
+                                System.out.println(accessCode);
+                                return accessCode;
+                            }
+                    });                
                     return accessCode;
                 }
             });
-        return accessCode;
+        return accessCodes;
     }
     
+   
     private List<String> populateCourses(long userId)
     {
-        List<String> courses = jdbcTemplate.query(
+        /** Populate courses from Aux DB (Sections and SectionMembers tables are in Aux DB) */
+        List<String> courses = auxJdbcTemplate.query(
             "Select name from Sections, SectionMembers where Sections.id=SectionMembers.sectionId and SectionMembers.userId = ?", new Object[] { userId },
             new RowMapper<String>() {
                 @Override
@@ -329,9 +347,9 @@ public class UsersSyncThread implements Runnable
             });
         return courses;
     }
-
-    /** Populate Institutions from Main DB (Institutions and Districts table are in Main DB) */
-    private Institution populateInstitution(String institutionId){        
+   
+    private Institution populateInstitution(String institutionId) {   
+        /** Populate Institutions from Main DB (Institutions and Districts table are in Main DB) */
         Institution  institution = jdbcTemplate.queryForObject(
             "Select Institutions.id,Institutions.name,Institutions.country,Institutions.other,Districts.name as district from Institutions left join Districts on Districts.id=Institutions.DistrictID where Institutions.id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
@@ -343,7 +361,11 @@ public class UsersSyncThread implements Runnable
         return institution;
     }
     
-    //function to create EsUser which is not in sync with MySQL user  
+    /**
+     * Function to create EsUser which is not in sync with MySQL user  
+     * @param syncInfo SyncInfo
+     * @return ElasticSearchUser
+     */
     private ElasticSearchUser getErrorEsUser(SyncInfo syncInfo){
     	ElasticSearchUser esUser = new ElasticSearchUser();
     	ElasticSearchInstitution elasticSearchInstitution = new ElasticSearchInstitution(institutionId);
