@@ -309,7 +309,7 @@ public class UsersSyncThread implements Runnable
     	List<Access> accessList = new ArrayList<Access>();
 
     	/** AccessRights table is in Aux DB */
-    	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId="+user.getId()+" And Feature <> 'book-view-ALL' AND AccessLevel>0 order by LastModified");
+    	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId="+user.getId()+" And Feature like 'book-view-%' And Feature <> 'book-view-ALL' AND AccessLevel>0 order by LastModified");
     	Iterator<Map<String,Object>> accessRightsIter = accessRights.iterator();
     	while(accessRightsIter.hasNext()) {
     		Access access = new Access();
@@ -331,7 +331,7 @@ public class UsersSyncThread implements Runnable
     		access.setDiscipline(String.valueOf(bookInfo.get("Discipline")));
     		accessList.add(access);
     	}
-    	List<Map<String,Object>> accessRightsByInstitutionId = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId ="+getUserTypeIdFromUserType(user.getUserType())+" AND InstitutionID = '"+user.getInstitution().getId()+"'And Feature <> 'book-view-ALL' AND AccessLevel > 0");
+    	List<Map<String,Object>> accessRightsByInstitutionId = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId ="+getUserTypeIdFromUserType(user.getUserType())+" AND InstitutionID = '"+user.getInstitution().getId()+"' And Feature like 'book-view-%' And Feature <> 'book-view-ALL' AND AccessLevel > 0");
     	Iterator<Map<String,Object>> accessRightsByInstitutionIdIter = accessRightsByInstitutionId.iterator();
     	while(accessRightsByInstitutionIdIter.hasNext()) {
     		Access access = new Access();
