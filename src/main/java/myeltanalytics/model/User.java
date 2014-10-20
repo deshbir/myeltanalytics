@@ -4,25 +4,9 @@ import java.util.List;
 
 public class User extends AbstractUser {
 
-    private List<AccessCode> accesscodes;
+    private List<Access> accessList;
     private Institution institution;
 
-    /**
-     * @return the accesscodes
-     */
-    public List<AccessCode> getAccesscodes()
-    {
-        return accesscodes;
-    }
-
-    /**
-     * @param accesscodes the accesscodes to set
-     */
-    public void setAccesscodes(List<AccessCode> accesscodes)
-    {
-        this.accesscodes = accesscodes;
-    }
-    
     
     public enum StudentType{
         STUDENT(1,"STUDENT"),INSTRUCTOR(2,"INSTRUCTOR"),AUTHOR(3,"AUTHOR"),ADMINISTRATOR(4,"ADMINISTRATOR"),DISTRICT(5,"DISTRICT"),SUPERUSER(6,"SUPERUSER");
@@ -139,4 +123,12 @@ public class User extends AbstractUser {
         }
         
     }
+
+	public List<Access> getAccessList() {
+		return accessList;
+	}
+
+	public void setAccessList(List<Access> accessList) {
+		this.accessList = accessList;
+	}
 }

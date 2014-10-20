@@ -10,7 +10,7 @@ import org.dom4j.Node;
 public class ElasticSearchUser extends AbstractUser {
         private String recordType; 
         private String studentType;
-        private AccessCode accessCode;
+        private Access access;
         private List<String> productNames;
         private List<String> productCodes;
         private List<String> disciplines;
@@ -18,10 +18,10 @@ public class ElasticSearchUser extends AbstractUser {
         private String region;
         private ElasticSearchInstitution institution;
         
-        public static ElasticSearchUser transformUser(User user, AccessCode ac,String recordType)
+        public static ElasticSearchUser transformUser(User user, Access ac,String recordType)
         {
             ElasticSearchUser esUser = new ElasticSearchUser();
-            esUser.setAccessCode(ac);
+            esUser.setAccess(ac);
             esUser.setId(user.getId());
             esUser.setDatabaseURL(user.getDatabaseURL());
             esUser.setFirstName(user.getFirstName());
@@ -42,10 +42,10 @@ public class ElasticSearchUser extends AbstractUser {
             List<String> productCodes = new LinkedList<String>();
             List<String> productNames = new LinkedList<String>();
             List<String> disciplines = new LinkedList<String>();
-            for(AccessCode accessCode : user.getAccesscodes()){
-                productNames.add(accessCode.getProductName());
-                disciplines.add(accessCode.getDiscipline());
-                productCodes.add(accessCode.getProductCode());
+            for(Access access : user.getAccessList()){
+                productNames.add(access.getProductName());
+                disciplines.add(access.getDiscipline());
+                productCodes.add(access.getProductCode());
             }
             esUser.setProductCodes(productCodes);
             esUser.setProductNames(productNames);
@@ -99,19 +99,6 @@ public class ElasticSearchUser extends AbstractUser {
         {
             this.productNames = productNames;
         }
-
-
-
-        public AccessCode getAccessCode()
-        {
-            return accessCode;
-        }
-
-        public void setAccessCode(AccessCode accessCode)
-        {
-            this.accessCode = accessCode;
-        }
-
 
 
 
@@ -225,5 +212,19 @@ public class ElasticSearchUser extends AbstractUser {
         {
             this.institution = institution;
         }
+
+
+
+
+		public Access getAccess() {
+			return access;
+		}
+
+
+
+
+		public void setAccess(Access access) {
+			this.access = access;
+		}
        
  }

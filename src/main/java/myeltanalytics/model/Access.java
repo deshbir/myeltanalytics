@@ -1,7 +1,7 @@
 package myeltanalytics.model;
 
 
-public class AccessCode
+public class Access
 {
     private String code;
     private String dateCreated;

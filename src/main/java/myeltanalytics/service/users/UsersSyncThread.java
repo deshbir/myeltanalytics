@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import myeltanalytics.model.AccessCode;
+import myeltanalytics.model.Access;
 import myeltanalytics.model.Constants;
 import myeltanalytics.model.ElasticSearchInstitution;
 import myeltanalytics.model.ElasticSearchUser;
@@ -100,22 +100,22 @@ public class UsersSyncThread implements Runnable
                 syncInfo.setStatus("Success");
                 user.setSyncInfo(syncInfo);
             
-                List<AccessCode> accessCodes = user.getAccesscodes();           
+                List<Access> accessList = user.getAccessList();           
             	
-        		if(accessCodes.size() ==0){
+        		if(accessList.size() ==0){
         			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
         			pushuser(esUser);
         		}
         		else {
-        			for(int i = 0 ;i < accessCodes.size(); i++){
-        				AccessCode accessCode  =  accessCodes.get(i);
+        			for(int i = 0 ;i < accessList.size(); i++){
+        				Access access  =  accessList.get(i);
         				String userType = null; 
         				if(i == 0){
         					userType = "USER_WITH_ACCESSCODE";
         				} else {
         					userType = "ADDITIONAL_ACCESSCODE";
         				}
-        				esUser = ElasticSearchUser.transformUser(user, accessCode, userType);
+        				esUser = ElasticSearchUser.transformUser(user, access, userType);
         				pushuser(esUser);
         			}
         		}
@@ -140,7 +140,7 @@ public class UsersSyncThread implements Runnable
                 usersSyncService.updateLastSyncedUserStatus();
             }
             catch (JsonProcessingException e1)
-            {                	// TODO Auto-generated catch block
+            {                	
                 LOGGER.error("Failure for json processing= " + loginName, e1);
             }
         }
@@ -148,8 +148,8 @@ public class UsersSyncThread implements Runnable
     
     private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
         String loginName = String.valueOf(esUser.getUserName());
-        if (esUser.getAccessCode() != null ) {
-            loginName = loginName + esUser.getAccessCode().getCode();
+        if (esUser.getAccess() != null ) {
+            loginName = loginName + esUser.getAccess().getCode();
         }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
@@ -198,7 +198,7 @@ public class UsersSyncThread implements Runnable
                     
                     user.setUserCountry(rs.getString("countryCode"));                                     
                     user.setCourses(populateCourses(user.getId()));
-                    user.setAccesscodes(populateAccessCodes(user.getId()));
+                    user.setAccessList(populateAccessList(user.getId()));
                     
                     /*****************************************
                      *  Populate Milestones for CAPES users
@@ -292,45 +292,42 @@ public class UsersSyncThread implements Runnable
         return milestones;
     }
     
-    private List<AccessCode> populateAccessCodes(final long userId)
+    private List<Access> populateAccessList(final long userId)
     {
     	/** AccessRights table is in Aux DB */
-    	List<AccessCode> accessCodes = auxJdbcTemplate.query(
+    	List<Access> accessList = auxJdbcTemplate.query(
             "Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId=? And AccessLevel>0 order by LastModified", new Object[] {userId},
-            new RowMapper<AccessCode>() {
+            new RowMapper<Access>() {
                 @Override
-                public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                public Access mapRow(ResultSet rs, int rowNum) throws SQLException {
                 	
                     final String productCode = rs.getString("ProductCode");
                     final Timestamp lastModified = rs.getTimestamp("LastModified");
-                    System.out.println(userId + "," + productCode + "," + lastModified);
                     
                     /** BookAccessCodes, BookList, Discipline tables are in Main DB*/
-                    AccessCode accessCode = jdbcTemplate.queryForObject(
+                    Access access = jdbcTemplate.queryForObject(
                         "Select Discipline.name as Discipline, BookList.name as ProductName,BookAccessCodes.AccessCode from BookAccessCodes, BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" +  productCode + "' And BookAccessCodes.UserId='" + userId +  "' And BookAccessCodes.BookAbbr like '" + productCode + "%'",
-                        new RowMapper<AccessCode>() {
+                        new RowMapper<Access>() {
                             @Override
-                            public AccessCode mapRow(ResultSet rs, int rowNum) throws SQLException {
-                            	System.out.println(userId + "," + productCode);
-                                AccessCode accessCode = new AccessCode();
-                                accessCode.setCode(productCode + "-" + rs.getString("AccessCode"));
+                            public Access mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                Access access = new Access();
+                                access.setCode(productCode + "-" + rs.getString("AccessCode"));
                                 
                                 DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
                                 if (lastModified != null) {
-                                    accessCode.setDateCreated(dateFormat.format(lastModified));
+                                    access.setDateCreated(dateFormat.format(lastModified));
                                 } 
                                 
-                                accessCode.setProductCode(productCode);
-                                accessCode.setProductName(rs.getString("ProductName"));
-                                accessCode.setDiscipline(rs.getString("Discipline"));
-                                System.out.println(accessCode);
-                                return accessCode;
+                                access.setProductCode(productCode);
+                                access.setProductName(rs.getString("ProductName"));
+                                access.setDiscipline(rs.getString("Discipline"));
+                                return access;
                             }
                     });                
-                    return accessCode;
+                    return access;
                 }
             });
-        return accessCodes;
+        return accessList;
     }
     
    
