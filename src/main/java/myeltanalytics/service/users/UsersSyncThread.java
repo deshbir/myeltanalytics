@@ -4,12 +4,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import myeltanalytics.model.Access;
 import myeltanalytics.model.Constants;
@@ -103,19 +105,25 @@ public class UsersSyncThread implements Runnable
                 List<Access> accessList = user.getAccessList();           
             	
         		if(accessList.size() ==0){
-        			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESSCODE");
+        			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESS", null);
         			pushuser(esUser);
         		}
         		else {
         			for(int i = 0 ;i < accessList.size(); i++){
         				Access access  =  accessList.get(i);
-        				String userType = null; 
+        				String recordType = null; 
         				if(i == 0){
-        					userType = "USER_WITH_ACCESSCODE";
+        					recordType = "USER_WITH_ACCESS";
         				} else {
-        					userType = "ADDITIONAL_ACCESSCODE";
+        					recordType = "ADDITIONAL_ACCESS";
         				}
-        				esUser = ElasticSearchUser.transformUser(user, access, userType);
+        				String accessType;
+        				if (access.getCode() != null) {
+        					accessType = "ACCESSCODE";
+        				} else {
+        					accessType = "ACCESSRIGHT";
+        				}
+        				esUser = ElasticSearchUser.transformUser(user, access, recordType, accessType);
         				pushuser(esUser);
         			}
         		}
@@ -147,13 +155,17 @@ public class UsersSyncThread implements Runnable
     }
     
     private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
-        String loginName = String.valueOf(esUser.getUserName());
+        String elasticSearchID = String.valueOf(esUser.getUserName());
         if (esUser.getAccess() != null ) {
-            loginName = loginName + esUser.getAccess().getCode();
+        	if (esUser.getAccess().getCode() != null ) {
+        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
+        	} else {
+        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
+        	}
         }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, loginName).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute().actionGet();
     }
     
     private User populateUser(String loginName, String institutionId)
@@ -294,40 +306,33 @@ public class UsersSyncThread implements Runnable
     
     private List<Access> populateAccessList(final long userId)
     {
+    	List<Access> accessList = new ArrayList<Access>();
+
     	/** AccessRights table is in Aux DB */
-    	List<Access> accessList = auxJdbcTemplate.query(
-            "Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId=? And AccessLevel>0 order by LastModified", new Object[] {userId},
-            new RowMapper<Access>() {
-                @Override
-                public Access mapRow(ResultSet rs, int rowNum) throws SQLException {
-                	
-                    final String productCode = rs.getString("ProductCode");
-                    final Timestamp lastModified = rs.getTimestamp("LastModified");
-                    
-                    /** BookAccessCodes, BookList, Discipline tables are in Main DB*/
-                    Access access = jdbcTemplate.queryForObject(
-                        "Select Discipline.name as Discipline, BookList.name as ProductName,BookAccessCodes.AccessCode from BookAccessCodes, BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" +  productCode + "' And BookAccessCodes.UserId='" + userId +  "' And BookAccessCodes.BookAbbr like '" + productCode + "%'",
-                        new RowMapper<Access>() {
-                            @Override
-                            public Access mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                Access access = new Access();
-                                access.setCode(productCode + "-" + rs.getString("AccessCode"));
-                                
-                                DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-                                if (lastModified != null) {
-                                    access.setDateCreated(dateFormat.format(lastModified));
-                                } 
-                                
-                                access.setProductCode(productCode);
-                                access.setProductName(rs.getString("ProductName"));
-                                access.setDiscipline(rs.getString("Discipline"));
-                                return access;
-                            }
-                    });                
-                    return access;
-                }
-            });
-        return accessList;
+    	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId=? And Feature <> 'book-view-ALL' AND AccessLevel>0 order by LastModified");
+    	Iterator<Map<String,Object>> accessRightsIter = accessRights.iterator();
+    	while(accessRightsIter.hasNext()) {
+    		Access access = new Access();
+    		Map<String,Object> accessRight = accessRightsIter.next();
+    		String productCode = String.valueOf(accessRight.get("ProductCode"));
+    		String lastModified = String.valueOf(accessRight.get("LastModified"));
+    		access.setProductCode(productCode);
+    		access.setDateCreated(lastModified);
+
+    		Map<String,Object> accessCode = jdbcTemplate.queryForMap("Select AccessCode from BookAccessCodes where UserId='" + userId + "' And BookAbbr like '" + productCode + "%'");
+
+    		Map<String,Object> bookInfo = jdbcTemplate.queryForMap("Select Discipline.name as Discipline, BookList.name as ProductName from BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" + productCode + "'");
+
+    		if (accessCode != null) {
+    			access.setCode(String.valueOf(accessCode.get("AccessCode")));
+    		} 
+
+    		access.setProductName(String.valueOf(bookInfo.get("ProductName")));
+    		access.setDiscipline(String.valueOf(bookInfo.get("Discipline")));
+    		accessList.add(access);
+    	}
+
+    	return accessList;
     }
     
    

@@ -29,9 +29,11 @@ public class Constants
     public static final String STATUS_INPROGRESS_RETRY = "InProgressRetry";
     
     //Users constants
-    public static final String USER_WITH_ACCESSCODE = "user_with_accesscode";
-    public static final String USER_WITHOUT_ACCESSCODE = "user_without_accesscode";
-    public static final String ADDITIONAL_ACCESSCODE = "additional_accesscode";
+    public static final String USER_WITH_ACCESS = "user_with_access";
+    public static final String USER_WITHOUT_ACCESS = "user_without_access";
+    public static final String ADDITIONAL_ACCESS = "additional_access";
+    public static final String ACCESSTYPE_ACCESSCODE = "accesscode";
+    public static final String ACCESSTYPE_ACCESSRIGHT = "accessright";
     public static final String USER_ERROR = "user_error";
     public static final String CAPES_MODEL = "capes_model";
     public static final String ICPNA_INSTITUTION = "ICPNA";

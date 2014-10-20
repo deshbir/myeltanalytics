@@ -11,6 +11,7 @@ public class ElasticSearchUser extends AbstractUser {
         private String recordType; 
         private String studentType;
         private Access access;
+        private String accessType;
         private List<String> productNames;
         private List<String> productCodes;
         private List<String> disciplines;
@@ -18,10 +19,11 @@ public class ElasticSearchUser extends AbstractUser {
         private String region;
         private ElasticSearchInstitution institution;
         
-        public static ElasticSearchUser transformUser(User user, Access ac,String recordType)
+        public static ElasticSearchUser transformUser(User user, Access ac,String recordType, String accessType)
         {
             ElasticSearchUser esUser = new ElasticSearchUser();
             esUser.setAccess(ac);
+            esUser.setAccessType(accessType);
             esUser.setId(user.getId());
             esUser.setDatabaseURL(user.getDatabaseURL());
             esUser.setFirstName(user.getFirstName());
@@ -225,6 +227,20 @@ public class ElasticSearchUser extends AbstractUser {
 
 		public void setAccess(Access access) {
 			this.access = access;
+		}
+
+
+
+
+		public String getAccessType() {
+			return accessType;
+		}
+
+
+
+
+		public void setAccessType(String accessType) {
+			this.accessType = accessType;
 		}
        
  }
