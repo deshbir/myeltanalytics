@@ -210,7 +210,7 @@ public class UsersSyncThread implements Runnable
                     
                     user.setUserCountry(rs.getString("countryCode"));                                     
                     user.setCourses(populateCourses(user.getId()));
-                    user.setAccessList(populateAccessList(user.getId()));
+                    user.setAccessList(populateAccessList(user));
                     
                     /*****************************************
                      *  Populate Milestones for CAPES users
@@ -304,12 +304,12 @@ public class UsersSyncThread implements Runnable
         return milestones;
     }
     
-    private List<Access> populateAccessList(final long userId)
+    private List<Access> populateAccessList(User user)
     {
     	List<Access> accessList = new ArrayList<Access>();
 
     	/** AccessRights table is in Aux DB */
-    	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId=? And Feature <> 'book-view-ALL' AND AccessLevel>0 order by LastModified");
+    	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId="+user.getId()+" And Feature <> 'book-view-ALL' AND AccessLevel>0 order by LastModified");
     	Iterator<Map<String,Object>> accessRightsIter = accessRights.iterator();
     	while(accessRightsIter.hasNext()) {
     		Access access = new Access();
@@ -319,14 +319,28 @@ public class UsersSyncThread implements Runnable
     		access.setProductCode(productCode);
     		access.setDateCreated(lastModified);
 
-    		Map<String,Object> accessCode = jdbcTemplate.queryForMap("Select AccessCode from BookAccessCodes where UserId='" + userId + "' And BookAbbr like '" + productCode + "%'");
+    		List<Map<String,Object>> accessCodeList = jdbcTemplate.queryForList("Select AccessCode from BookAccessCodes where UserId='" + user.getId() + "' And BookAbbr like '" + productCode + "%'");
 
     		Map<String,Object> bookInfo = jdbcTemplate.queryForMap("Select Discipline.name as Discipline, BookList.name as ProductName from BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" + productCode + "'");
-
-    		if (accessCode != null) {
+    		
+    		if(accessCodeList != null && accessCodeList.size() > 0){
+    			Map<String,Object> accessCode = accessCodeList.get(0);
     			access.setCode(String.valueOf(accessCode.get("AccessCode")));
-    		} 
-
+    		}
+    		access.setProductName(String.valueOf(bookInfo.get("ProductName")));
+    		access.setDiscipline(String.valueOf(bookInfo.get("Discipline")));
+    		accessList.add(access);
+    	}
+    	List<Map<String,Object>> accessRightsByInstitutionId = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId ="+getUserTypeIdFromUserType(user.getUserType())+" AND InstitutionID = '"+user.getInstitution().getId()+"'And Feature <> 'book-view-ALL' AND AccessLevel > 0");
+    	Iterator<Map<String,Object>> accessRightsByInstitutionIdIter = accessRightsByInstitutionId.iterator();
+    	while(accessRightsByInstitutionIdIter.hasNext()) {
+    		Access access = new Access();
+    		Map<String,Object> accessRight = accessRightsByInstitutionIdIter.next();
+    		String productCode = String.valueOf(accessRight.get("ProductCode"));
+    		String lastModified = String.valueOf(accessRight.get("LastModified"));
+    		access.setProductCode(productCode);
+    		access.setDateCreated(lastModified);
+    		Map<String,Object> bookInfo = jdbcTemplate.queryForMap("Select Discipline.name as Discipline, BookList.name as ProductName from BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" + productCode + "'");
     		access.setProductName(String.valueOf(bookInfo.get("ProductName")));
     		access.setDiscipline(String.valueOf(bookInfo.get("Discipline")));
     		accessList.add(access);
@@ -376,5 +390,36 @@ public class UsersSyncThread implements Runnable
 		esUser.setSyncInfo(syncInfo);
 		esUser.setRecordType("USER_ERROR");
 		return esUser;
+    }
+    
+    private int getUserTypeIdFromUserType(String userType){
+    	int userParent = 1;
+    	switch (userType) {
+        	case "STUDENT": {
+        		userParent = 1;
+        		break;
+        	}
+        	case "INSTRUCTOR": {
+        		userParent = 2;
+        		break;
+        	}
+        	case "AUTHOR":  {
+        		userParent = 3;
+        		break;
+        	}
+        	case "ADMINISTRATOR":  {
+        		userParent = 4;
+        		break;
+        	}
+        	case "DISTRICT":  {
+        		userParent = 5;
+        		break;
+        	}
+        	case "SUPERUSER":  {
+        		userParent = 5;
+        		break;
+        	}
+}
+   	return userParent;
     }
 }
