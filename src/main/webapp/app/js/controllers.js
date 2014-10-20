@@ -283,8 +283,8 @@ myeltAnalyticsControllers.controller('MyELTUsageReportController', ['$scope','$h
 				$scope.newStudentsReg_allOther.push({"data":$scope.usageReportData.new_student_registrations.AllOther[$scope.keys[j].data]});
 				$scope.newStudentsReg_total.push({"data":$scope.usageReportData.new_student_registrations.CAPES[$scope.keys[j].data]+$scope.usageReportData.new_student_registrations.AllOther[$scope.keys[j].data]});
 				$scope.newProductsReg_capes.push({"data" :$scope.usageReportData.new_product_registrations.CAPES[$scope.keys[j].data]});
-				/*$scope.newProdReg_allOther.push({"data":$scope.usageReportData.new_product_registrations.AllOther[$scope.keys[j].data]});*/
-				$scope.newProductsReg_total.push({"data":$scope.usageReportData.new_product_registrations.CAPES[$scope.keys[j].data]/*+$scope.usageReportData.new_product_registrations.AllOther[$scope.keys[j].data]*/});
+				$scope.newProductsReg_allOther.push({"data" :$scope.usageReportData.new_product_registrations.AllOther[$scope.keys[j].data]});
+				$scope.newProductsReg_total.push({"data":$scope.usageReportData.new_product_registrations.CAPES[$scope.keys[j].data]+$scope.usageReportData.new_product_registrations.AllOther[$scope.keys[j].data]});
 				if(j == $scope.keys.length - 2){
 					$scope.activeUsers_capes = $scope.usageReportData.active_user_accounts.CAPES[$scope.keys[j].data];
 					$scope.activeUsers_allOther = $scope.usageReportData.active_user_accounts.AllOther[$scope.keys[j].data];

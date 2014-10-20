@@ -35,11 +35,13 @@ public class MyeltUsageReportsController
 		Map<String,Long> newUsersRegCapesDataMap = myELTUsageReportService.getNewUsersRegCapesReportData(year,month);
 		Map<String,Long> newUsersRegAllOtherDataMap = myELTUsageReportService.getNewUsersRegAllOtherReportData(year,month);
 		Map<String,Long> newProdRegCapesDataMap = myELTUsageReportService.getNewProdRegCapesReportData(year, month);
+		Map<String,Long> newProdRegAllOtherDataMap = myELTUsageReportService.getNewProdRegAllOtherReportData(year, month);
 		Map<String,Long> activeUsersCapesDataMap = myELTUsageReportService.getactiveUsersCapesReportData(year, month);
 		Map<String,Long> activeUsersAllOtherDataMap = myELTUsageReportService.getactiveUsersAllOtherReportData(year, month);
 		newUsersRegObj.put("CAPES", newUsersRegCapesDataMap);
 		newUsersRegObj.put("AllOther", newUsersRegAllOtherDataMap);
 		newProdRegObj.put("CAPES", newProdRegCapesDataMap);
+		newProdRegObj.put("AllOther", newProdRegAllOtherDataMap);
 		activeUsersAccountDataObj.put("CAPES", activeUsersCapesDataMap);
 		activeUsersAccountDataObj.put("AllOther", activeUsersAllOtherDataMap);
 		jsonObj.put("new_student_registrations",newUsersRegObj);

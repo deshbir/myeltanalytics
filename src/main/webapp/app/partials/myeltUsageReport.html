@@ -107,20 +107,9 @@
 					</tr>
 					<tr>
 						<td><b>All Other</b></td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
-						<td>-</td>
+						<td ng-repeat="allOtherProducts in newProductsReg_allOther">
+							{{allOtherProducts.data}}
+						</td>
 					</tr>
 					<tr>
 						<td><b>Total</b></td>

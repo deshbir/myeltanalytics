@@ -111,6 +111,40 @@ public class MyELTUsageReportService {
 			dataMap.put("Last 12 Months", last12Month);
 			return dataMap;
 		}
+	 
+	 public Map<String,Long> getNewProdRegAllOtherReportData(int year, int month){
+			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
+			Calendar date = new GregorianCalendar();
+			date.set(Calendar.MONTH, month-1);
+			date.set(Calendar.YEAR,year);
+			long last12Month = 0;
+			String startDate,endDate;
+			for(int i  = 0; i < 13 ; i++){
+				startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
+				endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
+				QueryBuilder query = QueryBuilders.boolQuery()
+						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
+						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
+						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
+						.should(QueryBuilders.matchQuery("recordType", "ADDITIONAL_ACCESS"))
+						.should(QueryBuilders.matchQuery("recordType", "USER_WITH_ACCESSCODE"))
+						.minimumNumberShouldMatch(1)
+						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
+				long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
+						.setQuery(query)
+						.execute()
+						.actionGet()
+						.getCount();
+				if(i < 12 ){
+					last12Month = last12Month + count;
+				}
+				String monthName=new DateFormatSymbols().getMonths()[date.get(Calendar.MONTH)];
+				dataMap.put(monthName.substring(0, Math.min(monthName.length(), 3)) +" '"+ String.valueOf(date.get(Calendar.YEAR)).substring(2), count);
+				date.add(Calendar.MONTH, -1);
+			}
+			dataMap.put("Last 12 Months", last12Month);
+			return dataMap;
+		}
 	 public Map<String,Long> getactiveUsersCapesReportData(int year, int month){
 			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
 			Calendar date = new GregorianCalendar();
