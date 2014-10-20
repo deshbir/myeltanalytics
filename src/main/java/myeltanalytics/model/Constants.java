@@ -29,6 +29,8 @@ public class Constants
     public static final String STATUS_INPROGRESS_RETRY = "InProgressRetry";
     
     //Users constants
+    public static final String PRODUCTNAME = "ProductName";
+    public static final String DISCIPLINE = "Discipline";
     public static final String USER_WITH_ACCESS = "user_with_access";
     public static final String USER_WITHOUT_ACCESS = "user_without_access";
     public static final String ADDITIONAL_ACCESS = "additional_access";

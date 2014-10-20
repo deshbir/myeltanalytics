@@ -321,17 +321,16 @@ public class UsersSyncThread implements Runnable
 
     		List<Map<String,Object>> accessCodeList = jdbcTemplate.queryForList("Select AccessCode from BookAccessCodes where UserId='" + user.getId() + "' And BookAbbr like '" + productCode + "%'");
 
-    		List<Map<String,Object>> bookInfoList = jdbcTemplate.queryForList("Select Discipline.name as Discipline, BookList.name as ProductName from BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" + productCode + "'");
+    		Map<String,String> bookInfo = usersSyncService.getBookInfo(productCode);
     		
     		if (accessCodeList != null && accessCodeList.size() > 0) {
     			Map<String,Object> accessCode = accessCodeList.get(0);
     			access.setCode(String.valueOf(accessCode.get("AccessCode")));
     		}
     		
-    		if (bookInfoList != null && bookInfoList.size() > 0) {
-    			Map<String,Object> bookInfo = bookInfoList.get(0);
-    			access.setProductName(String.valueOf(bookInfo.get("ProductName")));
-        		access.setDiscipline(String.valueOf(bookInfo.get("Discipline")));
+    		if (bookInfo != null) {
+    			access.setProductName(String.valueOf(bookInfo.get(Constants.PRODUCTNAME)));
+        		access.setDiscipline(String.valueOf(bookInfo.get(Constants.DISCIPLINE)));
     		}
     		
     		accessList.add(access);
@@ -345,11 +344,10 @@ public class UsersSyncThread implements Runnable
     		String lastModified = String.valueOf(accessRight.get("LastModified"));
     		access.setProductCode(productCode);
     		access.setDateCreated(lastModified);
-    		List<Map<String,Object>> bookInfoList = jdbcTemplate.queryForList("Select Discipline.name as Discipline, BookList.name as ProductName from BookList,Discipline where Discipline.Abbr = BookList.discipline And BookList.Abbr='" + productCode + "'");
-    		if (bookInfoList != null && bookInfoList.size() > 0) {
-    			Map<String,Object> bookInfo = bookInfoList.get(0);
-    			access.setProductName(String.valueOf(bookInfo.get("ProductName")));
-        		access.setDiscipline(String.valueOf(bookInfo.get("Discipline")));
+    		Map<String,String> bookInfo = usersSyncService.getBookInfo(productCode);
+    		if (bookInfo != null) {
+    			access.setProductName(String.valueOf(bookInfo.get(Constants.PRODUCTNAME)));
+        		access.setDiscipline(String.valueOf(bookInfo.get(Constants.DISCIPLINE)));
     		}
     		accessList.add(access);
     	}

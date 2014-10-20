@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -89,18 +91,45 @@ public class UsersSyncService
     
     private static Map<String, JdbcTemplate> jdbcTemplateMap = new HashMap<String,JdbcTemplate>();
     
-    public JdbcTemplate getJdbcTemplate(String databaseURL) {
-        JdbcTemplate myJdbcTemplate = null;
-        if (databaseURL.equals(".") || databaseURL.equals(mainDatabaseURL)) {
-            myJdbcTemplate = jdbcTemplate;
-        } else {
-            myJdbcTemplate = jdbcTemplateMap.get(databaseURL);
-            if (myJdbcTemplate == null) {
-                myJdbcTemplate = buildJdbcTemplate(databaseURL);
-                jdbcTemplateMap.put(databaseURL, myJdbcTemplate);
-            }
-        }
-        return myJdbcTemplate;
+    private static Map<String, Map<String,String>> bookInfoMap = new HashMap<String, Map<String,String>>();
+    
+    public JdbcTemplate getJdbcTemplate(String databaseURL) {       
+        return jdbcTemplateMap.get(databaseURL);
+    }
+    
+    public Map<String,String> getBookInfo(String bookCode) {       
+        return bookInfoMap.get(bookCode);
+    }
+    
+    public void preProcessSync() {
+    	/*****************************************
+    	 * Prepare JDBC templates for Aux DBs
+    	 *******************************************/
+    	List<Map<String,Object>> databaseURLList = jdbcTemplate.queryForList("Select Distinct DatabaseUrl from Institutions");
+    	Iterator<Map<String,Object>> databaseURLListIter = databaseURLList.iterator();
+    	while(databaseURLListIter.hasNext()) {
+    		Map<String,Object> databaseURLMap = databaseURLListIter.next();
+    		String databaseURL = String.valueOf(databaseURLMap.get("DatabaseUrl"));
+    		if (!databaseURL.equals(".") && !databaseURL.equals(mainDatabaseURL)) {
+    			JdbcTemplate myJdbcTemplate = buildJdbcTemplate(databaseURL);
+        		jdbcTemplateMap.put(databaseURL, myJdbcTemplate);
+    		}    		
+    	}
+    	jdbcTemplateMap.put(mainDatabaseURL, jdbcTemplate);
+    	jdbcTemplateMap.put(".", jdbcTemplate);
+    	
+    	/*****************************************
+    	 * Prepare Book/Product Info
+    	 *******************************************/
+    	List<Map<String,Object>> bookList = jdbcTemplate.queryForList("Select BookList.Abbr, Discipline.name as " + Constants.DISCIPLINE + ", BookList.name from BookList,Discipline where Discipline.Abbr = BookList.discipline");
+    	Iterator<Map<String,Object>> bookListiter = bookList.iterator();
+    	while(bookListiter.hasNext()) {
+    		Map<String,Object> bookMap = bookListiter.next();
+    		Map<String,String> bookInfo = new HashMap<String,String>();
+    		bookInfo.put(Constants.DISCIPLINE, String.valueOf(bookMap.get(Constants.DISCIPLINE)));
+    		bookInfo.put(Constants.PRODUCTNAME, String.valueOf(bookMap.get("name")));  
+    		bookInfoMap.put(String.valueOf(bookMap.get("Abbr")), bookInfo);
+    	}	
     }
     
     public void startFreshSync() throws JsonProcessingException {
@@ -119,6 +148,7 @@ public class UsersSyncService
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
         jobInfo.setTotalRecords(getTotalUsersCount());
+        preProcessSync();
         startSyncJob();
     }
     
@@ -137,6 +167,7 @@ public class UsersSyncService
     	jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);
     	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	updateUserStatus();
+    	preProcessSync();
     	startSyncJob();
     }
     
