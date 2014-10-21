@@ -512,6 +512,9 @@ public class UsersSyncService
         dataSource.setInitialSize(dbInitialSize);
         dataSource.setMaxIdle(dbMaxIdle);
         dataSource.setMaxActive(dbMaxActive);
+        dataSource.setTestOnBorrow(true);
+        dataSource.setValidationQuery("SELECT 1");
+        dataSource.setValidationInterval(30000);
         
         JdbcTemplate template = new JdbcTemplate();
         template.setDataSource(dataSource);
