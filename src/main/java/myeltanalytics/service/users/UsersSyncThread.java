@@ -105,7 +105,7 @@ public class UsersSyncThread implements Runnable
                 List<Access> accessList = user.getAccessList();           
             	
         		if(accessList.size() ==0){
-        			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESS", null);
+        			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESS");
         			pushuser(esUser);
         		}
         		else {
@@ -117,13 +117,7 @@ public class UsersSyncThread implements Runnable
         				} else {
         					recordType = "ADDITIONAL_ACCESS";
         				}
-        				String accessType;
-        				if (access.getCode() != null) {
-        					accessType = "ACCESSCODE";
-        				} else {
-        					accessType = "ACCESSRIGHT";
-        				}
-        				esUser = ElasticSearchUser.transformUser(user, access, recordType, accessType);
+        				esUser = ElasticSearchUser.transformUser(user, access, recordType);
         				pushuser(esUser);
         			}
         		}
@@ -326,6 +320,9 @@ public class UsersSyncThread implements Runnable
     		if (accessCodeList != null && accessCodeList.size() > 0) {
     			Map<String,Object> accessCode = accessCodeList.get(0);
     			access.setCode(String.valueOf(accessCode.get("AccessCode")));
+    			access.setAccessType(Constants.ACCESSTYPE_ACCESSCODE);
+    		} else {
+    			access.setAccessType(Constants.ACCESSTYPE_ACCESSRIGHT);
     		}
     		
     		if (bookInfo != null) {
@@ -344,6 +341,7 @@ public class UsersSyncThread implements Runnable
     		String lastModified = String.valueOf(accessRight.get("LastModified"));
     		access.setProductCode(productCode);
     		access.setDateCreated(lastModified);
+    		access.setAccessType(Constants.ACCESSTYPE_INSTITUTION);
     		Map<String,String> bookInfo = usersSyncService.getBookInfo(productCode);
     		if (bookInfo != null) {
     			access.setProductName(String.valueOf(bookInfo.get(Constants.PRODUCTNAME)));

@@ -179,7 +179,7 @@ public class UsersSyncService
     	jobInfo.setTotalRetryRecords(elasticSearchClient.prepareCount(Constants.USERS_ERROR_ALIAS).execute().actionGet().getCount());
     	LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + jobInfo.getJobId());
     	updateUserStatus();
-    	
+    	preProcessSync();
     	getFailedUsers();    	
     	retryFailedUsersJob();
     }
@@ -334,27 +334,27 @@ public class UsersSyncService
         
         //Create required aliases for Access Codes reports
         if (!helperService.isIndexExist(Constants.ACCESS_CODES_ALL_ALIAS, elasticSearchClient)) {
-        	AndFilterBuilder accessCodesOnlyFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("accessType", Constants.ACCESSTYPE_ACCESSCODE));
+        	AndFilterBuilder accessCodesOnlyFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("access.accessType", Constants.ACCESSTYPE_ACCESSCODE));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.ACCESS_CODES_ALL_ALIAS, accessCodesOnlyFilter).execute().actionGet();
         }
         
         if (!helperService.isIndexExist(Constants.ACCESS_CODES_FY14_ALIAS, elasticSearchClient)) {
-            AndFilterBuilder accessCodesFY14Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2013-07-01T00:00:00").to("2014-06-30T23:59:59"));
+            AndFilterBuilder accessCodesFY14Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("access.accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2013-07-01T00:00:00").to("2014-06-30T23:59:59"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.ACCESS_CODES_FY14_ALIAS, accessCodesFY14Filter).execute().actionGet();
         }
         
         if (!helperService.isIndexExist(Constants.ACCESS_CODES_FY13_ALIAS, elasticSearchClient)) {
-            AndFilterBuilder accessCodesFY13Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2012-07-01T00:00:00").to("2013-06-30T23:59:59"));
+            AndFilterBuilder accessCodesFY13Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("access.accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2012-07-01T00:00:00").to("2013-06-30T23:59:59"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.ACCESS_CODES_FY13_ALIAS, accessCodesFY13Filter).execute().actionGet();
         }
         
         if (!helperService.isIndexExist(Constants.ACCESS_CODES_FY12_ALIAS, elasticSearchClient)) {
-            AndFilterBuilder accessCodesFY12Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2011-07-01T00:00:00").to("2012-06-30T23:59:59"));
+            AndFilterBuilder accessCodesFY12Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("access.accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2011-07-01T00:00:00").to("2012-06-30T23:59:59"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.ACCESS_CODES_FY12_ALIAS, accessCodesFY12Filter).execute().actionGet();
         }
         
         if (!helperService.isIndexExist(Constants.ACCESS_CODES_FY11_ALIAS, elasticSearchClient)) {
-            AndFilterBuilder accessCodesFY11Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2010-07-01T00:00:00").to("2011-06-30T23:59:59"));
+            AndFilterBuilder accessCodesFY11Filter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.ADDITIONAL_ACCESS), FilterBuilders.termsFilter("access.accessType", Constants.ACCESSTYPE_ACCESSCODE), FilterBuilders.rangeFilter("dateCreated").from("2010-07-01T00:00:00").to("2011-06-30T23:59:59"));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.ACCESS_CODES_FY11_ALIAS, accessCodesFY11Filter).execute().actionGet();
         }
     }
@@ -544,7 +544,7 @@ public class UsersSyncService
 		userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
 		for (SearchHit searchHit : failedUsersSearchHits){
 			 String loginName = (String)searchHit.getSource().get("userName");
-			 Map<String, String> institutionMap = (HashMap<String,String>)(searchHit.getSource().get("institution"));
+			Map<String, String> institutionMap = (HashMap<String,String>)(searchHit.getSource().get("institution"));
 			 String institutionID = institutionMap.get("id");
 			 Runnable worker = new UsersSyncThread(loginName, institutionID);
 			 userSyncExecutor.execute(worker);

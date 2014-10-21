@@ -8,6 +8,7 @@ public class Access
     private String productCode;
     private String productName;
     private String discipline;
+    private String accessType;
     
     /**
      * @return the code
@@ -79,5 +80,11 @@ public class Access
     {
         this.discipline = discipline;
     }
+	public String getAccessType() {
+		return accessType;
+	}
+	public void setAccessType(String accessType) {
+		this.accessType = accessType;
+	}
     
 }

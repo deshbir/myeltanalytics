@@ -126,15 +126,26 @@ public class MyELTUsageReportService {
 						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
 						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
-						.should(QueryBuilders.matchQuery("recordType", "ADDITIONAL_ACCESS"))
-						.should(QueryBuilders.matchQuery("recordType", "USER_WITH_ACCESSCODE"))
+						.should(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_ACCESSCODE))
+						.should(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_ACCESSRIGHT))
 						.minimumNumberShouldMatch(1)
 						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
-				long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
+				long count = elasticSearchClient.prepareCount(Constants.USERS_INDEX)
 						.setQuery(query)
 						.execute()
 						.actionGet()
 						.getCount();
+					query = QueryBuilders.boolQuery()
+						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
+						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
+						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
+						.must(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_INSTITUTION));
+					count = count +  elasticSearchClient.prepareCount(Constants.USERS_INDEX)
+							.setQuery(query)
+							.execute()
+							.actionGet()
+							.getCount();
+
 				if(i < 12 ){
 					last12Month = last12Month + count;
 				}

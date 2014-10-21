@@ -36,6 +36,7 @@ public class Constants
     public static final String ADDITIONAL_ACCESS = "additional_access";
     public static final String ACCESSTYPE_ACCESSCODE = "accesscode";
     public static final String ACCESSTYPE_ACCESSRIGHT = "accessright";
+    public static final String ACCESSTYPE_INSTITUTION = "accessinstitution";
     public static final String USER_ERROR = "user_error";
     public static final String CAPES_MODEL = "capes_model";
     public static final String ICPNA_INSTITUTION = "ICPNA";
