@@ -139,7 +139,8 @@ public class MyELTUsageReportService {
 						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
 						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
-						.must(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_INSTITUTION));
+						.must(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_INSTITUTION))
+						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
 					count = count +  elasticSearchClient.prepareCount(Constants.USERS_INDEX)
 							.setQuery(query)
 							.execute()
