@@ -113,3 +113,29 @@ body {
 .fancybox-inner .table-responsive{
 	margin-top: 30px;
 }
+@media print {
+	body{
+			font-size: 8pt;
+	        margin-left: auto;
+        	margin-right: auto;
+        	padding:0;
+	}
+	#myeltUsageReportHeader{
+		display:none;
+	}
+	h3{
+		margin-top:0;
+	}
+	.table-responsive{
+		overflow:hidden;
+		border:0;
+	}
+	.table.table-override.table-bordered>thead>tr th, .table.table-override.table-bordered>tbody>tr th, .table.table-override.table.table-override.table-bordered>tfoot>tr th,  .table.table-override.table-bordered>thead>tr td, .table.table-override.table-bordered>tbody>tr td, .table-bordered>tfoot>tr td {
+		border:1px solid #000 !important;
+		text-align:center;
+		padding:0px !important;
+	}
+	.table.table-override.table-bordered{
+		border:1px solid #000 !important;
+	}
+}
