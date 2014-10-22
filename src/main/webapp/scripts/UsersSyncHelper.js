@@ -8,39 +8,39 @@ var UsersSyncHelper = new function() {
               var responseJson = eval("(" + data + ")");
               $("#usersProgressContainer .progress-bar").css('width', responseJson.percent +'%');
               $("#usersProgressContainer .progress-bar").html(responseJson.percent + '%');
-              if (responseJson.jobStatus == "Completed" && !(responseJson.retryJobStatus == "InProgress")) {
+              
+              if (responseJson.jobStatus == "Completed") {             
                   $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
                   $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
                   $("#usersStopButton").hide();
                   $("#usersResumeButton").hide();
                   $("#usersStartButton").show();
-                  if(responseJson.errorRecords > 0){
+                  if (responseJson.errorRecords > 0) {
                 	  $("#userFailedRecord i.fa-spin").hide();
-                	  $("#userFailedRecord i.fa-repeat").show().css("cursor","pointer");
+                	  $("#userFailedRecord i.fa-repeat").show();
                   }
                   UsersSyncHelper.abortFetchingSyncStatus();
-              }
-              $("#usersJobStartDateTime").html(responseJson.startDateTime);
-              $("#usersJobStatus").html(responseJson.jobStatus);
-              $("#usersSuccessRecords").html(responseJson.successRecords);
-              $("#usersErrorRecords").html(responseJson.errorRecords);
-              if(responseJson.retryJobStatus == "Completed" && !(responseJson.jobStatus == "Completed")){
-            	  $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
+              }  else if (responseJson.retryJobStatus == "Completed" && responseJson.jobStatus == "Paused") {
+              	   $("#usersJobStatus").removeClass().addClass("syncinfo badge badge-success pull-right");
                   $("#usersProgressContainer").removeClass().addClass("progress progress-striped");  
                   $("#usersSyncPanel .panel-heading i").removeClass("fa-spin");
                   $("#usersStopButton").hide();
                   $("#usersResumeButton").show();
                   $("#usersStartButton").show();
-                  if(responseJson.errorRecords > 0){
+                  if (responseJson.errorRecords > 0) {
 	                  $("#userFailedRecord i.fa-repeat").show();
 	                  $("#userFailedRecord i.fa-spin").hide();
-                  }else{
+                  } else {
                 	  $("#userFailedRecord i.fa-repeat").hide();
 	                  $("#userFailedRecord i.fa-spin").hide();
                   }
                   UsersSyncHelper.abortFetchingSyncStatus();
-              }
+              }              
+              $("#usersJobStartDateTime").html(responseJson.startDateTime);
+              $("#usersJobStatus").html(responseJson.jobStatus);
+              $("#usersSuccessRecords").html(responseJson.successRecords);
+              $("#usersErrorRecords").html(responseJson.errorRecords);
             })
         }, 5000);
     };
