@@ -113,6 +113,24 @@ body {
 .fancybox-inner .table-responsive{
 	margin-top: 30px;
 }
+
+.backgroundLoaderCover{
+	position:fixed;
+	background-color: #000;
+	width:100%;
+	height:100%;
+	z-index:99;
+	opacity:.5;
+	display : none;
+	top:0;
+}
+
+.spinner{
+	position: fixed;
+	z-index: 999;
+	display: none;
+	font-size: 6em;
+}
 @media print {
 	body{
 			font-size: 8pt;
