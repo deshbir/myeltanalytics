@@ -10,18 +10,31 @@ myeltAnalyticsApp.config(['$routeProvider',
         }).
         when('/settings', {
             templateUrl: 'partials/settings.html',
-            controller: 'SettingsController'
+            controller: 'SettingsController',
+            resolve : {
+            	jsonDataSetting : function(getDataFromServerService , $http){
+                	return getDataFromServerService.getData($http , '../settings/mysqlinfo');
+                }
+            }
         }).
         when('/rules', {
             templateUrl: 'partials/rules.html',
-            controller: 'RulesController'
+            controller: 'RulesController',
+            resolve : {
+            	jsonDataRules : function(getDataFromServerService , $http){
+                	return getDataFromServerService.getData($http , '../rules/regionmap');
+                },
+        		jsonDataIgnoreInstitutions : function(getDataFromServerService , $http){
+		        	return getDataFromServerService.getData($http , '../rules/ignoreinstitutions');
+		        }
+            }
         }).
         when('/reports/myeltUsage/:year/:month', {
             templateUrl: 'partials/myeltUsageReport.html',
             controller: 'MyELTUsageReportController',
             resolve: {
-                reportData: function(myeltUsageReportDataService,$route,$http){
-                	return myeltUsageReportDataService.getReportData($route,$http);
+                reportData: function(getMyELTUsageReportDataService,$route,$http){
+                	return getMyELTUsageReportDataService.getData($http , "../api/reports/myeltusage/"+$route.current.params.year+"/"+$route.current.params.month);
                 }
             }
         }).
@@ -31,14 +44,26 @@ myeltAnalyticsApp.config(['$routeProvider',
     }
 ]);
 
-myeltAnalyticsApp.factory("myeltUsageReportDataService", function(){
+myeltAnalyticsApp.factory("getMyELTUsageReportDataService", function(){
     return {
-    	getReportData: function($route,$http){
+    	getData: function($http,url){
             showLoader();
-    		var reportData = $http.get("../api/reports/myeltusage/"+$route.current.params.year+"/"+$route.current.params.month).success(function(data){
+    		var result = $http.get(url).success(function(data){
             				return data;
             });
-            return reportData;
+            return result;
+    	}
+    };
+});
+
+myeltAnalyticsApp.factory("getDataFromServerService", function(){
+    return {
+    	getData: function($http,url){
+            showLoader();
+    		var result = $http.get(url,{cache:true}).success(function(data){
+            				return data;
+            });
+            return result;
     	}
     };
 });

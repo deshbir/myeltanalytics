@@ -237,24 +237,17 @@ myeltAnalyticsControllers.controller('NavigationController', ['$scope', '$locati
     }
 ]);
 
-myeltAnalyticsControllers.controller('SettingsController', ['$scope','$http',
-   function ($scope, $http) {
-     $http.get('../settings/mysqlinfo').success(function(data) {
-        $scope.mysqlInfo = data;
-     });     
+myeltAnalyticsControllers.controller('SettingsController', function ($scope , jsonDataSetting) {
+        $scope.mysqlInfo = jsonDataSetting.data;
+        hideLoader();
    }
-]);
+);
 
-myeltAnalyticsControllers.controller('RulesController', ['$scope','$http',
-    function ($scope, $http) {
-        $http.get('../rules/regionmap').success(function(data) {
-            $scope.regionmap = data;
-        });  
-        $http.get('../rules/ignoreinstitutions').success(function(data) {
-            $scope.ignoreinstitutions = data;
-        });  
-    }
- ]);
+myeltAnalyticsControllers.controller('RulesController', function ($scope , jsonDataRules , jsonDataIgnoreInstitutions) {
+            $scope.regionmap = jsonDataRules.data;
+            $scope.ignoreinstitutions = jsonDataIgnoreInstitutions.data;
+            hideLoader();
+});
 
 myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($scope, $routeParams , reportData) {
 	jQuery(window).scrollTop(0);
