@@ -291,6 +291,9 @@ myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($sc
 		}
 	}
 	hideLoader();
+	$scope.printReport = function(){
+		window.print();
+	}
 });
 
 function showLoader() {
