@@ -24,7 +24,7 @@
   2. spring.datasource.username=root.
   3. spring.datasource.password=. 
 
-###Build Project###
+>###Build Project###
 
 1. Open command prompt and navigate to directory “F:/myeltanalytics”
 2. Run ‘gradle build’ to build project.
