@@ -22,7 +22,7 @@
   1. spring.datasource.url=jdbc:mysql://mira1/users-26-07-11?zeroDateTimeBehavior=convertToNull
   2. spring.datasource.username=root.
   3. spring.datasource.password=.
-  
+
 
 >###Build Project###
 1. Open command prompt and navigate to directory “F:/myeltanalytics”
