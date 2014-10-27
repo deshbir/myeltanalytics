@@ -9,14 +9,14 @@
   2.	service.bat install
 4.	Go to service manager and start newly added Elasticsearch service.
 
->###Clone MyELTAnalytics repository###
+>###Clone MyELTAnalytics###
 
 1. Open SmartGit and choose "Repository -> clone" from menu bar.
 2. Enter "https://github.com/deshbir/myeltanalytics" as Remote Repository Url. Select type of repository as "Git".
 3. Enter username and password of your github account.
 4. Choose Folder for cloning (e.g. “F:/myeltanalytics”) and Click Finish.
 
->###Custom configuration for Project###
+>###Custom configuration###
 
 1. Open file "src\main\webapp\reports\config.js" and change ‘elasticsearch: "http://"+window.location.hostname + "/search"’ to ‘elasticsearch: "http://"+window.location.hostname + ":9200"’.
 2. Open file ‘application.properties’ and update MySQL credentials: 
@@ -27,8 +27,8 @@
 >###Build Project###
 
 1. Open command prompt and navigate to directory “F:/myeltanalytics”
-2. Run ‘gradle build’ to build project.
-3. Run ‘gradle eclipse’ to build dependencies for eclipse.
-4. Run ‘gradle bootRun’ to start MyELTAnalytics application.
-5. Open ‘http://localhost:8080/myeltanalytics/’ and verify if application is running.
+2. Run "gradle build" to build project.
+3. Run "gradle eclipse" to build dependencies for eclipse.
+4. Run "gradle bootRun" to start MyELTAnalytics application.
+5. Open "http://localhost:8080/myeltanalytics/" and verify if application is running.
 
