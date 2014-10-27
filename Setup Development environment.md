@@ -17,14 +17,15 @@
 4. Choose Folder for cloning (e.g. “F:/myeltanalytics”) and Click Finish.
 
 >###Custom configuration for Project###
+
 1. Open file ‘config.js ’ change ‘elasticsearch: "http://"+window.location.hostname + "/search"’ to ‘elasticsearch: "http://"+window.location.hostname + ":9200"’.
 2. Open file ‘application.properties’ change 
   1. spring.datasource.url=jdbc:mysql://mira1/users-26-07-11?zeroDateTimeBehavior=convertToNull
   2. spring.datasource.username=root.
-  3. spring.datasource.password=.
+  3. spring.datasource.password=. 
 
+###Build Project###
 
->###Build Project###
 1. Open command prompt and navigate to directory “F:/myeltanalytics”
 2. Run ‘gradle build’ to build project.
 3. Run ‘gradle eclipse’ to build dependencies for eclipse.
