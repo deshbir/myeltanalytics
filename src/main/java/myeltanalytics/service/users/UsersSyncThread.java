@@ -174,9 +174,19 @@ public class UsersSyncThread implements Runnable
         String dbURL = jdbcTemplate.queryForObject("Select DatabaseURL from Institutions where ID = ?", new Object[]{institutionId}, String.class);
         auxJdbcTemplate = usersSyncService.getJdbcTemplate(dbURL);
         
-        /** Populate users from Aux DB (Users table is in Aux DB) */
+        /********************************************************
+         * 
+         * Populate users from Aux DB (Users table is in Aux DB)
+         * 
+         *********************************************************
+         * We found 2 users on reporting server with following names
+         * 	1. student
+         * 	2. instructor
+         * When we query for "student", the query sometimes returns default "STUDENT" user with parent=0 (since query is case insensitive).
+         * Adding a check parent<>0 to avoid such situation
+         ********************************************************/
         User user = auxJdbcTemplate.queryForObject(
-            "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from Users where name = ? limit 1", new Object[] { loginName },
+            "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from Users where name = ? AND parent<>0 limit 1", new Object[] { loginName },
             new RowMapper<User>() {
                 
                 @Override
