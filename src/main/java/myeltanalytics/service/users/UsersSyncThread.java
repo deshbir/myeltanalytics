@@ -125,7 +125,7 @@ public class UsersSyncThread implements Runnable
         				indexedEsUser =  perpareIndexedEsUser(esUser);
         				bulkRequest.add(indexedEsUser);
         				if(i == (accessList.size() -1)) {
-        					bulkRequest.execute();
+        					bulkRequest.execute().actionGet();
         				}
         			}
         			
@@ -168,7 +168,7 @@ public class UsersSyncThread implements Runnable
         }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute();
+        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute().actionGet();
     }
     
     private IndexRequestBuilder perpareIndexedEsUser (ElasticSearchUser esUser)throws JsonProcessingException{
