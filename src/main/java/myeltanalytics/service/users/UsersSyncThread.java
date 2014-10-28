@@ -420,10 +420,10 @@ public class UsersSyncThread implements Runnable
         		break;
         	}
         	case "SUPERUSER":  {
-        		userParent = 5;
+        		userParent = 6;
         		break;
         	}
-}
-   	return userParent;
+       }
+   	   return userParent;
     }
 }
