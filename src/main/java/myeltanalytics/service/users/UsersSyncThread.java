@@ -26,6 +26,8 @@ import myeltanalytics.service.ApplicationContextProvider;
 import myeltanalytics.service.HelperService;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -104,11 +106,13 @@ public class UsersSyncThread implements Runnable
             
                 List<Access> accessList = user.getAccessList();           
             	
-        		if(accessList.size() ==0){
+        		if(accessList.size() == 0){
         			esUser  = ElasticSearchUser.transformUser(user,null,"USER_WITHOUT_ACCESS");
         			pushuser(esUser);
         		}
         		else {
+        			IndexRequestBuilder indexedEsUser;
+        			BulkRequestBuilder bulkRequest = elasticSearchClient.prepareBulk();
         			for(int i = 0 ;i < accessList.size(); i++){
         				Access access  =  accessList.get(i);
         				String recordType = null; 
@@ -118,8 +122,13 @@ public class UsersSyncThread implements Runnable
         					recordType = "ADDITIONAL_ACCESS";
         				}
         				esUser = ElasticSearchUser.transformUser(user, access, recordType);
-        				pushuser(esUser);
+        				indexedEsUser =  perpareIndexedEsUser(esUser);
+        				bulkRequest.add(indexedEsUser);
+        				if(i == (accessList.size() -1)) {
+        					bulkRequest.execute();
+        				}
         			}
+        			
         		}
         		if (UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
         			UsersSyncService.jobInfo.decrementErrorRecords();
@@ -159,7 +168,22 @@ public class UsersSyncThread implements Runnable
         }
         ObjectMapper mapper = new ObjectMapper(); // create once, reuse
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute();
+    }
+    
+    private IndexRequestBuilder perpareIndexedEsUser (ElasticSearchUser esUser)throws JsonProcessingException{
+    	String elasticSearchID = String.valueOf(esUser.getUserName());
+        if (esUser.getAccess() != null ) {
+        	if (esUser.getAccess().getCode() != null ) {
+        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
+        	} else {
+        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
+        	}
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(esUser);
+        IndexRequestBuilder indexedEsUser =  elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json);
+        return indexedEsUser;
     }
     
     private User populateUser(String loginName, String institutionId)
@@ -402,7 +426,7 @@ public class UsersSyncThread implements Runnable
 		esUser.setUserName(loginName);
 		esUser.setInstitution(elasticSearchInstitution);
 		esUser.setSyncInfo(syncInfo);
-		esUser.setRecordType("USER_ERROR");
+		esUser.setRecordType(Constants.USER_ERROR);
 		return esUser;
     }
     
