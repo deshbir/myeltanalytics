@@ -28,6 +28,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +148,7 @@ public class UsersSyncService
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);    
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
+        deleteOldData();
         jobInfo.setTotalRecords(getTotalUsersCount());
         preProcessSync();
         startSyncJob();
@@ -548,10 +550,17 @@ public class UsersSyncService
 		userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
 		for (SearchHit searchHit : failedUsersSearchHits){
 			 String loginName = (String)searchHit.getSource().get("userName");
-			Map<String, String> institutionMap = (HashMap<String,String>)(searchHit.getSource().get("institution"));
+			 
+			 @SuppressWarnings("unchecked")
+			 Map<String, String> institutionMap = (HashMap<String,String>)(searchHit.getSource().get("institution"));
+			 
 			 String institutionID = institutionMap.get("id");
 			 Runnable worker = new UsersSyncThread(loginName, institutionID);
 			 userSyncExecutor.execute(worker);
 		}
+	}
+	
+	private void deleteOldData() {
+		elasticSearchClient.prepareDeleteByQuery(Constants.USERS_INDEX).setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
 	}
 }

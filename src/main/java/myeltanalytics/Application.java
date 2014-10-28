@@ -43,8 +43,9 @@ public class Application {
     
     @Bean
     public Client elasticSearchClient(){
-        Settings settings = ImmutableSettings.settingsBuilder()
-            .put("cluster.name", clusterName).build();
-        return new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(elasticSearchHost, elasticSearchPort));
+        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", clusterName).build();
+        TransportClient transportClient = new TransportClient(settings);
+        transportClient.addTransportAddress(new InetSocketTransportAddress(elasticSearchHost, elasticSearchPort));
+        return transportClient;
     }
 }
