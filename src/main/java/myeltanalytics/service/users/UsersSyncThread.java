@@ -158,17 +158,17 @@ public class UsersSyncThread implements Runnable
     }
     
     private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
-//        String elasticSearchID = String.valueOf(esUser.getUserName());
-//        if (esUser.getAccess() != null ) {
-//        	if (esUser.getAccess().getCode() != null ) {
-//        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
-//        	} else {
-//        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
-//        	}
-//        }
+        String elasticSearchID = String.valueOf(esUser.getUserName());
+        if (esUser.getAccess() != null ) {
+        	if (esUser.getAccess().getCode() != null ) {
+        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
+        	} else {
+        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
+        	}
+        }
         ObjectMapper mapper = new ObjectMapper(); 
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE).setSource(json).execute().actionGet();
+        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute().actionGet();
     }
     
     private IndexRequestBuilder perpareIndexedEsUser (ElasticSearchUser esUser)throws JsonProcessingException{

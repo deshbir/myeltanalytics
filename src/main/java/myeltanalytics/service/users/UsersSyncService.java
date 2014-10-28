@@ -148,7 +148,7 @@ public class UsersSyncService
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);    
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
-        deleteOldData();
+        //deleteOldData();
         jobInfo.setTotalRecords(getTotalUsersCount());
         preProcessSync();
         startSyncJob();
