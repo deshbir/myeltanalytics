@@ -26,8 +26,6 @@ import myeltanalytics.service.ApplicationContextProvider;
 import myeltanalytics.service.HelperService;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -111,8 +109,6 @@ public class UsersSyncThread implements Runnable
         			pushuser(esUser);
         		}
         		else {
-        			IndexRequestBuilder indexedEsUser;
-        			BulkRequestBuilder bulkRequest = elasticSearchClient.prepareBulk();
         			for(int i = 0 ; i < accessList.size(); i++){
         				Access access  =  accessList.get(i);
         				String recordType = "ADDITIONAL_ACCESS";
@@ -120,11 +116,8 @@ public class UsersSyncThread implements Runnable
         					recordType = "USER_WITH_ACCESS";
         				}	
         				esUser = ElasticSearchUser.transformUser(user, access, recordType);
-        				indexedEsUser =  prepareIndexedEsUser(esUser);
-        				bulkRequest.add(indexedEsUser);
-        			}
-        			bulkRequest.execute().actionGet();
-        			
+        				pushuser(esUser);
+        			}        			
         		}
         		if (UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
         			UsersSyncService.jobInfo.decrementErrorRecords();
@@ -169,13 +162,6 @@ public class UsersSyncThread implements Runnable
         ObjectMapper mapper = new ObjectMapper(); 
         String json = mapper.writeValueAsString(esUser);
         elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, createESId(esUser)).setSource(json).execute().actionGet();
-    }
-    
-    private IndexRequestBuilder prepareIndexedEsUser (ElasticSearchUser esUser)throws JsonProcessingException{
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(esUser);
-        IndexRequestBuilder indexedEsUser =  elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, createESId(esUser)).setSource(json);
-        return indexedEsUser;
     }
     
     private User populateUser(String loginName, String institutionId)

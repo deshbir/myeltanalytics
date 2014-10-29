@@ -96,9 +96,11 @@ public class UsersSyncService
     
     private static Map<String, Map<String,String>> bookInfoMap = new HashMap<String, Map<String,String>>();
     
-    private static List<String> corruptDataUsersList = new ArrayList<String>();
+    //more than one users having same Name in Users table
+    private static List<String> duplicateUsersList = new ArrayList<String>();
     
-    private static List<String> corruptDataUsersInstList = new ArrayList<String>();
+    //more than one users having same LoginName in UsersInstitutionMap table
+    private static List<String> duplicateUsersInstMapList = new ArrayList<String>();
     
     public JdbcTemplate getJdbcTemplate(String databaseURL) {       
         return jdbcTemplateMap.get(databaseURL);
@@ -139,15 +141,20 @@ public class UsersSyncService
 	    		bookInfo.put(Constants.PRODUCTNAME, String.valueOf(bookMap.get("name")));  
 	    		bookInfoMap.put(String.valueOf(bookMap.get("Abbr")), bookInfo);
 	    	}
-	    	List<String> corruptDataUsersTableList =  jdbcTemplate.queryForList("SELECT NAME FROM Users GROUP BY NAME HAVING COUNT(*) > 1", String.class);
-	    	List<String> corruptDataUsersInstTableList = jdbcTemplate.queryForList("SELECT LoginName FROM UserInstitutionMap GROUP BY LoginName HAVING COUNT(*) > 1", String.class);
-	    	Iterator<String> corruptDataUsersListTableIter = corruptDataUsersTableList.iterator(); 
-	    	Iterator<String> corruptDataUsersInstListTableIter = corruptDataUsersInstTableList.iterator();
-	    	while(corruptDataUsersListTableIter.hasNext()){
-	    		corruptDataUsersList.add("'" +corruptDataUsersListTableIter.next() +"'");
+	    	
+	    	/**********************************************************************
+	    	 * In MyELT LoginName is unique for each user, but few corrupt/old users having same LoginName.
+	    	 * We are ignoring such users and not Syncing them in ElasticSearch.
+	    	 ********************************************************************/
+	    	List<String> duplicateRecordsUsersTable =  jdbcTemplate.queryForList("SELECT NAME FROM Users GROUP BY NAME HAVING COUNT(*) > 1", String.class);
+	    	List<String> duplicateRecordsUsersInstMapTable = jdbcTemplate.queryForList("SELECT LoginName FROM UserInstitutionMap GROUP BY LoginName HAVING COUNT(*) > 1", String.class);
+	    	Iterator<String> duplicateRecordsUsersTableIter = duplicateRecordsUsersTable.iterator(); 
+	    	Iterator<String> duplicateRecordsUsersInstMapTableIter = duplicateRecordsUsersInstMapTable.iterator();
+	    	while(duplicateRecordsUsersTableIter.hasNext()){
+	    		duplicateUsersList.add("'" +duplicateRecordsUsersTableIter.next() +"'");
 	    	}
-	    	while(corruptDataUsersInstListTableIter.hasNext()){
-	    		corruptDataUsersInstList.add("'" +corruptDataUsersInstListTableIter.next() +"'");
+	    	while(duplicateRecordsUsersInstMapTableIter.hasNext()){
+	    		duplicateUsersInstMapList.add("'" +duplicateRecordsUsersInstMapTableIter.next() +"'");
 	    	}
 	    	isPreProcessingDone = true;
     	}	
@@ -214,12 +221,12 @@ public class UsersSyncService
         
         String query = null;
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = "(SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!corruptDataUsersList.isEmpty()? "and Name NOT IN" + corruptDataUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!corruptDataUsersInstList.isEmpty()? "and LoginName NOT IN "+ corruptDataUsersInstList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
+            query = "(SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "and Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "and LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
                 + ")" + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
-            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!corruptDataUsersList.isEmpty()? "and Name NOT IN" + corruptDataUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!corruptDataUsersInstList.isEmpty()? "and LoginName NOT IN "+ corruptDataUsersInstList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
+            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "and Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "and LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
                 + "))" + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         }
         
@@ -386,8 +393,8 @@ public class UsersSyncService
         
 
 
-    	String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!corruptDataUsersList.isEmpty()? "and Name NOT IN" + corruptDataUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
-                    + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!corruptDataUsersInstList.isEmpty()? "and LoginName NOT IN "+ corruptDataUsersInstList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+    	String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "and Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+                    + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "and LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
                     + ")) as allusers";
         System.out.println(sql);
         
