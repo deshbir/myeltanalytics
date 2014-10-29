@@ -27,8 +27,6 @@ import myeltanalytics.service.HelperService;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -125,10 +123,8 @@ public class UsersSyncThread implements Runnable
         				indexedEsUser =  prepareIndexedEsUser(esUser);
         				bulkRequest.add(indexedEsUser);
         			}
-        			BulkResponse bulkResponse = bulkRequest.execute().actionGet();
-        			if (bulkResponse.hasFailures()) {
-         				LOGGER.info("COMPRO TEST, Bulk request failure, loginName = " + loginName);
-        			}
+        			bulkRequest.execute().actionGet();
+        			
         		}
         		if (UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
         			UsersSyncService.jobInfo.decrementErrorRecords();
@@ -158,23 +154,13 @@ public class UsersSyncThread implements Runnable
     }
     
     private String createESId(ElasticSearchUser esUser) {
-    	 if (esUser.getUserName() == null) {
-    		 LOGGER.info("COMPRO TEST, esUser.getUserName() is NULL, loginName = " + loginName);
-    	 }
     	 String elasticSearchID = String.valueOf(esUser.getUserName());
          if (esUser.getAccess() != null ) {
-        	if (esUser.getAccess().getProductCode() == null) {
-        		LOGGER.info("COMPRO TEST, esUser.getAccess().getProductCode() is NULL, loginName = " + loginName);
-        	}
          	if (esUser.getAccess().getCode() != null ) {
          		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
          	} else {
          		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
          	}
-         }
-         GetResponse response = elasticSearchClient.prepareGet(Constants.USERS_INDEX, Constants.USERS_TYPE,elasticSearchID).execute().actionGet();
-         if (response.isExists()) {
-        	 LOGGER.info("COMPRO TEST, record already exists in ES, loginName = " + loginName + ", elasticSearchID=" + elasticSearchID);
          }
          return elasticSearchID;
     }
