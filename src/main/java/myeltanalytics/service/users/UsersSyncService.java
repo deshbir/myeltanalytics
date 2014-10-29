@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -95,6 +96,10 @@ public class UsersSyncService
     
     private static Map<String, Map<String,String>> bookInfoMap = new HashMap<String, Map<String,String>>();
     
+    private static List<String> corruptDataUsersList = new ArrayList<String>();
+    
+    private static List<String> corruptDataUsersInstList = new ArrayList<String>();
+    
     public JdbcTemplate getJdbcTemplate(String databaseURL) {       
         return jdbcTemplateMap.get(databaseURL);
     }
@@ -134,6 +139,16 @@ public class UsersSyncService
 	    		bookInfo.put(Constants.PRODUCTNAME, String.valueOf(bookMap.get("name")));  
 	    		bookInfoMap.put(String.valueOf(bookMap.get("Abbr")), bookInfo);
 	    	}
+	    	List<String> corruptDataUsersTableList =  jdbcTemplate.queryForList("SELECT NAME FROM Users GROUP BY NAME HAVING COUNT(*) > 1", String.class);
+	    	List<String> corruptDataUsersInstTableList = jdbcTemplate.queryForList("SELECT LoginName FROM UserInstitutionMap GROUP BY LoginName HAVING COUNT(*) > 1", String.class);
+	    	Iterator<String> corruptDataUsersListTableIter = corruptDataUsersTableList.iterator(); 
+	    	Iterator<String> corruptDataUsersInstListTableIter = corruptDataUsersInstTableList.iterator();
+	    	while(corruptDataUsersListTableIter.hasNext()){
+	    		corruptDataUsersList.add("'" +corruptDataUsersListTableIter.next() +"'");
+	    	}
+	    	while(corruptDataUsersInstListTableIter.hasNext()){
+	    		corruptDataUsersInstList.add("'" +corruptDataUsersInstListTableIter.next() +"'");
+	    	}
 	    	isPreProcessingDone = true;
     	}	
     }
@@ -154,8 +169,9 @@ public class UsersSyncService
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
         //deleteOldData();
-        jobInfo.setTotalRecords(getTotalUsersCount());
         preProcessSync();
+        jobInfo.setTotalRecords(getTotalUsersCount());
+        
         startSyncJob();
     }
     
@@ -198,13 +214,13 @@ public class UsersSyncService
         
         String query = null;
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = "(SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + " group by Name having count(*) = 1) UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
-                + " group by LoginName having count(*) = 1)" + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
+            query = "(SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!corruptDataUsersList.isEmpty()? "and Name NOT IN" + corruptDataUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!corruptDataUsersInstList.isEmpty()? "and LoginName NOT IN "+ corruptDataUsersInstList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
+                + ")" + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
-            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + " group by Name having count(*) = 1) UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
-                + " group by LoginName having count(*) = 1))" + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
+            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!corruptDataUsersList.isEmpty()? "and Name NOT IN" + corruptDataUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!corruptDataUsersInstList.isEmpty()? "and LoginName NOT IN "+ corruptDataUsersInstList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
+                + "))" + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         }
         
         
@@ -368,10 +384,11 @@ public class UsersSyncService
     
     public long getTotalUsersCount() throws JsonProcessingException {
         
-        String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
-            + " group by Name having count(*) = 1) UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
-            + " group by LoginName having count(*) = 1)) as allusers";
-        
+
+
+    	String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!corruptDataUsersList.isEmpty()? "and Name NOT IN" + corruptDataUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+                    + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!corruptDataUsersInstList.isEmpty()? "and LoginName NOT IN "+ corruptDataUsersInstList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+                    + ")) as allusers";
         System.out.println(sql);
         
         long usersCount = jdbcTemplate.queryForObject(sql, Long.class);
