@@ -1,10 +1,10 @@
 package myeltanalytics.model;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class User extends AbstractUser {
 
-    private List<Access> accessList;
+    private ArrayList<Access> accessList;
     private Institution institution;
 
     
@@ -124,11 +124,11 @@ public class User extends AbstractUser {
         
     }
 
-	public List<Access> getAccessList() {
+	public ArrayList<Access> getAccessList() {
 		return accessList;
 	}
 
-	public void setAccessList(List<Access> accessList) {
+	public void setAccessList(ArrayList<Access> accessList) {
 		this.accessList = accessList;
 	}
 }

@@ -28,7 +28,6 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +89,8 @@ public class UsersSyncService
     
     SearchHit[] failedUsersSearchHits = null;
     
+    private static boolean isPreProcessingDone = false;
+    
     private static Map<String, JdbcTemplate> jdbcTemplateMap = new HashMap<String,JdbcTemplate>();
     
     private static Map<String, Map<String,String>> bookInfoMap = new HashMap<String, Map<String,String>>();
@@ -103,33 +104,37 @@ public class UsersSyncService
     }
     
     public void preProcessSync() {
-    	/*****************************************
-    	 * Prepare JDBC templates for Aux DBs
-    	 *******************************************/
-    	List<Map<String,Object>> databaseURLList = jdbcTemplate.queryForList("Select Distinct DatabaseUrl from Institutions");
-    	Iterator<Map<String,Object>> databaseURLListIter = databaseURLList.iterator();
-    	while(databaseURLListIter.hasNext()) {
-    		Map<String,Object> databaseURLMap = databaseURLListIter.next();
-    		String databaseURL = String.valueOf(databaseURLMap.get("DatabaseUrl"));
-    		if (!databaseURL.equals(".") && !databaseURL.equals(mainDatabaseURL)) {
-    			JdbcTemplate myJdbcTemplate = buildJdbcTemplate(databaseURL);
-        		jdbcTemplateMap.put(databaseURL, myJdbcTemplate);
-    		}    		
-    	}
-    	jdbcTemplateMap.put(mainDatabaseURL, jdbcTemplate);
-    	jdbcTemplateMap.put(".", jdbcTemplate);
-    	
-    	/*****************************************
-    	 * Prepare Book/Product Info
-    	 *******************************************/
-    	List<Map<String,Object>> bookList = jdbcTemplate.queryForList("Select BookList.Abbr, Discipline.name as " + Constants.DISCIPLINE + ", BookList.name from BookList,Discipline where Discipline.Abbr = BookList.discipline");
-    	Iterator<Map<String,Object>> bookListiter = bookList.iterator();
-    	while(bookListiter.hasNext()) {
-    		Map<String,Object> bookMap = bookListiter.next();
-    		Map<String,String> bookInfo = new HashMap<String,String>();
-    		bookInfo.put(Constants.DISCIPLINE, String.valueOf(bookMap.get(Constants.DISCIPLINE)));
-    		bookInfo.put(Constants.PRODUCTNAME, String.valueOf(bookMap.get("name")));  
-    		bookInfoMap.put(String.valueOf(bookMap.get("Abbr")), bookInfo);
+    	  	
+    	if (!isPreProcessingDone) {
+	    	/*****************************************
+	    	 * Prepare JDBC templates for Aux DBs
+	    	 *******************************************/
+	    	List<Map<String,Object>> databaseURLList = jdbcTemplate.queryForList("Select Distinct DatabaseUrl from Institutions");
+	    	Iterator<Map<String,Object>> databaseURLListIter = databaseURLList.iterator();
+	    	while(databaseURLListIter.hasNext()) {
+	    		Map<String,Object> databaseURLMap = databaseURLListIter.next();
+	    		String databaseURL = String.valueOf(databaseURLMap.get("DatabaseUrl"));
+	    		if (!databaseURL.equals(".") && !databaseURL.equals(mainDatabaseURL)) {
+	    			JdbcTemplate myJdbcTemplate = buildJdbcTemplate(databaseURL);
+	        		jdbcTemplateMap.put(databaseURL, myJdbcTemplate);
+	    		}    		
+	    	}
+	    	jdbcTemplateMap.put(mainDatabaseURL, jdbcTemplate);
+	    	jdbcTemplateMap.put(".", jdbcTemplate);
+	    	
+	    	/*****************************************
+	    	 * Prepare Book/Product Info
+	    	 *******************************************/
+	    	List<Map<String,Object>> bookList = jdbcTemplate.queryForList("Select BookList.Abbr, Discipline.name as " + Constants.DISCIPLINE + ", BookList.name from BookList,Discipline where Discipline.Abbr = BookList.discipline");
+	    	Iterator<Map<String,Object>> bookListiter = bookList.iterator();
+	    	while(bookListiter.hasNext()) {
+	    		Map<String,Object> bookMap = bookListiter.next();
+	    		Map<String,String> bookInfo = new HashMap<String,String>();
+	    		bookInfo.put(Constants.DISCIPLINE, String.valueOf(bookMap.get(Constants.DISCIPLINE)));
+	    		bookInfo.put(Constants.PRODUCTNAME, String.valueOf(bookMap.get("name")));  
+	    		bookInfoMap.put(String.valueOf(bookMap.get("Abbr")), bookInfo);
+	    	}
+	    	isPreProcessingDone = true;
     	}	
     }
     
@@ -560,7 +565,7 @@ public class UsersSyncService
 		}
 	}
 	
-	private void deleteOldData() {
-		elasticSearchClient.prepareDeleteByQuery(Constants.USERS_INDEX).setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
-	}
+//	private void deleteOldData() {
+//		elasticSearchClient.prepareDeleteByQuery(Constants.USERS_INDEX).setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
+//	}
 }

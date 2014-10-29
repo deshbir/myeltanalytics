@@ -113,21 +113,17 @@ public class UsersSyncThread implements Runnable
         		else {
         			IndexRequestBuilder indexedEsUser;
         			BulkRequestBuilder bulkRequest = elasticSearchClient.prepareBulk();
-        			for(int i = 0 ;i < accessList.size(); i++){
+        			for(int i = 0 ; i < accessList.size(); i++){
         				Access access  =  accessList.get(i);
-        				String recordType = null; 
-        				if(i == 0){
+        				String recordType = "ADDITIONAL_ACCESS";
+        				if (i == 0) {
         					recordType = "USER_WITH_ACCESS";
-        				} else {
-        					recordType = "ADDITIONAL_ACCESS";
-        				}
+        				}	
         				esUser = ElasticSearchUser.transformUser(user, access, recordType);
-        				indexedEsUser =  perpareIndexedEsUser(esUser);
+        				indexedEsUser =  prepareIndexedEsUser(esUser);
         				bulkRequest.add(indexedEsUser);
-        				if(i == (accessList.size() -1)) {
-        					bulkRequest.execute().actionGet();
-        				}
         			}
+        			bulkRequest.execute().actionGet();
         			
         		}
         		if (UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
@@ -157,32 +153,28 @@ public class UsersSyncThread implements Runnable
         }
     }
     
-    private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
-        String elasticSearchID = String.valueOf(esUser.getUserName());
-        if (esUser.getAccess() != null ) {
-        	if (esUser.getAccess().getCode() != null ) {
-        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
-        	} else {
-        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
-        	}
-        }
-        ObjectMapper mapper = new ObjectMapper(); 
-        String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute().actionGet();
+    private String createESId(ElasticSearchUser esUser) {
+    	 String elasticSearchID = String.valueOf(esUser.getUserName());
+         if (esUser.getAccess() != null ) {
+         	if (esUser.getAccess().getCode() != null ) {
+         		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
+         	} else {
+         		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
+         	}
+         }
+         return elasticSearchID;
     }
     
-    private IndexRequestBuilder perpareIndexedEsUser (ElasticSearchUser esUser)throws JsonProcessingException{
-    	String elasticSearchID = String.valueOf(esUser.getUserName());
-        if (esUser.getAccess() != null ) {
-        	if (esUser.getAccess().getCode() != null ) {
-        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
-        	} else {
-        		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
-        	}
-        }
+    private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper(); 
+        String json = mapper.writeValueAsString(esUser);
+        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, createESId(esUser)).setSource(json).execute().actionGet();
+    }
+    
+    private IndexRequestBuilder prepareIndexedEsUser (ElasticSearchUser esUser)throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(esUser);
-        IndexRequestBuilder indexedEsUser =  elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json);
+        IndexRequestBuilder indexedEsUser =  elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, createESId(esUser)).setSource(json);
         return indexedEsUser;
     }
     
@@ -332,9 +324,9 @@ public class UsersSyncThread implements Runnable
         return milestones;
     }
     
-    private List<Access> populateAccessList(User user)
+    private ArrayList<Access> populateAccessList(User user)
     {
-    	List<Access> accessList = new ArrayList<Access>();
+    	ArrayList<Access> accessList = new ArrayList<Access>();
 
     	/** AccessRights table is in Aux DB */
     	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId="+user.getId()+" And Feature like 'book-view-%' And Feature <> 'book-view-ALL' AND AccessLevel>0 order by LastModified");
