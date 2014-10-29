@@ -221,12 +221,12 @@ public class UsersSyncService
         
         String query = null;
         if (jobInfo.getLastIdentifier().equals("")) {
-            query = "(SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "and Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "and LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
+            query = "(SELECT Name as LoginName,InstitutionID FROM Users where parent<>0" + String.valueOf(!duplicateUsersList.isEmpty()? " AND Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  " AND InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")") + " AND " : "")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
                 + ")" + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         } else {
-            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "and Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
-                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "and LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
+            query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0" + String.valueOf(!duplicateUsersList.isEmpty()? " AND Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  " AND InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
+                + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "LoginName NOT IN " + duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")") + " AND " : "") + "InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
                 + "))" + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
         }
         
@@ -393,8 +393,8 @@ public class UsersSyncService
         
 
 
-    	String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "and Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  "and InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
-                    + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "and LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")"):"")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+    	String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "AND Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" ) +  " AND InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
+                    + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty() ? "LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")") + " AND ":"") + "InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
                     + ")) as allusers";
         System.out.println(sql);
         
