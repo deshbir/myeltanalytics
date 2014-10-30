@@ -26,6 +26,7 @@ import myeltanalytics.service.ApplicationContextProvider;
 import myeltanalytics.service.HelperService;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -161,7 +162,14 @@ public class UsersSyncThread implements Runnable
     private void pushuser(ElasticSearchUser esUser) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper(); 
         String json = mapper.writeValueAsString(esUser);
-        elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, createESId(esUser)).setSource(json).execute().actionGet();
+        String elasticSearchID =  createESId(esUser);
+        IndexResponse indexResponse = elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute().actionGet();
+        if (indexResponse.getId() == null || indexResponse.getId().equals("")) {
+        	LOGGER.error("COMPRO TEST, Document not added, LoginName=" + loginName + ", elasticSearchID=" + elasticSearchID);
+        }
+        if (!indexResponse.isCreated()) {
+        	LOGGER.error("COMPRO TEST, Document Updated, LoginName=" + loginName + ", elasticSearchID=" + elasticSearchID);
+        }
     }
     
     private User populateUser(String loginName, String institutionId)
