@@ -151,10 +151,14 @@ public class UsersSyncThread implements Runnable
     	 String elasticSearchID = String.valueOf(esUser.getUserName());
          if (esUser.getAccess() != null ) {
          	if (esUser.getAccess().getCode() != null ) {
-         		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode()+ esUser.getAccess().getCode();
+         		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode() + esUser.getAccess().getCode();
          	} else {
-         		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
-         	}
+         		if (esUser.getAccess().getAccessType().equals(Constants.ACCESSTYPE_INSTITUTION)) {
+         			elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode() + Constants.ACCESSTYPE_INSTITUTION;
+         		} else {
+         			elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode();
+         		}	
+         	}         		
          }
          return elasticSearchID;
     }
