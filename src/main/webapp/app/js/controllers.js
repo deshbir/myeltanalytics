@@ -253,13 +253,14 @@ myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($sc
 	jQuery(window).scrollTop(0);
 	$scope.year = $routeParams.year;
 	$scope.month  = $routeParams.month;
-	var date = new Date();
-	date.setMonth($scope.month -1);
-	date.setYear($scope.year);
 	$scope.keys = [];
 	for(var i  = 0; i < 13; i++){
-		$scope.keys.push({"data" : monthNames[date.getMonth()]+" '"+date.getFullYear().toString().slice(-2)});
-		date.setMonth(date.getMonth()-1);
+		$scope.keys.push({"data" : monthNames[$scope.month -1]+" '"+$scope.year.toString().slice(-2)});
+		if($scope.month == 1){
+			$scope.month = 13;
+			$scope.year--;
+		}
+		$scope.month--;
 	}
 	$scope.keys.reverse();
 	$scope.keys.push({"data":"Last 12 Months"});
