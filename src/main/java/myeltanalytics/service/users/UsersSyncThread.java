@@ -327,7 +327,7 @@ public class UsersSyncThread implements Runnable
     	ArrayList<Access> accessList = new ArrayList<Access>();
 
     	/** AccessRights table is in Aux DB */
-    	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId="+user.getId()+" And Feature like 'book-view-%' And Feature <> 'book-view-ALL' AND AccessLevel>0 order by LastModified");
+    	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId="+user.getId()+" And Feature like 'book-view-%' And Feature <> 'book-view-ALL' AND AccessLevel>0 group by Feature");
     	Iterator<Map<String,Object>> accessRightsIter = accessRights.iterator();
     	while(accessRightsIter.hasNext()) {
     		Access access = new Access();
