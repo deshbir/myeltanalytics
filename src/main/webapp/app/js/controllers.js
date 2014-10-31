@@ -9,7 +9,12 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http','$q
 	    	thirdLastMonth = new Date(),
 	    	fourthLastMonth	= new Date(),
 	    	fifthLastMonth= new Date();
-		lastMonth.setMonth(currentMonth.getMonth() - 1);
+	    currentMonth.setDate(1);
+	    lastMonth.setDate(1);
+	    secondLastMonth.setDate(1);
+	    thirdLastMonth.setDate(1);
+	    fifthLastMonth.setDate(1);
+	    lastMonth.setMonth(currentMonth.getMonth() - 1);
 		secondLastMonth.setMonth(currentMonth.getMonth() - 2);
 		thirdLastMonth.setMonth(currentMonth.getMonth() - 3);
 		fourthLastMonth.setMonth(currentMonth.getMonth() - 4);
@@ -161,35 +166,35 @@ myeltAnalyticsControllers.controller('ReportsController', ['$scope', '$http','$q
             "myeltUsageReport": {
             	"title" : "MyELT Usage Report",
             	"list": [{
-            		"name" : monthNames[currentMonth.getMonth()-1] +" '" +currentMonth.getFullYear().toString().slice(-2),
+            		"name" : monthNames[currentMonth.getMonth()] +" '" +currentMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"period": currentMonth.getFullYear()+"/"+currentMonth.getMonth()
+            		"period": currentMonth.getFullYear()+"/"+ (currentMonth.getMonth() +1)
             	},{
-            		"name" : monthNames[lastMonth.getMonth()-1] +" '" +lastMonth.getFullYear().toString().slice(-2),
+            		"name" : monthNames[lastMonth.getMonth()] +" '" +lastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"period": lastMonth.getFullYear()+"/"+lastMonth.getMonth()
+            		"period": lastMonth.getFullYear()+"/"+ (lastMonth.getMonth() + 1)
             	},{
-            		"name" : monthNames[secondLastMonth.getMonth()-1] +" '" +secondLastMonth.getFullYear().toString().slice(-2),
+            		"name" : monthNames[secondLastMonth.getMonth()] +" '" +secondLastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"period": secondLastMonth.getFullYear() +"/"+secondLastMonth.getMonth()
+            		"period": secondLastMonth.getFullYear() +"/"+ (secondLastMonth.getMonth() + 1)
             	},{
-            		"name" : monthNames[thirdLastMonth.getMonth()-1] +"'" +thirdLastMonth.getFullYear().toString().slice(-2),
+            		"name" : monthNames[thirdLastMonth.getMonth()] +"'" +thirdLastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"period": thirdLastMonth.getFullYear()+"/"+thirdLastMonth.getMonth()
+            		"period": thirdLastMonth.getFullYear()+"/"+ (thirdLastMonth.getMonth()+1)
             	},{
-            		"name" : monthNames[fourthLastMonth.getMonth()-1] +" '" +fourthLastMonth.getFullYear().toString().slice(-2),
+            		"name" : monthNames[fourthLastMonth.getMonth()] +" '" +fourthLastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"period": fourthLastMonth.getFullYear()+"/"+fourthLastMonth.getMonth()
+            		"period": fourthLastMonth.getFullYear()+"/"+ (fourthLastMonth.getMonth() + 1)
             	},{
-            		"name" : monthNames[fifthLastMonth.getMonth()-1] +" '" +fifthLastMonth.getFullYear().toString().slice(-2),
+            		"name" : monthNames[fifthLastMonth.getMonth()] +" '" +fifthLastMonth.getFullYear().toString().slice(-2),
             		"disabled": "false",
             		"file": "",
-            		"period": fifthLastMonth.getFullYear() +"/"+ fifthLastMonth.getMonth()
+            		"period": fifthLastMonth.getFullYear() +"/"+ (fifthLastMonth.getMonth() + 1)
             	}]
             }
 

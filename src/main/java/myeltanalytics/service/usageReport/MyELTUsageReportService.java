@@ -23,6 +23,7 @@ public class MyELTUsageReportService {
 	 public Map<String,Long> getNewUsersRegCapesReportData(int year,int month){
 		Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
 		Calendar date = new GregorianCalendar();
+		date.set(Calendar.DATE, 1);
 		date.set(Calendar.MONTH, month-1);
 		date.set(Calendar.YEAR,year);
 		long last12Month = 0;
@@ -54,6 +55,7 @@ public class MyELTUsageReportService {
 	 public Map<String,Long> getNewUsersRegAllOtherReportData(int year, int month){
 			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
 			Calendar date = new GregorianCalendar();
+			date.set(Calendar.DATE, 1);
 			date.set(Calendar.MONTH, month-1);
 			date.set(Calendar.YEAR,year);
 			long last12Month = 0;
@@ -85,6 +87,7 @@ public class MyELTUsageReportService {
 	 public Map<String,Long> getNewProdRegCapesReportData(int year, int month){
 			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
 			Calendar date = new GregorianCalendar();
+			date.set(Calendar.DATE, 1);
 			date.set(Calendar.MONTH, month-1);
 			date.set(Calendar.YEAR,year);
 			long last12Month = 0;
@@ -115,6 +118,7 @@ public class MyELTUsageReportService {
 	 public Map<String,Long> getNewProdRegAllOtherReportData(int year, int month){
 			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
 			Calendar date = new GregorianCalendar();
+			date.set(Calendar.DATE, 1);
 			date.set(Calendar.MONTH, month-1);
 			date.set(Calendar.YEAR,year);
 			long last12Month = 0;
@@ -160,6 +164,7 @@ public class MyELTUsageReportService {
 	 public Map<String,Long> getactiveUsersCapesReportData(int year, int month){
 			Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
 			Calendar date = new GregorianCalendar();
+			date.set(Calendar.DATE, 1);
 			date.set(Calendar.MONTH, month-1);
 			date.set(Calendar.YEAR,year);
 			String startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
@@ -181,6 +186,7 @@ public class MyELTUsageReportService {
 	 public Map<String,Long> getactiveUsersAllOtherReportData(int year, int month){
 		Map<String,Long>  dataMap = new LinkedHashMap<String,Long>();
 		Calendar date = new GregorianCalendar();
+		date.set(Calendar.DATE, 1);
 		date.set(Calendar.MONTH, month-1);
 		date.set(Calendar.YEAR,year);
 		String startDate = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-01T00:00:00";
