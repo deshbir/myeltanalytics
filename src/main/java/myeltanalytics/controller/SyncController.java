@@ -33,31 +33,55 @@ public class SyncController {
     
     private final Logger LOGGER = Logger.getLogger(SyncController.class);
     
-    private static boolean isESSetup;
+    private static boolean isESUsersSetup;
     
-    @RequestMapping("")
-    public String sync(Model model) throws IOException {
+    private static boolean isESSubmissionSetup;
+    
+    @RequestMapping("/users")
+    @ResponseBody
+    public String syncUsers() throws IOException {
         
         //Setting up(One-Time) required indexes in ElasticSearch.
-        if (!isESSetup) {
+        if (!isESUsersSetup) {
             usersSyncService.setup();
-            submissionsSyncService.setup();
-            isESSetup = true;
+            isESUsersSetup = true;
         }
         
         long usersProcessedRecords = UsersSyncService.jobInfo.getSuccessRecords() + UsersSyncService.jobInfo.getErrorRecords();
         int usersPercentProcessed = (int)(((double)usersProcessedRecords / (double)UsersSyncService.jobInfo.getTotalRecords()) * 100);
+        JSONObject userInfoJson = new JSONObject(UsersSyncService.jobInfo);
+        try {
+			userInfoJson.put("percent", usersPercentProcessed);
+			userInfoJson.put("status", "success");
+        }catch(Exception e){
+        	LOGGER.error("Error Sync Job Status: ", e);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
+        }
+        return userInfoJson.toString();
+    } 
+    
+    @RequestMapping("/submissions")
+    @ResponseBody
+    public String syncSubmissions() throws IOException {
         
-        model.addAttribute("usersJobPercent", usersPercentProcessed);
-        model.addAttribute("usersJobInfo",UsersSyncService.jobInfo);
+        //Setting up(One-Time) required indexes in ElasticSearch.
+        if (!isESSubmissionSetup) {
+            submissionsSyncService.setup();
+            isESSubmissionSetup = true;
+        }
         
         long submissionsRecordsProcessed = SubmissionsSyncService.jobInfo.getSuccessRecords() + SubmissionsSyncService.jobInfo.getErrorRecords();
         int submissionsPercentProcessed = (int)(((double)submissionsRecordsProcessed / (double)SubmissionsSyncService.jobInfo.getTotalRecords()) * 100);        
-        model.addAttribute("submissionsJobPercent", submissionsPercentProcessed);
-        model.addAttribute("submissionsJobInfo", SubmissionsSyncService.jobInfo);
-        
-        return "sync";
-    }   
+        JSONObject submissionInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
+        try {
+	        submissionInfoJson.put("percent", submissionsPercentProcessed);
+	        submissionInfoJson.put("status", "success");
+        }catch(Exception e){
+        	LOGGER.error("Error Sync Job Status: ", e);
+            return helperService.constructErrorResponse(Constants.DEFAULT_ERROR_MESSAGE);
+        }
+        return submissionInfoJson.toString();
+    }
    
     @RequestMapping(value= "/users/getSyncStatus")
     @ResponseBody
@@ -81,6 +105,7 @@ public class SyncController {
         try {
             usersSyncService.startFreshSync();
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
+            jobInfoJson.put("percent", 0);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {

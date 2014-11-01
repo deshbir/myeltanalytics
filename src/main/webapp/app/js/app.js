@@ -8,6 +8,18 @@ myeltAnalyticsApp.config(['$routeProvider',
           templateUrl: 'partials/reports.html',
           controller: 'ReportsController'
         }).
+        when('/sync', {
+            templateUrl: 'partials/sync.html',
+            controller: 'SyncController',
+            resolve : {
+            	 jsonUserSyncData : function(getDataFromServerService , $http){
+                	return getDataFromServerService.getData($http , '../sync/users');
+                },
+                jsonSubmissionSyncData : function(getDataFromServerService , $http){
+		        	return getDataFromServerService.getData($http , '../sync/submissions');
+		        }
+            }
+          }).
         when('/settings', {
             templateUrl: 'partials/settings.html',
             controller: 'SettingsController',

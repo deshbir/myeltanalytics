@@ -254,6 +254,11 @@ myeltAnalyticsControllers.controller('RulesController', function ($scope , jsonD
             hideLoader();
 });
 
+myeltAnalyticsControllers.controller('SyncController', function ($scope , jsonUserSyncData , jsonSubmissionSyncData) {
+    $scope.usersJobInfo = jsonUserSyncData.data;
+    $scope.submissionInfo = jsonSubmissionSyncData.data;
+    hideLoader();
+});
 myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($scope, $routeParams , reportData) {
 	jQuery(window).scrollTop(0);
 	$scope.year = $routeParams.year;
