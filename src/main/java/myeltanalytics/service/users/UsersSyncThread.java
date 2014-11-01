@@ -148,7 +148,7 @@ public class UsersSyncThread implements Runnable
     }
     
     private String createESId(ElasticSearchUser esUser) {
-    	 String elasticSearchID = String.valueOf(esUser.getUserName());
+    	 String elasticSearchID = String.valueOf(esUser.getUserName() + esUser.getInstitution().getId());
          if (esUser.getAccess() != null ) {
          	if (esUser.getAccess().getCode() != null ) {
          		elasticSearchID = elasticSearchID + esUser.getAccess().getProductCode() + esUser.getAccess().getCode();
@@ -197,7 +197,7 @@ public class UsersSyncThread implements Runnable
          * 	1. student
          * 	2. instructor
          * When we query for "student", the query sometimes returns default "STUDENT" user with parent=0 (since query is case insensitive).
-         * Adding a check parent<>0 to avoid such situation
+         * Adding a additional check parent<>0 to avoid such situation
          ********************************************************/
         User user = auxJdbcTemplate.queryForObject(
             "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from Users where name = ? AND parent<>0 limit 1", new Object[] { loginName },
@@ -326,7 +326,15 @@ public class UsersSyncThread implements Runnable
     {
     	ArrayList<Access> accessList = new ArrayList<Access>();
 
-    	/** AccessRights table is in Aux DB */
+    	/************************************************
+    	 * AccessRights table is in Aux DB
+    	 ************************************************ 
+    	 * There are some corrupt records in AccessRights table where same User has more than one AccessRight records with same Feature.
+    	 * We have to ignore duplicate records and select only one record out of these.
+    	 * Adding "group by feature" to address above corrupt/duplicate records.
+    	 ************************************************
+    	 * Also Ignoring book-view-ALL permissions
+    	 ***********************************************/
     	List<Map<String,Object>> accessRights = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId="+user.getId()+" And Feature like 'book-view-%' And Feature <> 'book-view-ALL' AND AccessLevel>0 group by Feature");
     	Iterator<Map<String,Object>> accessRightsIter = accessRights.iterator();
     	while(accessRightsIter.hasNext()) {
@@ -339,6 +347,7 @@ public class UsersSyncThread implements Runnable
 
     		List<Map<String,Object>> accessCodeList = jdbcTemplate.queryForList("Select AccessCode from BookAccessCodes where UserId='" + user.getId() + "' And BookAbbr like '" + productCode + "%'");
 
+    		//Get bookInfo from pre-populated bookInfo map
     		Map<String,String> bookInfo = usersSyncService.getBookInfo(productCode);
     		
     		if (accessCodeList != null && accessCodeList.size() > 0) {
@@ -356,6 +365,9 @@ public class UsersSyncThread implements Runnable
     		
     		accessList.add(access);
     	}
+    	 /************************************************
+    	 * Ignore book-view-ALL permissions
+    	 ***********************************************/
     	List<Map<String,Object>> accessRightsByInstitutionId = auxJdbcTemplate.queryForList("Select SUBSTRING(Feature,11) as ProductCode, LastModified from AccessRights where UserId ="+getUserTypeIdFromUserType(user.getUserType())+" AND InstitutionID = '"+user.getInstitution().getId()+"' And Feature like 'book-view-%' And Feature <> 'book-view-ALL' AND AccessLevel > 0");
     	Iterator<Map<String,Object>> accessRightsByInstitutionIdIter = accessRightsByInstitutionId.iterator();
     	while(accessRightsByInstitutionIdIter.hasNext()) {

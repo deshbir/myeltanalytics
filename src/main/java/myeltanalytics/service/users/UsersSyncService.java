@@ -219,12 +219,22 @@ public class UsersSyncService
         recordsProcessed = 0;
         userSyncExecutor = Executors.newFixedThreadPool(userSyncThreadPoolSize);
         
+        
+        /**
+    	 * 1. Get records from both "Users" table and "UserInstitutionMap" table and join them to select unique records (SQL UNION).
+    	 * 2. Ignore records with parent = 0.
+    	 * 3. Ignore test institutions (HelperService.IGNORE_INSTITUTIONS) users. 
+    	 * 4. Ignore those records where more than one record have same LoginName/Name(Corrupt data).
+    	 */
         String query = null;
+        //Fresh sync
         if (jobInfo.getLastIdentifier().equals("")) {
             query = "(SELECT Name as LoginName,InstitutionID FROM Users where parent<>0" + String.valueOf(!duplicateUsersList.isEmpty()? " AND Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  " AND InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
                 + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")") + " AND " : "")+"InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
                 + ")" + " order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
-        } else {
+        } 
+        //Resume sync
+        else {
             query = "SELECT LoginName,InstitutionID from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0" + String.valueOf(!duplicateUsersList.isEmpty()? " AND Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" )+  " AND InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery 
                 + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty()? "LoginName NOT IN " + duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")") + " AND " : "") + "InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery  
                 + "))" + " as allusers where LoginName > \"" + jobInfo.getLastIdentifier() + "\" order by LoginName limit " + Constants.SQL_RECORDS_LIMIT;
@@ -235,11 +245,6 @@ public class UsersSyncService
         
         LOGGER.info("Starting sync process for UsersSyncJob with syncJobId=" + jobInfo.getJobId() + ", query=" + query);
         
-        /**
-         * UserInstitutionMap handling
-         * 1. Change query to use loginName instead of id  --- and change table to UserInstitutionMap
-         * 2. Additinally select instId and pass it as a argument to Thread.
-         */
         jdbcTemplate.query(query,
             new RowCallbackHandler()
             {
@@ -392,7 +397,12 @@ public class UsersSyncService
     public long getTotalUsersCount() throws JsonProcessingException {
         
 
-
+    	/**
+    	 * 1. Get records from both "Users" table and "UserInstitutionMap" table and join them to select unique records (SQL UNION).
+    	 * 2. Ignore records with parent = 0.
+    	 * 3. Ignore test institutions (HelperService.IGNORE_INSTITUTIONS) users. 
+    	 * 4. Ignore those records where more than one record have same LoginName/Name(Corrupt data).
+    	 */
     	String sql = "SELECT Count(*) from ((SELECT Name as LoginName,InstitutionID FROM Users where parent<>0 " + String.valueOf(!duplicateUsersList.isEmpty()? "AND Name NOT IN" + duplicateUsersList.toString().replace("[", "(").replace("]", ")"):  "" ) +  " AND InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
                     + ") UNION (SELECT LoginName,InstitutionID FROM UserInstitutionMap where "+ String.valueOf(!duplicateUsersInstMapList.isEmpty() ? "LoginName NOT IN "+ duplicateUsersInstMapList.toString().replace("[", "(").replace("]", ")") + " AND ":"") + "InstitutionID NOT IN " + HelperService.ignoreInstitutionsQuery
                     + ")) as allusers";
