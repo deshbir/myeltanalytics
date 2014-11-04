@@ -12,7 +12,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -37,7 +36,7 @@ public class SyncController {
     
     private static boolean isESSubmissionSetup;
     
-    @RequestMapping("/users")
+    @RequestMapping("/users/status")
     @ResponseBody
     public String syncUsers() throws IOException {
         
@@ -99,7 +98,7 @@ public class SyncController {
         }
     }  
 
-    @RequestMapping(value= "/users/startSync")
+    @RequestMapping(value= "/users/start")
     @ResponseBody
     String startFreshUsersSync() throws JsonProcessingException{
         try {
@@ -117,12 +116,15 @@ public class SyncController {
         }
     }
     
-    @RequestMapping(value= "/users/stopSync")
+    @RequestMapping(value= "/users/stop")
     @ResponseBody
     String pauseUsersSync() throws JsonProcessingException, InterruptedException{
         try {
             usersSyncService.stopSync();        
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
+            long processedRecords = UsersSyncService.jobInfo.getSuccessRecords() + UsersSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)UsersSyncService.jobInfo.getTotalRecords()) * 100);
+            jobInfoJson.put("percent", percentageProcessed);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
@@ -134,12 +136,15 @@ public class SyncController {
         }
     }
     
-    @RequestMapping(value= "/users/resumeSync")
+    @RequestMapping(value= "/users/resume")
     @ResponseBody
     String resumeUsersSync() throws JsonProcessingException{ 
         try {
             usersSyncService.resumeSync();
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
+            long processedRecords = UsersSyncService.jobInfo.getSuccessRecords() + UsersSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)UsersSyncService.jobInfo.getTotalRecords()) * 100);
+            jobInfoJson.put("percent", percentageProcessed);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
@@ -225,6 +230,9 @@ public class SyncController {
     	try {
             usersSyncService.retryFailedUsers();
             JSONObject jobInfoJson = new JSONObject(UsersSyncService.jobInfo);
+            long processedRecords = UsersSyncService.jobInfo.getSuccessRecords() + UsersSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)UsersSyncService.jobInfo.getTotalRecords()) * 100);
+            jobInfoJson.put("percent", percentageProcessed);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
