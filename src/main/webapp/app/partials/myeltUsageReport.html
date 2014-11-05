@@ -1,4 +1,4 @@
-<div class="container-fluid" style="margin-bottom:10px;">
+<div class="container-fluid" style="margin-bottom:10px;font-family: 'Droid Sans', sans-serif;">
 		<div id="myeltUsageReportHeader">
 			<a href="#/reports"><i class="fa fa-arrow-circle-o-left" style="font-size:2em;" title="go back to Reports page"></i></a>
 			<button class="pull-right" type="button" class="btn btn-default btn-lg" ng-click="printReport()">
@@ -6,6 +6,7 @@
 			</button>
 		</div>
 		<h1 class="text-center">MyELT Usage Report</h1>
+		<h4 class="text-center">( {{reportPeriod}} )</h4>
 		<div class="table-responsive">
 			<h3><em>New Student User Registrations</em></h3>
 			<table class="table table-bordered text-right table-override">
@@ -21,7 +22,7 @@
 					<tr>
 						<td><b>CAPES</b></td>
 						<td ng-repeat="capesStudent in newStudentsReg_capes">
-							{{capesStudent.data}}
+							{{capesStudent.data|number}}
 						</td>
 					</tr>
 					<tr>
@@ -44,13 +45,13 @@
 					<tr>
 						<td><b>All Other</b></td>
 						<td ng-repeat="allOtherStudent in newStudentsReg_allOther">
-							{{allOtherStudent.data}}
+							{{allOtherStudent.data|number}}
 						</td>
 					</tr>
 					<tr>
 						<td><b>Total</b></td>
 						<td ng-repeat="totalUsers in newStudentsReg_total">
-							{{totalUsers.data}}
+							{{totalUsers.data|number}}
 						</td>
 					</tr>
 				</tbody>
@@ -89,7 +90,7 @@
 					<tr>
 						<td><b>CAPES</b></td>
 						<td ng-repeat="capesProduct in newProductsReg_capes">
-							{{capesProduct.data}}
+							{{capesProduct.data|number}}
 						</td>
 					</tr>
 					</tr>
@@ -113,13 +114,13 @@
 					<tr>
 						<td><b>All Other</b></td>
 						<td ng-repeat="allOtherProducts in newProductsReg_allOther">
-							{{allOtherProducts.data}}
+							{{allOtherProducts.data|number}}
 						</td>
 					</tr>
 					<tr>
 						<td><b>Total</b></td>
 						<td ng-repeat="totalProducts in newProductsReg_total">
-							{{totalProducts.data}}
+							{{totalProducts.data|number}}
 						</td>
 					</tr>
 				</tbody>
@@ -168,7 +169,7 @@
 						<td>-</td>
 						<td>-</td>
 						<td>-</td>
-						<td>{{activeUsers_capes}}</td>
+						<td>{{activeUsers_capes|number}}</td>
 					</tr>
 					<tr>
 						<td><b>ICPNA</b></td>
@@ -200,7 +201,7 @@
 						<td>-</td>
 						<td>-</td>
 						<td>-</td>
-						<td>{{activeUsers_allOther}}</td>
+						<td>{{activeUsers_allOther|number}}</td>
 					</tr>
 					<tr>
 						<td><b>Total</b></td>
@@ -216,7 +217,7 @@
 						<td>-</td>
 						<td>-</td>
 						<td>-</td>
-						<td>{{activeUsers_total}}</td>
+						<td>{{activeUsers_total|number}}</td>
 					</tr>
 				</tbody>
 			</table>

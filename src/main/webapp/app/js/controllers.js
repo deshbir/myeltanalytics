@@ -258,6 +258,7 @@ myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($sc
 	jQuery(window).scrollTop(0);
 	$scope.year = $routeParams.year;
 	$scope.month  = $routeParams.month;
+	$scope.reportPeriod = monthNames[$scope.month -1]+" '"+$scope.year.toString().slice(-2); 
 	$scope.keys = [];
 	for(var i  = 0; i < 13; i++){
 		$scope.keys.push({"data" : monthNames[$scope.month -1]+" '"+$scope.year.toString().slice(-2)});
@@ -292,7 +293,7 @@ myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($sc
 	hideLoader();
 	$scope.printReport = function(){
 		window.print();
-	}
+	};
 });
 
 function showLoader() {
