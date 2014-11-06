@@ -46,7 +46,7 @@
          </div>
        </nav>
         
-       <div class="container">
+       <div class="container mainContent">
             <div class="row" id="errorMessage"></div>
             <div class="row">
                 <div class="col-md-6">

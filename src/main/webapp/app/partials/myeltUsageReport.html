@@ -1,14 +1,21 @@
-<div class="container-fluid" style="margin-bottom:10px;font-family: 'Droid Sans', sans-serif;">
-		<div id="myeltUsageReportHeader">
+<div style="background-color:#444;padding:15px 0">
+
+<!-- <div id="myeltUsageReportHeader" >
 			<a href="#/reports"><i class="fa fa-arrow-circle-o-left" style="font-size:2em;" title="go back to Reports page"></i></a>
 			<button class="pull-right" type="button" class="btn btn-default btn-lg" ng-click="printReport()">
   				<i class="fa fa-print"></i> Print
 			</button>
+		</div> -->
+<div class="container-fluid report">
+		<div id="myeltUsageReportHeader">
+		<button type="button" class=" pull-right btn btn-default btn-lg" style="margin-top:10px;" ng-click="printReport()">
+  				<i class="fa fa-print"></i> Print
+			</button>
 		</div>
-		<h1 class="text-center">MyELT Usage Report</h1>
+		<h1 class="text-center" style="margin:0px">MyELT Usage Report</h1>
 		<h4 class="text-center">( {{reportPeriod}} )</h4>
 		<div class="table-responsive">
-			<h3><em>New Student User Registrations</em></h3>
+			<h3>New Student User Registrations</h3>
 			<table class="table table-bordered text-right table-override">
 				<thead>
 					<tr>
@@ -76,7 +83,7 @@
 			</ol>
 		</div>
 		<div class="table-responsive">
-			<h3><em>New Product Registrations</em></h3>
+			<h3>New Product Registrations</h3>
 			<table class="table table-bordered text-right table-override">
 				<thead>
 					<tr>
@@ -144,7 +151,7 @@
 			</ol>
 		</div>
 		<div class="table-responsive">
-			<h3><em>Active User Accounts</em></h3>
+			<h3>Active User Accounts</h3>
 			<table class="table table-bordered text-right table-override">
 				<thead>
 					<tr>
@@ -223,5 +230,6 @@
 			</table>
 			<b>Note:</b> Active user accounts for a month are determined based on number uniques student
 			 that logged into MyELT (at-least once) in that month. This data is not available for past months.
-		</div>
+	</div>	
+    </div>
     </div>

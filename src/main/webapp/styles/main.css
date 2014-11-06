@@ -1,9 +1,12 @@
 body {
-    padding-top: 80px; 
+    padding-top: 50px; 
 }
-
+.mainContent{
+	padding-top:30px; 
+}
 .navbar{
   background-color: #2A333B;  
+  border: 0;
 }
 
 .navbar-brand {
@@ -131,19 +134,35 @@ body {
 	display: none;
 	font-size: 6em;
 }
+.report{
+	background-color: #fff !important;
+	margin-bottom:10px;
+	font-family: 'Droid Sans', sans-serif;
+	width:985px;
+	
+}
+.table.table-override.table-bordered>thead>tr th, .table.table-override.table-bordered>tbody>tr th, .table.table-override.table.table-override.table-bordered>tfoot>tr th,  .table.table-override.table-bordered>thead>tr td, .table.table-override.table-bordered>tbody>tr td, .table-bordered>tfoot>tr td {
+		padding:4px !important;
+		border:1px solid #999 !important;
+	}
+	.table.table-override.table-bordered{
+		border:1px solid #999 !important;
+	}
+	#myeltUsageReportHeader{
+		display:inline-block;width:100%	
+	}
 @media print {
 	body{
-			font-size: 8pt;
+			font-size: 12pt;
 	        margin-left: auto;
         	margin-right: auto;
         	padding:0;
+        	
 	}
 	#myeltUsageReportHeader{
-		display:none;
+		display:none; !important;
 	}
-	h3{
-		margin-top:0;
-	}
+
 	.table-responsive{
 		overflow:hidden;
 		border:0;
@@ -156,4 +175,5 @@ body {
 	.table.table-override.table-bordered{
 		border:1px solid #000 !important;
 	}
+	
 }
