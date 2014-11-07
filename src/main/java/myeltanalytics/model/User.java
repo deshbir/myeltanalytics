@@ -96,14 +96,16 @@ public class User extends AbstractUser {
     
     public String getStudentType()
     {
-        if((institution.getId().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTHideAssignment=true") != -1)){
-            return "self_paced";
-        } else if(("CAPES").equals(institution.getDistrict())){
+    	if(("CAPES").equals(institution.getDistrict())){
             return Constants.CAPES_MODEL;
-        } else if(institution.getOther().indexOf("MyELTSelfLearner=false") != -1){
-            return "classroom";
-        }
-        return "hybrid_learner";
+        }  else {
+        	if((institution.getId().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTHideAssignment=true") != -1)){
+                return "self_paced";
+            } else if(institution.getOther().indexOf("MyELTSelfLearner=false") != -1){
+                return "classroom";
+            }
+            return "hybrid_learner";
+        }    	
     }
     
     
