@@ -29,6 +29,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,7 +176,7 @@ public class UsersSyncService
         jobInfo.setJobStatus(Constants.STATUS_INPROGRESS);    
         LOGGER.info("Updating userStatus for UsersSyncJob with syncJobId=" + newJobId);
         updateUserStatus();
-        //deleteOldData();
+        deleteOldData();
         preProcessSync();
         jobInfo.setTotalRecords(getTotalUsersCount());
         
@@ -599,7 +600,7 @@ public class UsersSyncService
 		}
 	}
 	
-//	private void deleteOldData() {
-//		elasticSearchClient.prepareDeleteByQuery(Constants.USERS_INDEX).setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
-//	}
+	private void deleteOldData() {
+		elasticSearchClient.prepareDeleteByQuery(Constants.USERS_INDEX).setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
+	}
 }
