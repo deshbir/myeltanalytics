@@ -167,6 +167,15 @@ public class UsersSyncThread implements Runnable
         ObjectMapper mapper = new ObjectMapper(); 
         String json = mapper.writeValueAsString(esUser);
         String elasticSearchID =  createESId(esUser);
+        
+        /****************************************************************
+         * If it is Retry Failed users job,
+         * Clear old failed record from ElasticSearch before adding a new one.
+         *****************************************************************/
+        if (UsersSyncService.jobInfo.getJobStatus().equals(Constants.STATUS_INPROGRESS_RETRY)) {
+        	elasticSearchClient.prepareDelete(Constants.USERS_INDEX, Constants.USERS_TYPE, String.valueOf(esUser.getUserName() + esUser.getInstitution().getId())).execute().actionGet();
+        }
+        
         IndexResponse indexResponse = elasticSearchClient.prepareIndex(Constants.USERS_INDEX, Constants.USERS_TYPE, elasticSearchID).setSource(json).execute().actionGet();
         if (indexResponse.getId() == null || indexResponse.getId().equals("")) {
         	LOGGER.error("COMPRO TEST, Document not added, LoginName=" + loginName + ", elasticSearchID=" + elasticSearchID);
