@@ -1,8 +1,62 @@
-
-    {{usersJobInfo}}
-    
-    
-    
-    
-    {{submissionInfo}}
-    
+<div class="container" data-ng-init="manaageUsersSynButton()">
+            <div class=" row alert alert-danger alert-dismissable" ng-show="usersJobInfo.status == 'error'">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<strong>Error! {{usersJobInfo.errorMessage}}</strong>
+			</div>
+            <div class="row" >
+                <div class="col-md-6">
+                    <div id="usersSyncPanel" class="panel panel-primary">
+                        <div class="panel-heading"><i class="fa fa-refresh fa-lg {{usersSpinClass}}"></i><strong> Users (MySQL)</strong></div>
+                           <div class="panel-body">
+                               <div id="usersProgressContainer" class="progress progress-striped {{usersActiveClass}}">
+                                   <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{usersJobInfo.percent}}" aria-valuemin="0" aria-valuemax="100" style="width:{{usersJobInfo.percent}}%;">
+                                       {{usersJobInfo.percent}}%
+                                   </div>
+                               </div>
+                               <table class="table table-bordered">
+                                   <tbody>
+                                       <tr>
+                                           <td>
+                                               <span id="usersJobStatus" class="syncinfo badge pull-right {{usersBadgeClass}}">{{usersJobInfo.jobStatus}}</span>
+                                               <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersJobStartDateTime" class="syncinfo pull-right">{{usersJobInfo.startDateTime}}</span>
+                                               <i class="fa fa-calendar fa-lg"></i><span class="syncinfoHeading">Started At</span>
+                                           </td>
+                                       </tr> 
+                                       <tr>
+                                           <td>
+                                               <span id="usersTotalRecords" class="syncinfo odometer pull-right">{{usersJobInfo.totalRecords}}</span> 
+                                               <i class="fa fa-road fa-lg"></i><span class="syncinfoHeading">Total records to Sync</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersSuccessRecords" class="syncinfo pull-right odometer text-success"><odometer value='{{usersJobInfo.successRecords}}'></odometer></span>
+                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with Reporting App</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersErrorRecords" class="syncinfo pull-right odometer text-danger"><odometer value='{{usersJobInfo.errorRecords}}'></odometer></span>
+                                               <i class="fa fa-warning fa-lg"></i>
+                                               <span class="syncinfoHeading" id="userFailedRecord">Failed records  
+													<i class="fa fa-repeat fa-lg pointer {{failedUsersSyncButtonDisplay}}" style=";color:red" ng-click="retryFailedUsers()";></i>
+													<i style="" class="fa fa-spin fa-spinner fa-lg {{failedUsersSyncInProcessButtonDisplay}}"></i>
+                                               </span>
+                                           </td>
+                                       </tr>
+                                   </tbody>
+                               	
+                               </table>
+                               <button id="usersResumeButton" class="btn btn-primary {{usersResumeButtonDisplay}}" ng-click="resumeSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
+                               <button id="usersStartButton" class="btn btn-primary {{usersStartButtonDisplay}}" ng-click="startSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
+                               <button id="usersStopButton" class="btn btn-danger {{usersStopButtonDisplay}}" ng-click="stopSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
+                           </div>
+                       </div>
+                   </div>  
+        </div>
+          

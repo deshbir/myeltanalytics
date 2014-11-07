@@ -254,10 +254,163 @@ myeltAnalyticsControllers.controller('RulesController', function ($scope , jsonD
             hideLoader();
 });
 
-myeltAnalyticsControllers.controller('SyncController', function ($scope , jsonUserSyncData , jsonSubmissionSyncData) {
+myeltAnalyticsControllers.controller('SyncController', function ($scope ,$http,$interval,jsonUserSyncData , jsonSubmissionSyncData) {
     $scope.usersJobInfo = jsonUserSyncData.data;
-    $scope.submissionInfo = jsonSubmissionSyncData.data;
     hideLoader();
+    $scope.manaageUsersSynButton=function(){
+		if($scope.usersJobInfo.jobStatus == "InProgress"){
+			$scope.usersSpinClass = "fa-spin";
+			$scope.usersStartButtonDisplay = "hide";
+			$scope.usersResumeButtonDisplay = "hide";
+			$scope.usersStopButtonDisplay = "";
+			$scope.usersBadgeClass = "";
+			$scope.failedUsersSyncInProcessButtonDisplay="hide";
+			if(fetchSyncPoller == null){
+				triggerFetchingSyncStatus();
+			}
+		}else if($scope.usersJobInfo.jobStatus == "Completed"){
+			$scope.usersSpinClass = "";
+			$scope.usersStartButtonDisplay = "";
+			$scope.usersResumeButtonDisplay = "hide";
+			$scope.usersStopButtonDisplay = "hide";
+			$scope.usersBadgeClass = "badge-success";
+			
+			$scope.failedUsersSyncInProcessButtonDisplay="hide";
+			if ( $scope.usersJobInfo.errorRecords > 0) {
+          	  $("#userFailedRecord i.fa-spin").hide();
+          	  $("#userFailedRecord i.fa-repeat").show();
+            }
+            abortFetchingSyncStatus();
+		}else if($scope.usersJobInfo.jobStatus == "Paused"){
+			$scope.usersBadgeClass = "badge-error";
+			$scope.usersSpinClass = "";
+			$scope.usersStartButtonDisplay = "";
+			$scope.usersResumeButtonDisplay = "";
+			$scope.usersStopButtonDisplay = "hide";
+			if($scope.usersJobInfo.retryJobStatus == "Completed"){
+				if ( $scope.usersJobInfo.errorRecords > 0) {
+	                  $("#userFailedRecord i.fa-repeat").show();
+	                  $("#userFailedRecord i.fa-spin").hide();
+                } else {
+              	  $("#userFailedRecord i.fa-repeat").hide();
+	                  $("#userFailedRecord i.fa-spin").hide();
+                }
+                abortFetchingSyncStatus();
+			}
+			$scope.failedUsersSyncInProcessButtonDisplay="hide";
+		}else if($scope.usersJobInfo.jobStatus == "InProgressRetry"){
+		
+			$scope.usersStartButtonDisplay="hide";
+			$scope.usersResumeButtonDisplay="hide";
+			$scope.usersStopButtonDisplay="";
+			$scope.failedUsersSyncButtonDisplay="hide";
+			$scope.failedUsersSyncInProcessButtonDisplay=""; 
+		}
+		else{
+			$scope.usersBadgeClass = "badge-info";
+			$scope.usersActiveClass = "active";
+			$scope.usersStartButtonDisplay = "";
+			$scope.usersResumeButtonDisplay = "hide";
+			$scope.usersStopButtonDisplay = "hide";
+			$scope.failedUsersSyncInProcessButtonDisplay="hide";
+		}
+		if($scope.usersJobInfo.errorRecords > 0 && !($scope.usersStartButtonDisplay == "hide")){
+			$scope.failedUsersSyncButtonDisplay = "";
+		}else{
+			$scope.failedUsersSyncButtonDisplay = "hide";
+		}
+	};
+	var fetchSyncPoller = null;
+    triggerFetchingSyncStatus = function () {
+        fetchSyncPoller = $interval(function(){
+            $http.get("../sync/users/getSyncStatus").success(function(data){
+              $scope.usersJobInfo  = data;
+              $scope.manaageUsersSynButton();
+            })
+        }, 5000);
+    }; 
+    
+    abortFetchingSyncStatus = function () {
+        $interval.cancel(fetchSyncPoller);
+    }; 
+    
+	  $scope.startSync= function () {
+	        $("#usersStartButton").attr("disabled","disabled");
+	        $("#usersResumeButton").attr("disabled","disabled");
+	        $("#usersStartButton i.fa-play").hide();
+	        $("#usersStartButton i.fa-spin").show();
+	        $("#userFailedRecord i.fa-repeat").hide();
+	        $http.get("../sync/users/start").success(function(data){
+	            $scope.usersJobInfo=data;
+	            if ($scope.usersJobInfo.status == "success") {
+	                triggerFetchingSyncStatus();
+		            $("#usersStartButton").removeAttr("disabled");
+		            $("#usersResumeButton").removeAttr("disabled");
+		            $("#usersStartButton i.fa-play").show();
+		            $("#usersStartButton i.fa-spin").hide();
+		            $scope.manaageUsersSynButton();
+	            }
+	        });
+	    };
+	    $scope.stopSync= function () {
+	        abortFetchingSyncStatus();
+	        $("#usersStopButton").attr("disabled","disabled");
+	        $("#usersStopButton i.fa-stop").hide();
+	        $("#usersStopButton i.fa-spin").show();
+	        $http.get("../sync/users/stop").success(function(data){
+	           $scope.usersJobInfo=data;
+	           if ($scope.usersJobInfo.status == "success") {
+	        	   if($scope.usersJobInfo.errorRecords > 0){
+	        		   $("#userFailedRecord i.fa-repeat").show();
+	        		   $("#userFailedRecord i.fa-spin").hide();
+	        	   }
+		           $("#usersStopButton").removeAttr("disabled");
+		           $("#usersStopButton i.fa-stop").show();
+		           $("#usersStopButton i.fa-spin").hide();
+		           $scope.manaageUsersSynButton();
+	           }
+	        });
+
+	    };
+	    	    
+	    $scope.resumeSync= function () {
+	        $("#usersStartButton").attr("disabled","disabled");
+	        $("#usersResumeButton").attr("disabled","disabled");
+	        $("#usersResumeButton i.fa-play-circle-o").hide();
+	        $("#usersResumeButton i.fa-spin").show();
+	        $("#userFailedRecord i.fa-repeat").hide();
+	        $http.get("../sync/users/resume").success(function(data){
+	            $scope.usersJobInfo = data;
+	            $scope.usersJobInfo=data;
+	            if ( $scope.usersJobInfo.status == "success") {
+	                triggerFetchingSyncStatus();
+		            $("#usersStartButton").removeAttr("disabled");
+		            $("#usersResumeButton").removeAttr("disabled");
+		            $("#usersResumeButton i.fa-play-circle-o").show();
+		            $("#usersResumeButton i.fa-spin").hide();
+		            $scope.manaageUsersSynButton();
+	            }
+	        });
+	        
+	    };
+	    
+	    $scope.retryFailedUsers = function () {
+			$("#usersStartButton").attr("disabled","disabled");
+	        $("#usersResumeButton").attr("disabled","disabled");
+	        $http.get("../sync/users/retryFailed").success(function(data){
+	        	$scope.usersJobInfo = data;
+	            if ( $scope.usersJobInfo.status == "success") {
+	            	triggerFetchingSyncStatus();
+		            $("#usersStartButton").removeAttr("disabled");
+		            $("#usersResumeButton").removeAttr("disabled");
+		            $("#usersStartButton i.fa-play").show();
+			        $("#userFailedRecord i.fa-repeat").hide();
+			        $("#userFailedRecord i.fa-spin").show();
+		            $scope.manaageUsersSynButton();
+	            }
+	        });
+	    };
+    
 });
 myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($scope, $routeParams , reportData) {
 	jQuery(window).scrollTop(0);
@@ -299,6 +452,28 @@ myeltAnalyticsControllers.controller("MyELTUsageReportController", function ($sc
 		window.print();
 	}
 });
+myeltAnalyticsControllers.directive('odometer',function () {
+    return {
+      restrict: 'E',
+      scope : {
+        endValue : '@value'
+        	
+      },
+      link: function(scope, element) {
+        // If you want to change the format, you have to add the necessary
+        //  parameters. In this case I am going with the defaults.
+        var od = new Odometer({
+            el : element[0],
+            value : 0   // default value
+        });
+        // update the odometer element when there is a 
+        // change in the model value.
+        scope.$watch('endValue', function() {
+          od.update(scope.endValue);
+        });
+      }
+    };
+  });
 
 function showLoader() {
 	jQuery(".backgroundLoaderCover").show();

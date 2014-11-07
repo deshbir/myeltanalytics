@@ -131,6 +131,10 @@ body {
 	display: none;
 	font-size: 6em;
 }
+.hide{
+	display : none;
+}
+
 @media print {
 	body{
 			font-size: 8pt;
