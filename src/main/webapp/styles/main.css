@@ -139,6 +139,7 @@ body {
 	margin-bottom:10px;
 	font-family: 'Droid Sans', sans-serif;
 	width:985px;
+	padding-bottom:10px;
 	
 }
 .table.table-override.table-bordered>thead>tr th, .table.table-override.table-bordered>tbody>tr th, .table.table-override.table.table-override.table-bordered>tfoot>tr th,  .table.table-override.table-bordered>thead>tr td, .table.table-override.table-bordered>tbody>tr td, .table-bordered>tfoot>tr td {
