@@ -8,11 +8,11 @@ public class User extends AbstractUser {
     private Institution institution;
 
     
-    public enum StudentType{
+    public enum UserType{
         STUDENT(1,"STUDENT"),INSTRUCTOR(2,"INSTRUCTOR"),AUTHOR(3,"AUTHOR"),ADMINISTRATOR(4,"ADMINISTRATOR"),DISTRICT(5,"DISTRICT"),SUPERUSER(6,"SUPERUSER");
         private int code;
         private String typeString;
-        StudentType(int code, String typeString){
+        UserType(int code, String typeString){
             this.code = code;
             this.typeString = typeString;
         }
@@ -56,22 +56,22 @@ public class User extends AbstractUser {
     {
         switch(userType){
             case 1:
-                setUserType(StudentType.STUDENT.getTypeString());
+                setUserType(UserType.STUDENT.getTypeString());
                 break;
             case 2:
-                setUserType(StudentType.INSTRUCTOR.getTypeString());
+                setUserType(UserType.INSTRUCTOR.getTypeString());
                 break;
             case 3:
-                setUserType(StudentType.AUTHOR.getTypeString());
+                setUserType(UserType.AUTHOR.getTypeString());
                 break;
             case 4:
-                setUserType(StudentType.ADMINISTRATOR.getTypeString());
+                setUserType(UserType.ADMINISTRATOR.getTypeString());
                 break;
             case 5:
-                setUserType(StudentType.DISTRICT.getTypeString());
+                setUserType(UserType.DISTRICT.getTypeString());
                 break;
             case 6:
-                setUserType(StudentType.SUPERUSER.getTypeString());
+                setUserType(UserType.SUPERUSER.getTypeString());
                 break;
         }
     }
@@ -94,7 +94,7 @@ public class User extends AbstractUser {
         this.institution = institution;
     }
     
-    public String getStudentType()
+    public String getUserModel()
     {
     	if(("CAPES").equals(institution.getDistrict())){
             return Constants.CAPES_MODEL;

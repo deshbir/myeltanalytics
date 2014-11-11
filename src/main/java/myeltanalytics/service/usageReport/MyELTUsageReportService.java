@@ -34,7 +34,7 @@ public class MyELTUsageReportService {
 			QueryBuilder query = QueryBuilders.boolQuery()
 					.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 					.must(QueryBuilders.matchQuery("milestones.PT.level", 0))
-					.must(QueryBuilders.matchQuery("studentType", "capes_model"))
+					.must(QueryBuilders.matchQuery("userModel", "capes_model"))
 					.must(QueryBuilders.rangeQuery("milestones.PT.startedDate").from(startDate).to(endDate));
 			long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
 					.setQuery(query)
@@ -66,7 +66,7 @@ public class MyELTUsageReportService {
 				QueryBuilder query = QueryBuilders.boolQuery()
 						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
-						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
+						.mustNot(QueryBuilders.matchQuery("userModel", "capes_model"))
 						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
 				long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
 						.setQuery(query)
@@ -97,7 +97,7 @@ public class MyELTUsageReportService {
 				endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
 				QueryBuilder query = QueryBuilders.boolQuery()
 						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
-						.must(QueryBuilders.matchQuery("studentType", "capes_model"))
+						.must(QueryBuilders.matchQuery("userModel", "capes_model"))
 						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
 				long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
 						.setQuery(query)
@@ -129,7 +129,7 @@ public class MyELTUsageReportService {
 				QueryBuilder query = QueryBuilders.boolQuery()
 						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
-						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
+						.mustNot(QueryBuilders.matchQuery("userModel", "capes_model"))
 						.should(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_ACCESSCODE))
 						.should(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_ACCESSRIGHT))
 						.minimumNumberShouldMatch(1)
@@ -142,7 +142,7 @@ public class MyELTUsageReportService {
 					query = QueryBuilders.boolQuery()
 						.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 						.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
-						.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
+						.mustNot(QueryBuilders.matchQuery("userModel", "capes_model"))
 						.must(QueryBuilders.matchQuery("access.accessType", Constants.ACCESSTYPE_INSTITUTION))
 						.must(QueryBuilders.rangeQuery("dateCreated").from(startDate).to(endDate));
 					count = count +  elasticSearchClient.prepareCount(Constants.USERS_INDEX)
@@ -171,7 +171,7 @@ public class MyELTUsageReportService {
 			String endDate   = date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-"+ date.getActualMaximum(Calendar.DAY_OF_MONTH) + "T23:59:59";
 			QueryBuilder query = QueryBuilders.boolQuery()
 					.must(QueryBuilders.matchQuery("userType", "STUDENT"))
-					.must(QueryBuilders.matchQuery("studentType", "capes_model"))
+					.must(QueryBuilders.matchQuery("userModel", "capes_model"))
 					.must(QueryBuilders.rangeQuery("dateLastLogin").from(startDate).to(endDate));
 			long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
 					.setQuery(query)
@@ -194,7 +194,7 @@ public class MyELTUsageReportService {
 		QueryBuilder query = QueryBuilders.boolQuery()
 				.must(QueryBuilders.matchQuery("userType", "STUDENT"))
 				.mustNot(QueryBuilders.matchQuery("institution.id", "ICPNA"))
-				.mustNot(QueryBuilders.matchQuery("studentType", "capes_model"))
+				.mustNot(QueryBuilders.matchQuery("userModel", "capes_model"))
 				.must(QueryBuilders.rangeQuery("dateLastLogin").from(startDate).to(endDate));
 		long count = elasticSearchClient.prepareCount(Constants.USERS_ALL_ALIAS)
 				.setQuery(query)

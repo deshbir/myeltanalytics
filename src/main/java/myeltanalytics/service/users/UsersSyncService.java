@@ -334,7 +334,7 @@ public class UsersSyncService
         }        
 
         if (!helperService.isIndexExist(Constants.USERS_CAPES_ALIAS, elasticSearchClient)) {
-            AndFilterBuilder capesModelUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.USER_WITHOUT_ACCESS), FilterBuilders.termsFilter("studentType", Constants.CAPES_MODEL));
+            AndFilterBuilder capesModelUsersFilter = FilterBuilders.andFilter(FilterBuilders.termsFilter("recordType", Constants.USER_WITH_ACCESS, Constants.USER_WITHOUT_ACCESS), FilterBuilders.termsFilter("userModel", Constants.CAPES_MODEL));
             elasticSearchClient.admin().indices().prepareAliases().addAlias(Constants.USERS_INDEX, Constants.USERS_CAPES_ALIAS, capesModelUsersFilter).execute().actionGet();
         }
         

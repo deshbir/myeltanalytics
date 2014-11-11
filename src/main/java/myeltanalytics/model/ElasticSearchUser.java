@@ -9,7 +9,7 @@ import org.dom4j.Node;
 
 public class ElasticSearchUser extends AbstractUser {
         private String recordType; 
-        private String studentType;
+        private String userModel;
         private Access access;
         private List<String> productNames;
         private List<String> productCodes;
@@ -36,7 +36,7 @@ public class ElasticSearchUser extends AbstractUser {
             ElasticSearchInstitution esi = ElasticSearchInstitution.transformInstitution(user.getInstitution());
             esUser.setInstitution(esi);
             esUser.setRecordType(recordType);
-            esUser.setStudentType(user.getStudentType());
+            esUser.setUserModel(user.getUserModel());
             esUser.setCountry(user.getCountry());
             esUser.setRegion();
             List<String> productCodes = new LinkedList<String>();
@@ -150,17 +150,17 @@ public class ElasticSearchUser extends AbstractUser {
 
 
 
-        public String getStudentType()
+        public String getUserModel()
         {
-            return studentType;
+            return userModel;
         }
 
 
 
 
-        public void setStudentType(String studentType)
+        public void setUserModel(String userModel)
         {
-            this.studentType = studentType;
+            this.userModel = userModel;
         }
 
 
