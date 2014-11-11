@@ -207,9 +207,12 @@ public class UsersSyncThread implements Runnable
          * 	2. instructor
          * When we query for "student", the query sometimes returns default "STUDENT" user with parent=0 (since query is case insensitive).
          * Adding a additional check parent<>0 to avoid such situation
-         ********************************************************/
+         ********************************************************
+         * We found 2 users with same name (one in Users table and other in UserInstitutionMap table).
+         * Adding instituionId check to avoid such situations.
+         */
         User user = auxJdbcTemplate.queryForObject(
-            "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID,DistrictID from Users where name = ? AND parent<>0 limit 1", new Object[] { loginName },
+            "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID,DistrictID from Users where name = ? AND InstitutionID = ? AND parent<>0 limit 1", new Object[] { loginName, institutionId },
             new RowMapper<User>() {
                 
                 @Override
