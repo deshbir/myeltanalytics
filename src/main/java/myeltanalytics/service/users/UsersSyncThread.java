@@ -209,7 +209,7 @@ public class UsersSyncThread implements Runnable
          * Adding a additional check parent<>0 to avoid such situation
          ********************************************************/
         User user = auxJdbcTemplate.queryForObject(
-            "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID from Users where name = ? AND parent<>0 limit 1", new Object[] { loginName },
+            "Select id,name,email,parent,createdAt,lastLoginAt,firstName,lastName,countryCode,InstitutionID,DistrictID from Users where name = ? AND parent<>0 limit 1", new Object[] { loginName },
             new RowMapper<User>() {
                 
                 @Override
@@ -233,7 +233,11 @@ public class UsersSyncThread implements Runnable
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
                     
-                    user.setInstitution(populateInstitution(rs.getString("InstitutionID"))); 
+                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));
+                    
+                    if (rs.getString("DistrictID").equals("41")) {
+                    	user.setCapes(true);
+                    }
                     
                     user.setUserCountry(rs.getString("countryCode"));                                     
                     user.setCourses(populateCourses(user.getId()));
@@ -242,7 +246,7 @@ public class UsersSyncThread implements Runnable
                     /*****************************************
                      *  Populate Milestones for CAPES users
                      ******************************************/
-                    if (user.getInstitution().getDistrict() != null && user.getInstitution().getDistrict().equals("CAPES")) {
+                    if (user.isCapes()) {
                         user.setMilestones(populateMilestones(user.getId()));
                         if (user.getMilestones() != null && user.getMilestones().size() > 0) {
                         	//Get last accessed milestone
@@ -413,14 +417,14 @@ public class UsersSyncThread implements Runnable
         return courses;
     }
    
-    private Institution populateInstitution(String institutionId) {   
-        /** Populate Institutions from Main DB (Institutions and Districts table are in Main DB) */
+    private Institution populateInstitution(final String institutionId) {   
+    	/** Populate Institutions from Main DB (Institutions and Districts table are in Main DB) */
         Institution  institution = jdbcTemplate.queryForObject(
-            "Select Institutions.id,Institutions.name,Institutions.country,Institutions.other,Districts.name as district from Institutions left join Districts on Districts.id=Institutions.DistrictID where Institutions.id=?", new Object[] { institutionId },
+            "Select id,name,country,other from Institutions where id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
                 @Override
                 public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {                                      
-                    return new Institution(rs.getString("id"),rs.getString("name"), rs.getString("country"), rs.getString("other"), rs.getString("district"));
+                    return new Institution(institutionId,rs.getString("name"), rs.getString("country"), rs.getString("other"));
                 }
             });
         return institution;

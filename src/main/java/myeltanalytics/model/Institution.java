@@ -9,18 +9,16 @@ public class Institution extends AbstractInstitution
 {
     private Country country;
     private String other;
-    private String district;
       
     /**
      * @param id
      * @param name
      */
-    public Institution(String id, String name, String country, String other, String district)
+    public Institution(String id, String name, String country, String other)
     {
         super(id,name);
         this.setCountry(country);
         this.other = other;
-        this.district = district;
     }
     
     public Institution(String id){
@@ -39,20 +37,6 @@ public class Institution extends AbstractInstitution
     public void setOther(String other)
     {
         this.other = other;
-    }
-    /**
-     * @return the district
-     */
-    public String getDistrict()
-    {
-        return district;
-    }
-    /**
-     * @param district the district to set
-     */
-    public void setDistrict(String district)
-    {
-        this.district = district;
     }
     
     public Country getCountry()

@@ -6,6 +6,7 @@ public class User extends AbstractUser {
 
     private ArrayList<Access> accessList;
     private Institution institution;
+    private boolean isCapes;
 
     
     public enum UserType{
@@ -96,15 +97,16 @@ public class User extends AbstractUser {
     
     public String getUserModel()
     {
-    	if(("CAPES").equals(institution.getDistrict())){
+    	if(isCapes){
             return Constants.CAPES_MODEL;
         }  else {
         	if((institution.getId().equals("SELF_LEARNER")) || (institution.getOther().indexOf("MyELTHideAssignment=true") != -1)){
                 return "self_paced";
             } else if(institution.getOther().indexOf("MyELTSelfLearner=false") != -1){
                 return "classroom";
-            }
-            return "hybrid_learner";
+            } else {
+            	return "hybrid_learner";
+            }            
         }    	
     }
     
@@ -132,5 +134,13 @@ public class User extends AbstractUser {
 
 	public void setAccessList(ArrayList<Access> accessList) {
 		this.accessList = accessList;
+	}
+
+	public boolean isCapes() {
+		return isCapes;
+	}
+
+	public void setCapes(boolean isCapes) {
+		this.isCapes = isCapes;
 	}
 }

@@ -101,7 +101,7 @@ public class SubmissionsSyncThread implements Runnable
     protected ActivitySubmission.User populateUserForSubmission(long userId)
     {
         ActivitySubmission.User user = jdbcTemplate.queryForObject(
-            "Select id,firstName,lastName,country,InstitutionID from Users where id = ?", new Object[] { userId },
+            "Select id,firstName,lastName,country,InstitutionID,DistrictID from Users where id = ?", new Object[] { userId },
             new RowMapper<ActivitySubmission.User>() {
                 @Override
                 public ActivitySubmission.User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -109,7 +109,7 @@ public class SubmissionsSyncThread implements Runnable
                     user.setFirstName(rs.getString("firstName"));
                     user.setLastName(rs.getString("lastName"));
                     user.setCountry(rs.getString("country"));
-                    user.setInstitution(populateInstitution(rs.getString("InstitutionID")));
+                    user.setInstitution(populateInstitution(rs.getString("InstitutionID"), rs.getString("DistrictID")));
                     return user;
                 }
             });
@@ -165,17 +165,17 @@ public class SubmissionsSyncThread implements Runnable
         }
     }
 
-    protected Institution populateInstitution(String institutionId){
+    protected Institution populateInstitution(final String institutionId, String districtId){
+    	/** Populate Institutions from Main DB (Institutions and Districts table are in Main DB) */
         Institution  institution = jdbcTemplate.queryForObject(
-            "Select Institutions.id,Institutions.name,Institutions.country,Institutions.other,Districts.name as district from Institutions left join Districts on Districts.id=Institutions.DistrictID where Institutions.id=?", new Object[] { institutionId },
+            "Select id,name,country,other from Institutions where id=?", new Object[] { institutionId },
             new RowMapper<Institution>() {
                 @Override
                 public Institution mapRow(ResultSet rs, int rowNum) throws SQLException {                                      
-                    return new Institution(rs.getString(1),rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                    return new Institution(institutionId,rs.getString("name"), rs.getString("country"), rs.getString("other"));
                 }
             });
         return institution;
-
     }
     
 }
