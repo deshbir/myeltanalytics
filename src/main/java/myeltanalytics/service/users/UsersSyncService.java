@@ -450,6 +450,7 @@ public class UsersSyncService
             }
         }
     }
+       
     
     public XContentBuilder buildUserTypeMappings(){
         XContentBuilder builder = null; 
@@ -463,7 +464,18 @@ public class UsersSyncService
                 .startObject("dateLastLogin")
                     .field("type", "date")                      
                 .endObject()
-                .startObject("accessCode")
+                .startObject("recordType")
+                    .field("type", "string")                      
+                .endObject()
+                .startObject("userModel")
+                    .field("type", "string")                      
+                .endObject()
+                .startObject("institution")
+                    .startObject("properties")
+                    	.field("id", "string")          
+                    .endObject()
+                .endObject()
+                .startObject("access")
                     .startObject("properties")
                         .startObject("discipline")
                              .field("type", "string")                      
@@ -475,6 +487,9 @@ public class UsersSyncService
                          .endObject()
                          .startObject("dateCreated")
                             .field("type", "date")                      
+                        .endObject()
+                        .startObject("accessType")
+                            .field("type", "string")                      
                         .endObject()
                      .endObject()
                 .endObject()

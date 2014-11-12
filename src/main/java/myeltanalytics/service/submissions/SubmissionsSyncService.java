@@ -239,6 +239,12 @@ public class SubmissionsSyncService
             builder = XContentFactory.jsonBuilder();
             builder.startObject()
             .startObject("properties")
+            	.startObject("status")
+                    .field("type", "string")                      
+                .endObject()
+                .startObject("activityType")
+                    .field("type", "string")                      
+                .endObject()
                 .startObject("book")
                     .startObject("properties")
                         .startObject("discipline")
