@@ -59,7 +59,7 @@ public class SyncController {
         return userInfoJson.toString();
     } 
     
-    @RequestMapping("/submissions")
+    @RequestMapping("/submissions/status")
     @ResponseBody
     public String syncSubmissions() throws IOException {
         
@@ -172,12 +172,13 @@ public class SyncController {
         }
     }  
 
-    @RequestMapping(value= "/submissions/startSync")
+    @RequestMapping(value= "/submissions/start")
     @ResponseBody
     String startFreshSubmissionsSync() throws JsonProcessingException{
         try {
             submissionsSyncService.startFreshSync();
             JSONObject jobInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
+            jobInfoJson.put("percent", 0);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
@@ -190,12 +191,17 @@ public class SyncController {
        
     }
     
-    @RequestMapping(value= "/submissions/stopSync")
+    @RequestMapping(value= "/submissions/stop")
     @ResponseBody
     String pauseSubmissionsSync() throws JsonProcessingException, InterruptedException{
         try {
             submissionsSyncService.stopSync();        
-            return helperService.constructSuccessResponse();
+            JSONObject jobInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
+            long processedRecords = SubmissionsSyncService.jobInfo.getSuccessRecords() + SubmissionsSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)SubmissionsSyncService.jobInfo.getTotalRecords()) * 100);
+            jobInfoJson.put("percent", percentageProcessed);
+            jobInfoJson.put("status", "success");
+            return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {
             LOGGER.error("Error communicating with MySQL Server.", e);
             return helperService.constructErrorResponse(Constants.MYSQL_ERROR_MESSAGE);
@@ -206,12 +212,15 @@ public class SyncController {
       
     }
     
-    @RequestMapping(value= "/submissions/resumeSync")
+    @RequestMapping(value= "/submissions/resume")
     @ResponseBody
     String resumeSubmissionsSync() throws JsonProcessingException{ 
         try {
             submissionsSyncService.resumeSync();
             JSONObject jobInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
+            long processedRecords = SubmissionsSyncService.jobInfo.getSuccessRecords() + SubmissionsSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)SubmissionsSyncService.jobInfo.getTotalRecords()) * 100);
+            jobInfoJson.put("percent", percentageProcessed);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {

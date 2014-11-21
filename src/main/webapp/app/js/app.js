@@ -16,7 +16,7 @@ myeltAnalyticsApp.config(['$routeProvider',
                 	return getDataFromServerService.getData($http , '../sync/users/status');
                 },
                 jsonSubmissionSyncData : function(getDataFromServerService , $http){
-		        	return getDataFromServerService.getData($http , '../sync/submissions');
+		        	return getDataFromServerService.getData($http , '../sync/submissions/status');
 		        }
             }
           }).
