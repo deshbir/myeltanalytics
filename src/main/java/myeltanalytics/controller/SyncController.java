@@ -178,7 +178,9 @@ public class SyncController {
         try {
             submissionsSyncService.startFreshSync();
             JSONObject jobInfoJson = new JSONObject(SubmissionsSyncService.jobInfo);
-            jobInfoJson.put("percent", 0);
+            long processedRecords = SubmissionsSyncService.jobInfo.getSuccessRecords() + SubmissionsSyncService.jobInfo.getErrorRecords();
+            int percentageProcessed = (int)(((double)processedRecords / (double)SubmissionsSyncService.jobInfo.getTotalRecords()) * 100);
+            jobInfoJson.put("percent", percentageProcessed);
             jobInfoJson.put("status", "success");
             return jobInfoJson.toString();
         } catch (CannotGetJdbcConnectionException e) {

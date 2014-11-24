@@ -1,4 +1,4 @@
-<div class="container" data-ng-init="manaageUsersSynButton()">
+<div class="container" data-ng-init="manageUsersSynButton(); manageSubmissionSynButton();">
             <div class=" row alert alert-danger alert-dismissable" ng-show="usersJobInfo.status == 'error'">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				<strong>Error! {{usersJobInfo.errorMessage}}</strong>
@@ -52,11 +52,109 @@
                                    </tbody>
                                	
                                </table>
-                               <button id="usersResumeButton" class="btn btn-primary {{usersResumeButtonDisplay}}" ng-click="resumeSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
-                               <button id="usersStartButton" class="btn btn-primary {{usersStartButtonDisplay}}" ng-click="startSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
-                               <button id="usersStopButton" class="btn btn-danger {{usersStopButtonDisplay}}" ng-click="stopSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
+                               <button id="usersResumeButton" class="btn btn-primary {{usersResumeButtonDisplay}}" ng-click="resumeUserSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
+                               <button id="usersStartButton" class="btn btn-primary {{usersStartButtonDisplay}}" ng-click="startUserSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
+                               <button id="usersStopButton" class="btn btn-danger {{usersStopButtonDisplay}}" ng-click="stopUserSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
                            </div>
                        </div>
-                   </div>  
-        </div>
+                   </div>
+                <div class="col-md-6">
+                    <div id="submissionsSyncPanel" class="panel panel-primary">
+                        <div class="panel-heading"><i class="fa fa-refresh fa-lg {{usersSpinClass}}"></i><strong>  Submissions (MySQL) </strong></div>
+                           <div class="panel-body">
+                               <div id="submissionsProgressContainer" class="progress progress-striped {{usersActiveClass}}">
+                                   <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{submissionsJobInfo.percent}}" aria-valuemin="0" aria-valuemax="100" style="width:{{submissionsJobInfo.percent}}%;">
+                                       {{submissionsJobInfo.percent}}%
+                                   </div>
+                               </div>
+                               <table class="table table-bordered">
+                                   <tbody>
+                                       <tr>
+                                           <td>
+                                               <span id="submissionsJobStatus" class="syncinfo badge pull-right {{submissionsBadgeClass}}">{{submissionsJobInfo.jobStatus}}</span>
+                                               <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="submissionsJobStartDateTime" class="syncinfo pull-right">{{submissionsJobInfo.startDateTime}}</span>
+                                               <i class="fa fa-calendar fa-lg"></i><span class="syncinfoHeading">Started At</span>
+                                           </td>
+                                       </tr> 
+                                       <tr>
+                                           <td>
+                                               <span id="submissionsTotalRecords" class="syncinfo odometer pull-right">{{submissionsJobInfo.totalRecords}}</span> 
+                                               <i class="fa fa-road fa-lg"></i><span class="syncinfoHeading">Total records to Sync</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="submissionsSuccessRecords" class="syncinfo pull-right odometer text-success"><odometer value='{{submissionsJobInfo.successRecords}}'></odometer></span>
+                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with Reporting App</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="submissionsErrorRecords" class="syncinfo pull-right odometer text-danger"><odometer value='{{submissionsJobInfo.errorRecords}}'></odometer></span>
+                                               <i class="fa fa-warning fa-lg"></i>
+                                               <span class="syncinfoHeading">Failed records
+                                               </span>
+                                           </td>
+                                       </tr>
+                                   </tbody>
+                               	
+                               </table>
+                               <button id="submissionsResumeButton" class="btn btn-primary {{submissionsResumeButtonDisplay}}" ng-click="resumeSubmissionSync()";><i class="fa fa-play-circle-o fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Resume Last Sync</span></button>   
+                               <button id="submissionsStartButton" class="btn btn-primary {{submissionsStartButtonDisplay}}" ng-click="startSubmissionSync()";><i class="fa fa-play fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
+                               <button id="submissionsStopButton" class="btn btn-danger {{submissionsStopButtonDisplay}}" ng-click="stopSubmissionSync()";><i class="fa fa-stop fa-lg"></i><i style="display:none" class="fa fa-spin fa-spinner fa-lg"></i><span class="syncinfoHeading"> Stop Sync</span></button>
+                           </div>
+                       </div>
+                   </div>    
+        	</div>     
+       		 <div class="row">
+                <div class="col-md-6">
+                    <div id="gaSyncPanel" class="panel panel-primary">
+                           <div class="panel-heading"><i class="fa fa-refresh fa-lg"></i><strong> Visits (Google Analytics)</strong></div>
+                           <div class="panel-body">
+                               <table class="table table-bordered">
+                                   <tbody>
+                                       <tr>
+                                           <td>
+                                               <span id="usersJobStatus" class="syncinfo badge pull-right badge-info">Not Started</span>
+                                               <i class="fa fa-flag fa-lg"></i><span class="syncinfoHeading">Status</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersJobStartDateTime" class="syncinfo pull-right"></span>
+                                               <i class="fa fa-calendar fa-lg"></i><span class="syncinfoHeading">Started At</span>
+                                           </td>
+                                       </tr> 
+                                       <tr>
+                                           <td>
+                                               <span id="usersTotalRecords" class="syncinfo odometer pull-right"></span> 
+                                               <i class="fa fa-road fa-lg"></i><span class="syncinfoHeading">Total records to Sync</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersSuccessRecords" class="syncinfo pull-right odometer text-success"></span>
+                                               <i class="fa fa-check-circle fa-lg"></i><span class="syncinfoHeading">Records synced with Reporting App</span>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td>
+                                               <span id="usersErrorRecords" class="syncinfo pull-right odometer text-danger"></span>
+                                               <i class="fa fa-warning fa-lg"></i><span class="syncinfoHeading">Failed records</span>
+                                           </td>
+                                       </tr>
+                                   </tbody>
+                               </table>
+                               <button id="gaStartButton" class="btn btn-primary" onclick="void(0);"><i class="fa fa-play fa-lg"></i><span class="syncinfoHeading">Start Fresh Sync</span></button>
+                           </div>
+                       </div>
+                   </div>
+            </div>
+        </div> 
+</div>
           
