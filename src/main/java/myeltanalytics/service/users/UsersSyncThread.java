@@ -357,12 +357,9 @@ public class UsersSyncThread implements Runnable
     		Access access = new Access();
     		Map<String,Object> accessRight = accessRightsIter.next();
     		String productCode = String.valueOf(accessRight.get("ProductCode"));
+    		String lastModified = String.valueOf(accessRight.get("LastModified"));
     		access.setProductCode(productCode);
-    		
-		    DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-            if (accessRight.get("LastModified") != null) {
-            	access.setDateCreated(dateFormat.format(accessRight.get("LastModified"))); 
-            } 
+    		access.setDateCreated(lastModified);
 
     		List<Map<String,Object>> accessCodeList = jdbcTemplate.queryForList("Select AccessCode from BookAccessCodes where UserId='" + user.getId() + "' And BookAbbr like '" + productCode + "%'");
 
@@ -393,13 +390,9 @@ public class UsersSyncThread implements Runnable
     		Access access = new Access();
     		Map<String,Object> accessRight = accessRightsByInstitutionIdIter.next();
     		String productCode = String.valueOf(accessRight.get("ProductCode"));
+    		String lastModified = String.valueOf(accessRight.get("LastModified"));
     		access.setProductCode(productCode);
-    		
-    		DateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-            if (accessRight.get("LastModified") != null) {
-            	access.setDateCreated(dateFormat.format(accessRight.get("LastModified"))); 
-            } 
-            
+    		access.setDateCreated(lastModified);
     		access.setAccessType(Constants.ACCESSTYPE_INSTITUTION);
     		Map<String,String> bookInfo = usersSyncService.getBookInfo(productCode);
     		if (bookInfo != null) {
